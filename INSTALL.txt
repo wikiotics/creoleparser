@@ -23,7 +23,7 @@ Support
 -------
 
 If you encounter any problems with Creoleparser, please don't
-hesitate to ask questions on the WikiCreole.org wiki:
+hesitate to ask questions on the google code page:
 
-http://wikicreole.org/wiki/Creoleparser.py
+http://code.google.com/p/creoleparser/wiki/QuestionAndComments
 

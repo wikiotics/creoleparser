@@ -115,7 +115,7 @@ class Parser(object):
     def render(self,text,**kwargs):
         """Returns final output string (e.g., xhtml)
 
-        :parameter:
+        :parameters:
           See Genshi documentation for additional keyword arguments.
         """
         return self.generate(text).render(method=self.method,strip_whitespace=self.strip_whitespace,

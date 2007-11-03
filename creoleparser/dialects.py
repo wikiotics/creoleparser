@@ -14,18 +14,20 @@ class Creole10(object):
 
     def __init__(self,wiki_links_base_url='http://',interwiki_links_base_urls={},
                  no_wiki_monospace=False, use_additions=False):
-        """Most attributes of new Creole objects are derived from the WikiElement
+        """Constructor for Creole10 oblects.
+
+        Most attributes of new Creole objects are derived from the WikiElement
         class. Please see the constructor of that class and other specific element
         classes for details.
 
         :parameters:
-          wiki_link_base_url
+          wiki_links_base_url
             self explanitory
           interwiki_links_base_urls
             Dictionary of urls for interwiki links.
-          no_wiki_monospace = ``False``
+          no_wiki_monospace
             If ``True``, inline no_wiki will be rendered as <tt> not <span>
-          use_additions = ``False``
+          use_additions
             If ``True``, markup beyond the Creole 1.0 spec will be allowed.
             Including monospace (##).
         """
