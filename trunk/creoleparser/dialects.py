@@ -12,7 +12,8 @@ class Creole10(object):
 
     """This class contains most of the logic and specification of the markup."""
 
-    def __init__(self,wiki_links_base_url='http://',interwiki_links_base_urls={},
+    def __init__(self,wiki_links_base_url='http://',wiki_links_space_char='_',
+                 interwiki_links_base_urls={},
                  no_wiki_monospace=False, use_additions=False):
         """Constructor for Creole10 oblects.
 
@@ -23,6 +24,9 @@ class Creole10(object):
         :parameters:
           wiki_links_base_url
             self explanitory
+          wiki_links_space_char
+            When wiki_links have spaces, this character replaces those spaces in
+            the url. 
           interwiki_links_base_urls
             Dictionary of urls for interwiki links.
           no_wiki_monospace
