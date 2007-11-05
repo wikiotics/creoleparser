@@ -489,9 +489,9 @@ class Link(InlineElement):
         for link_type in self.link_types:
             link_mo = link_type.regexp.search(link)
             if link_mo:
+                href = link_type.href(link_mo)
                 break
-        href = link_type.href(link_mo)
-        if not href:
+        if not link_mo:
             return bldr.tag.span('Bad Link - ',link)
         if not alias:
             alias = link_type.alias(link_mo)
@@ -649,7 +649,7 @@ class LineBreak(WikiElement):
 
     """An inline line break."""
 
-    append_newline = True
+    #append_newline = True
     def __init__(self,tag, token, child_tags=[]):
         super(LineBreak,self).__init__(tag,token , child_tags)
         self.regexp = re.compile(self.re_string(),re.DOTALL)
