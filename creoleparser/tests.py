@@ -36,8 +36,7 @@ r"""   |= Item|= Size|= Price |
 </table>
 <table><tr><th>Item</th><th>Size</th><th>Price</th></tr>
 <tr><td>fish</td><td>big</td><td><em>cheap</em></td></tr>
-<tr><td>crab</td><td>small</td><td><strong>very<br />
-expesive</strong></td></tr>
+<tr><td>crab</td><td>small</td><td><strong>very<br />expesive</strong></td></tr>
 </table>
 """
 
@@ -119,9 +118,7 @@ Go to [[http://www.google.com]], it is [[http://www.google.com| Google]]\\
 even [[This Page]] is nice like [[This Page|this]].\\
 As is [[Ohana:Home|This one]].""") == """\
 <p>Go to <a href="http://www.google.com">http://www.google.com</a>, it is <a href="http://www.google.com">Google</a><br />
-
 even <a href="http://www.wikicreole.org/wiki/This_Page">This Page</a> is nice like <a href="http://www.wikicreole.org/wiki/This_Page">this</a>.<br />
-
 As is <a href="http://wikiohana.net/cgi-bin/wiki.pl/Home">This one</a>.</p>
 """
 
@@ -153,10 +150,7 @@ drivel here
 </li>
 <li> two <a href="http://www.wikicreole.org/wiki/Creole1.0">Creole1.0</a>
 </li>
-<li> three<br />
-covers<br />
-many<br />
-lines
+<li> three<br />covers<br />many<br />lines
 </li>
 </ol></li>
 <li> <em>subitem 2</em>
@@ -201,9 +195,8 @@ drivel here
 |same picture as a link| [[http://google.com | {{ campfire.jpg | campfire.jpg }} ]]|""") == """\
 <h1>Big Heading</h1>
 <hr />
-<br />
-<table><tr><td>nice picture</td><td><img src="campfire.jpg" alt="campfire.jpg" /></td><td><br />
-</td></tr>
+<p><br /></p>
+<table><tr><td>nice picture</td><td><img src="campfire.jpg" alt="campfire.jpg" /></td><td><br /></td></tr>
 <tr><td>same picture as a link</td><td><a href="http://google.com"><img src="campfire.jpg" alt="campfire.jpg" /></a></td></tr>
 </table>
 """

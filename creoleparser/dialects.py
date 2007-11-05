@@ -41,7 +41,8 @@ class Creole10(object):
         self.interwiki_link = InterWikiLink(delimiter=':',
                                             base_urls=interwiki_links_base_urls,
                                             space_char='_')
-        self.wiki_link = WikiLink(base_url=wiki_links_base_url,space_char='_')
+        self.wiki_link = WikiLink(base_url=wiki_links_base_url,
+                                  space_char=wiki_links_space_char)
         self.img = Image('img',('{{','}}'),[],delimiter='|')
         self.link = Link('a',('[[',']]'),[],delimiter='|',
                         link_types=[self.http_link,self.interwiki_link,self.wiki_link])
@@ -68,7 +69,7 @@ class Creole10(object):
             header_children = [self.no_wiki,(self.strong, self.em), self.br,self.link,self.img,self.http_link]
                 
         self.hr = LoneElement('hr','----',[])
-        self.lone_br = LoneElement('br',r'\\',[])
+        #self.lone_br = LoneElement('br',r'\\',[])
         self.blank_line = BlankLine()
 
         self.h1 = Heading('h1','=',header_children)
@@ -96,8 +97,10 @@ class Creole10(object):
 
         self.pre = PreBlock('pre',['{{{','}}}'])
 
+##        self.parse_order = [self.pre,self.blank_line,self.table]+ headings\
+##                           + [self.hr,self.lone_br,self.ul,self.ol,self.p]
         self.parse_order = [self.pre,self.blank_line,self.table]+ headings\
-                           + [self.hr,self.lone_br,self.ul,self.ol,self.p]
+                           + [self.hr,self.ul,self.ol,self.p]
         """These are the wiki elements that are searched at the top level of text to be
         processed. The order matters because elements later in the list need not have any
         knowledge of those before (as those were parsed out already). This makes the
