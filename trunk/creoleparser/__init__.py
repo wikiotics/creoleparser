@@ -47,9 +47,11 @@ __docformat__ = 'restructuredtext en'
 
 
 creole_to_xhtml = Parser(dialect=Creole10(wiki_links_base_url='http://www.wikicreole.org/wiki/',
-                             interwiki_links_base_urls={'Ohana':'http://wikiohana.net/cgi-bin/wiki.pl/'}))
+                             interwiki_links_base_urls={'Ohana':'http://wikiohana.net/cgi-bin/wiki.pl/'},
+                         use_additions=True))
 """This is a parser created for convenience"""
 
+text2html = creole_to_xhtml
 
 def _test():
     import doctest
