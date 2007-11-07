@@ -14,7 +14,7 @@ class Creole10(object):
 
     def __init__(self,wiki_links_base_url='http://',wiki_links_space_char='_',
                  interwiki_links_base_urls={},
-                 no_wiki_monospace=False, use_additions=False):
+                 no_wiki_monospace=True, use_additions=False):
         """Constructor for Creole10 oblects.
 
         Most attributes of new Creole objects are derived from the WikiElement
@@ -47,26 +47,29 @@ class Creole10(object):
         self.link = Link('a',('[[',']]'),[],delimiter='|',
                         link_types=[self.http_link,self.interwiki_link,self.wiki_link])
         self.strong = InlineElement('strong', '**',[])
-        self.em = InlineElement('em', '//',[self.strong,self.br,self.link,self.img,self.http_link])
+        self.em = InlineElement('em', '//',[])
         if no_wiki_monospace:
             no_wiki_tag = 'tt'
         else:
             no_wiki_tag = 'span'
         self.no_wiki = NoWikiElement(no_wiki_tag,['{{{','}}}'],[])
-        self.strong.child_tags = [self.em,self.br,self.link,self.img,self.http_link]
-        self.link.child_tags = [(self.strong, self.em), self.img]
+        #self.strong.child_tags = [self.em,self.br,self.link,self.img,self.http_link]
+        #self.link.child_tags = [(self.strong, self.em), self.img]
 
         if use_additions:
-            self.tt = InlineElement('tt', '##',[(self.strong,self.em),self.br,self.link,self.img,self.http_link])
-            self.strong.child_tags = [(self.em,self.tt),self.br,self.link,self.img,self.http_link]
-            self.em.child_tags = [(self.strong,self.tt),self.br,self.link,self.img,self.http_link]
+            self.tt = InlineElement('tt', '##',[(self.strong,self.em,self.link),self.br,self.img,self.http_link])
+            self.strong.child_tags = [(self.em,self.tt,self.link),self.br,self.img,self.http_link]
+            self.em.child_tags = [(self.strong,self.tt,self.link),self.br,self.img,self.http_link]
             self.link.child_tags = [(self.strong, self.em,self.tt), self.img]
-            header_children = [self.no_wiki,(self.strong, self.em, self.tt), self.br,self.link,self.img,self.http_link]
+            header_children = [self.no_wiki,(self.strong, self.em, self.tt,self.link),
+                               self.br,self.img,self.http_link]
 
         else:
-            self.strong.child_tags = [self.em,self.br,self.link,self.img,self.http_link]
+            self.em.child_tags = [(self.strong,self.link),self.br,self.img,self.http_link]
+            self.strong.child_tags = [(self.em,self.link),self.br,self.img,self.http_link]
             self.link.child_tags = [(self.strong, self.em), self.img]
-            header_children = [self.no_wiki,(self.strong, self.em), self.br,self.link,self.img,self.http_link]
+            header_children = [self.no_wiki,(self.strong, self.em, self.link),
+                               self.br,self.img,self.http_link]
                 
         self.hr = LoneElement('hr','----',[])
         #self.lone_br = LoneElement('br',r'\\',[])

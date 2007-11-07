@@ -17,9 +17,9 @@ def test_creole_to_xhtml():
     assert creole_to_xhtml('steve **is strong**\n{{{\nnot **weak**\n}}}\n') == \
             '<p>steve <strong>is strong</strong></p>\n<pre>not **weak**\n</pre>\n'
     assert creole_to_xhtml('{{{no **wiki** in here}}} but //here// is fine') == \
-            '<p><span>no **wiki** in here</span> but <em>here</em> is fine</p>\n'
+            '<p><tt>no **wiki** in here</tt> but <em>here</em> is fine</p>\n'
     assert creole_to_xhtml('steve **is strong //you know\n dude{{{not **weak**}}}\n') == \
-            '<p>steve <strong>is strong <em>you know\n dude</em></strong><span>not **weak**</span></p>\n'
+            '<p>steve <strong>is strong <em>you know\n dude</em></strong><tt>not **weak**</tt></p>\n'
 
     assert creole_to_xhtml(
 r"""   |= Item|= Size|= Price |
@@ -83,6 +83,14 @@ preventing ** <strong>bold</strong> and // <em>italics</em>
 </table>
 """
 
+    assert creole_to_xhtml("\
+Names of pages have to LookLikeThis.\r\nIt's called a WikiName.\r\nIf you write\
+ a word that LookLikeThis.\r\n") == """\
+<p>Names of pages have to LookLikeThis.
+It's called a WikiName.
+If you write a word that LookLikeThis.</p>
+"""
+
     assert creole_to_xhtml(r"""
 {{{
 ** some ** unformatted {{{ stuff }}} ~~~
@@ -96,7 +104,7 @@ preventing ** <strong>bold</strong> and // <em>italics</em>
 
     assert creole_to_xhtml("""\
 {{{** some ** unformatted {{{ stuff ~~ }}}}}}""") == """\
-<p><span>** some ** unformatted {{{ stuff ~~ }}}</span></p>
+<p><tt>** some ** unformatted {{{ stuff ~~ }}}</tt></p>
 """
 
     assert creole_to_xhtml("""\
@@ -202,11 +210,11 @@ drivel here
 """
 
 def test_no_wiki_monospace_option():
-    dialect = Creole10(no_wiki_monospace=True)
+    dialect = Creole10(no_wiki_monospace=False)
     parser = Parser(dialect)
     assert parser(r"""
-This block of {{{no_wiki **should** be monospace}}} now""") == """\
-<p>This block of <tt>no_wiki **should** be monospace</tt> now</p>
+This block of {{{no_wiki **shouldn't** be monospace}}} now""") == """\
+<p>This block of <span>no_wiki **shouldn't** be monospace</span> now</p>
 """
     
 def test_use_additions_option():
