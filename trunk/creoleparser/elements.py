@@ -457,7 +457,9 @@ class InlineElement(WikiElement):
             return esc_neg_look + re.escape(self.token) + content + end
         else:
             content = '(.+?)'
-            return esc_neg_look + re.escape(self.token[0]) + content + esc_neg_look + re.escape(self.token[1])
+            return esc_neg_look + re.escape(self.token[0]) +\
+                   content + '(' + esc_neg_look + re.escape(self.token[1]) +\
+                   r'|$)'
              
 
 class Link(InlineElement):
@@ -477,7 +479,7 @@ class Link(InlineElement):
     def pre_escape_pattern(self):
         return '(' + re.escape(self.token[0]) + '.*?)' + \
                '(' + re.escape(self.delimiter) + '.*?' + \
-               re.escape(self.token[1]) + ')'
+               '(' + re.escape(self.token[1]) + '|$))'
         
     def _build(self,mo):
         body = mo.group(1).split(escape_char + self.delimiter, 1)
@@ -528,7 +530,7 @@ class Image(InlineElement):
     def pre_escape_pattern(self):
         return '(' + re.escape(self.token[0]) + '.*?)' + \
                '(' + re.escape(self.delimiter) + '.*?' + \
-               re.escape(self.token[1]) + ')'
+               '(' + re.escape(self.token[1]) + '|$))'
 
     def _build(self,mo):
         body = mo.group(1).split(escape_char+self.delimiter,1)
