@@ -16,8 +16,23 @@ __docformat__ = 'restructuredtext en'
 escape_char = '~'
 esc_neg_look = '(?<!' + re.escape(escape_char) + ')'
 esc_to_remove = re.compile(''.join([r'(?<!',re.escape(escape_char),')',re.escape(escape_char),r'(?!([ \n]|$))']))
+element_store = {}
+store_id_seq = 1
 
-def fragmentize(text,wiki_elements,remove_escapes = True):
+def fill_from_store(text):
+    frags = []
+    mo = re.search(r'<<<(\d*?)>>>',text,re.DOTALL)
+    if mo:
+        if mo.start():
+            frags.append(text[:mo.start()])
+        frags.append(element_store[mo.group(1)])
+        if mo.end() < len(text):
+            frags.extend(fill_from_store(text[mo.end():]))
+    else:
+        frags = [text]
+    return frags
+
+def fragmentize(text,wiki_elements, remove_escapes = True):
 
     """Takes a string of wiki markup and outputs a list of genshi
     Fragments (Elements and strings).
@@ -42,9 +57,8 @@ def fragmentize(text,wiki_elements,remove_escapes = True):
     # remove escape characters 
     if not wiki_elements:
         if remove_escapes:
-            return [esc_to_remove.sub('',text)]
-        else:
-            return [text]
+            text = esc_to_remove.sub('',text)
+        return fill_from_store(text)
 
     # If the first supplied wiki_element is actually a list of elements, \
     # search for all of them and match the closest one only.
@@ -64,20 +78,21 @@ def fragmentize(text,wiki_elements,remove_escapes = True):
          
     frags = []
     if mo:
-        # call again for leading text and extend the result list 
-        if mo.start():
-            frags.extend(fragmentize(text[:mo.start()],wiki_elements[1:]))
-
-        # append the found wiki element to the result list
-        frags.append(wiki_element._build(mo))
-
-        # make the source output easier to read
-        if wiki_element.append_newline:
-            frags.append('\n')
-
-        # call again for trailing text and extend the result list
-        if mo.end() < len(text):
-            frags.extend(fragmentize(text[mo.end():],wiki_elements))
+        frags = wiki_element._process(mo, text, wiki_elements)
+##        # call again for leading text and extend the result list 
+##        if mo.start():
+##            frags.extend(fragmentize(text[:mo.start()],wiki_elements[1:]))
+##
+##        # append the found wiki element to the result list
+##        frags.append(wiki_element._build(mo))
+##
+##        # make the source output easier to read
+##        if wiki_element.append_newline:
+##            frags.append('\n')
+##
+##        # call again for trailing text and extend the result list
+##        if mo.end() < len(text):
+##            frags.extend(fragmentize(text[mo.end():],wiki_elements))
     else:
         frags = fragmentize(text,wiki_elements[1:])
 
