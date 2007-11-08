@@ -1,8 +1,7 @@
-Version 0.?.? (Nov ?? 2007)
----------------------------
+Version 0.3 (Nov ?? 2007)
+-------------------------
 
- * links don't have to close! (makes them more robust)
-
+ * big refactoring of inline wiki markup processing
 
 Version 0.2.1 (Nov 6 2007)
 --------------------------

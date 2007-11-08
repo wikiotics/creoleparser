@@ -10,7 +10,8 @@ import re
 
 import genshi.builder as bldr
 
-from core import escape_char, esc_neg_look, fragmentize
+from core import escape_char, esc_neg_look, fragmentize, \
+     element_store, store_id_seq
 
 
 __docformat__ = 'restructuredtext en'
@@ -80,6 +81,21 @@ class WikiElement(object):
         """
         pass
 
+    def _process(self, mo, text, wiki_elements):
+        frags = []
+        # call again for leading text and extend the result list 
+        if mo.start():
+            frags.extend(fragmentize(text[:mo.start()],wiki_elements[1:]))
+        # append the found wiki element to the result list
+        frags.append(self._build(mo))
+        # make the source output easier to read
+        if self.append_newline:
+            frags.append('\n')
+        # call again for trailing text and extend the result list
+        if mo.end() < len(text):
+            frags.extend(fragmentize(text[mo.end():],wiki_elements))
+        return frags
+        
     def __repr__(self):
         return "<WikiElement "+str(self.tag)+">"
 
@@ -457,9 +473,20 @@ class InlineElement(WikiElement):
             return esc_neg_look + re.escape(self.token) + content + end
         else:
             content = '(.+?)'
-            return esc_neg_look + re.escape(self.token[0]) +\
-                   content + '(' + esc_neg_look + re.escape(self.token[1]) +\
-                   r'|$)'
+            return esc_neg_look + re.escape(self.token[0]) + content + esc_neg_look + re.escape(self.token[1])
+
+    def _process(self, mo, text, wiki_elements):
+
+        global store_id_seq
+        processed = self._build(mo)
+        store_id = str(store_id_seq) # str(hash(processed))
+        element_store[store_id] = processed
+        store_id_seq = store_id_seq + 1
+        text = ''.join([text[:mo.start()],'<<<',store_id,'>>>',
+                        text[mo.end():]])
+        frags = fragmentize(text,wiki_elements)
+        return frags
+
              
 
 class Link(InlineElement):
@@ -479,7 +506,7 @@ class Link(InlineElement):
     def pre_escape_pattern(self):
         return '(' + re.escape(self.token[0]) + '.*?)' + \
                '(' + re.escape(self.delimiter) + '.*?' + \
-               '(' + re.escape(self.token[1]) + '|$))'
+               re.escape(self.token[1]) + ')'
         
     def _build(self,mo):
         body = mo.group(1).split(escape_char + self.delimiter, 1)
@@ -530,7 +557,7 @@ class Image(InlineElement):
     def pre_escape_pattern(self):
         return '(' + re.escape(self.token[0]) + '.*?)' + \
                '(' + re.escape(self.delimiter) + '.*?' + \
-               '(' + re.escape(self.token[1]) + '|$))'
+               re.escape(self.token[1]) + ')'
 
     def _build(self,mo):
         body = mo.group(1).split(escape_char+self.delimiter,1)

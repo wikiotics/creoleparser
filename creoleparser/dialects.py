@@ -56,21 +56,36 @@ class Creole10(object):
         #self.strong.child_tags = [self.em,self.br,self.link,self.img,self.http_link]
         #self.link.child_tags = [(self.strong, self.em), self.img]
 
+##        if use_additions:
+##            self.tt = InlineElement('tt', '##',[(self.strong,self.em,self.link),self.br,self.img,self.http_link])
+##            self.strong.child_tags = [(self.em,self.tt,self.link),self.br,self.img,self.http_link]
+##            self.em.child_tags = [(self.strong,self.tt,self.link),self.br,self.img,self.http_link]
+##            self.link.child_tags = [(self.strong, self.em,self.tt), self.img]
+##            header_children = [self.no_wiki,(self.strong, self.em, self.tt,self.link),
+##                               self.br,self.img,self.http_link]
+##
+##        else:
+##            self.em.child_tags = [(self.strong,self.link),self.br,self.img,self.http_link]
+##            self.strong.child_tags = [(self.em,self.link),self.br,self.img,self.http_link]
+##            self.link.child_tags = [(self.strong, self.em), self.img]
+##            header_children = [self.no_wiki,(self.strong, self.em, self.link),
+##                               self.br,self.img,self.http_link]
+
         if use_additions:
-            self.tt = InlineElement('tt', '##',[(self.strong,self.em,self.link),self.br,self.img,self.http_link])
-            self.strong.child_tags = [(self.em,self.tt,self.link),self.br,self.img,self.http_link]
-            self.em.child_tags = [(self.strong,self.tt,self.link),self.br,self.img,self.http_link]
-            self.link.child_tags = [(self.strong, self.em,self.tt), self.img]
-            header_children = [self.no_wiki,(self.strong, self.em, self.tt,self.link),
-                               self.br,self.img,self.http_link]
+            self.tt = InlineElement('tt', '##',[self.strong,self.link,self.br,self.img,self.http_link,self.em])
+            self.strong.child_tags = [self.tt,self.link,self.br,self.img,self.http_link,self.em]
+            self.em.child_tags = [self.strong,self.tt,self.link,self.br,self.img,self.http_link]
+            self.link.child_tags = [self.strong, self.tt, self.img,self.em]
+            header_children = [self.no_wiki,self.strong, self.tt,self.link,
+                               self.br,self.img,self.http_link,self.em]
 
         else:
-            self.em.child_tags = [(self.strong,self.link),self.br,self.img,self.http_link]
-            self.strong.child_tags = [(self.em,self.link),self.br,self.img,self.http_link]
-            self.link.child_tags = [(self.strong, self.em), self.img]
-            header_children = [self.no_wiki,(self.strong, self.em, self.link),
-                               self.br,self.img,self.http_link]
-                
+            self.em.child_tags = [self.strong,self.link,self.br,self.img,self.http_link]
+            self.strong.child_tags = [self.link,self.br,self.img,self.http_link,self.em]
+            self.link.child_tags = [self.strong, self.img,self.em]
+            header_children = [self.no_wiki,self.strong, self.link,
+                               self.br,self.img,self.http_link,self.em]
+            
         self.hr = LoneElement('hr','----',[])
         #self.lone_br = LoneElement('br',r'\\',[])
         self.blank_line = BlankLine()

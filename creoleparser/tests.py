@@ -19,7 +19,7 @@ def test_creole_to_xhtml():
     assert creole_to_xhtml('{{{no **wiki** in here}}} but //here// is fine') == \
             '<p><tt>no **wiki** in here</tt> but <em>here</em> is fine</p>\n'
     assert creole_to_xhtml('steve **is strong //you know\n dude{{{not **weak**}}}\n') == \
-            '<p>steve <strong>is strong <em>you know\n dude</em></strong><tt>not **weak**</tt></p>\n'
+            '<p>steve <strong>is strong <em>you know\n dude<tt>not **weak**</tt></em></strong></p>\n'
 
     assert creole_to_xhtml(
 r"""   |= Item|= Size|= Price |
