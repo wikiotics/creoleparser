@@ -7,6 +7,7 @@
 #
 
 import re
+import random
 
 import genshi.builder as bldr
 
@@ -17,7 +18,7 @@ escape_char = '~'
 esc_neg_look = '(?<!' + re.escape(escape_char) + ')'
 esc_to_remove = re.compile(''.join([r'(?<!',re.escape(escape_char),')',re.escape(escape_char),r'(?!([ \n]|$))']))
 element_store = {}
-store_id_seq = 1
+store_id_seq = random.randrange(1000000,9990000)
 
 def fill_from_store(text):
     frags = []
@@ -25,7 +26,8 @@ def fill_from_store(text):
     if mo:
         if mo.start():
             frags.append(text[:mo.start()])
-        frags.append(element_store[mo.group(1)])
+        frags.append(element_store.get(mo.group(1),
+                       '<<<' + str(mo.group(1)) + '>>>'))
         if mo.end() < len(text):
             frags.extend(fill_from_store(text[mo.end():]))
     else:
@@ -79,20 +81,6 @@ def fragmentize(text,wiki_elements, remove_escapes = True):
     frags = []
     if mo:
         frags = wiki_element._process(mo, text, wiki_elements)
-##        # call again for leading text and extend the result list 
-##        if mo.start():
-##            frags.extend(fragmentize(text[:mo.start()],wiki_elements[1:]))
-##
-##        # append the found wiki element to the result list
-##        frags.append(wiki_element._build(mo))
-##
-##        # make the source output easier to read
-##        if wiki_element.append_newline:
-##            frags.append('\n')
-##
-##        # call again for trailing text and extend the result list
-##        if mo.end() < len(text):
-##            frags.extend(fragmentize(text[mo.end():],wiki_elements))
     else:
         frags = fragmentize(text,wiki_elements[1:])
 
@@ -152,14 +140,14 @@ def preprocess(text, dialect):
     text = text.replace("\r\n", "\n")
     text = text.replace("\r", "\n")
     text = ''.join([text.rstrip(),'\n']) 
-    text = ''.join(pre_escape(text,[dialect.pre,dialect.no_wiki],
-                              [dialect.link, dialect.img, dialect.http_link]))
+##    text = ''.join(pre_escape(text,[dialect.pre,dialect.no_wiki],
+##                              [dialect.http_link]))
     return text
 
 
 def pre_escape(text, elements_to_skip=None,
                elements_to_process=None):
-    """This is used to escape certain markup before parsing.
+    """This is used to escape certain markup before parsing. NOT USED.
 
     :parameters:
       text
