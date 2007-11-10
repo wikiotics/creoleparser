@@ -1,0 +1,97 @@
+<p><em>Creoleparser</em> is a Python implementation of a parser for the Creole
+wiki markup language. The specification of that can be found at <a href="http://wikicreole.org/wiki/Creole1.0">http://wikicreole.org/wiki/Creole1.0</a></p>
+<h3><a href="http://pages.videotron.com/shday/Creole/apidocs/index.html">API documentation</a></h3>
+<h3><a href="http://creoleparser.googlecode.com/svn/trunk/">Subversion repository</a></h3>
+<h3><a href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/CreoleparserSandBox">Sandbox</a></h3>
+<h2>Installation Instructions</h2>
+<p><em>You need <a href="http://www.python.org">Python</a> 2.4 or higher.</em> </p>
+<h3>Option 1</h3>
+<p>If you have <a href="http://peak.telecommunity.com/DevCenter/setuptools">setuptools</a>, install Creoleparser using easy_install:</p>
+<pre>easy_install Creoleparser
+</pre>
+<p>This will automatically download and install Genshi and Creoleparser to your site-package directory.</p>
+<h3>Option 2</h3>
+<ol><li> download and install Genshi from that package's <a href="http://genshi.edgewall.org">site</a>.
+</li>
+<li> download Creoleparser from <a href="http://pypi.python.org/pypi/Creoleparser">here</a>, unzip to a temporary folder, and run:
+<tt>setup.py install</tt>
+This will install Creoleparser to your site-package directory.
+</li>
+</ol>
+<h2>Basic Usage</h2>
+<pre>&gt;&gt;&gt; from creoleparser import text2html
+</pre>
+<p>Simply call the text2html() function with one argument (the text to be parsed):</p>
+<pre>&gt;&gt;&gt; print text2html("Some real **simple** mark-up"),
+&lt;p&gt;Some real &lt;strong&gt;simple&lt;/strong&gt; mark-up&lt;/p&gt;
+</pre>
+<p>To customize things a little, create your own dialect and parser:</p>
+<pre>&gt;&gt;&gt; from creoleparser.dialects import Creole10
+&gt;&gt;&gt; from creoleparser.core import Parser
+
+&gt;&gt;&gt; my_dialect=Creole10(wiki_links_base_url='http://www.mysite.net/',
+... interwiki_links_base_urls=dict(wikicreole='http://wikicreole.org/wiki/'))
+
+&gt;&gt;&gt; my_parser = Parser(dialect=my_dialect)
+
+&gt;&gt;&gt; print my_parser("[[Home]] and [[wikicreole:Home]]"),
+&lt;p&gt;&lt;a href="http://www.mysite.net/Home"&gt;Home&lt;/a&gt; and &lt;a href="http://wikicreole.org/wiki/Home"&gt;wikicreole:Home&lt;/a&gt;&lt;/p&gt;
+</pre>
+<p>If you want pure Creole 1.0 (i.e., no additions), use creole2html() instead of text2html().</p>
+<h2>TODO</h2>
+<ul><li> Add more "Additions" to the Creole10 class (and implement them!)
+<ul><li> so far only monospace has been added
+</li>
+</ul></li>
+<li> Support adding a class attribute for links to nonexistent wiki pages
+</li>
+<li> Support macros (ideally some MoinMoin macro's to start with)
+</li>
+</ul>
+<h2>Feedback</h2>
+<p>Would be appreciated, do it <a href="http://code.google.com/p/creoleparser/wiki/QuestionAndComments">here</a>, or email me directly &lt;stephen h day at gm**l com&gt; :-)</p>
+<h2>Changelog</h2>
+<h3>Version 0.3 (Nov 10 2007)</h3>
+<ul><li> text2html added, it has no_wiki_monospace=False and use_additions=True
+</li>
+<li> creole_to_xhtml is now pure Creole 1.0 (use_additions=False)
+</li>
+<li> removed need for any pre_escaping, much more robust now
+</li>
+<li> big refactoring of inline wiki markup processing
+</li>
+</ul>
+<h3>Version 0.2.1 (Nov 6 2007)</h3>
+<ul><li> links can include mark-up
+</li>
+<li> creole_to_xhtml has no_wiki_monospace=True and use_additions=True
+</li>
+<li> fixed bug with bad links
+</li>
+<li> removed lone line break as an element (it wasn't valid xhtml)
+</li>
+<li> stopped inserting \n's after &lt;br /&gt;'s
+</li>
+<li> wiki_links_space_char option added to dialects.Creole10
+</li>
+<li> added inline_no_wiki_monospace option to dialects.Creole10 
+</li>
+<li> refactored core.pre_escape()
+</li>
+<li> CHANGES.txt, LISCENCE.txt, and INSTALL.txt added to distribution
+</li>
+<li> added use_additions option to dialects.Creole10
+</li>
+<li> implemented monospace (##) (for use_additions option only) 
+</li>
+</ul>
+<h3>Version 0.2 (Oct 26 2007)</h3>
+<ul><li> module split into separate files to create the creoleparser package
+</li>
+<li> other refactoring
+</li>
+</ul>
+<h3>Version 0.1, 0.1.1, 0.1.2 (Oct 2007)</h3>
+<ul><li> First public releases
+</li>
+</ul>
