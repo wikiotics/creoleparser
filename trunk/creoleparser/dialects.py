@@ -53,38 +53,21 @@ class Creole10(object):
         else:
             no_wiki_tag = 'span'
         self.no_wiki = NoWikiElement(no_wiki_tag,['{{{','}}}'],[])
-        #self.strong.child_tags = [self.em,self.br,self.link,self.img,self.http_link]
-        #self.link.child_tags = [(self.strong, self.em), self.img]
-
-##        if use_additions:
-##            self.tt = InlineElement('tt', '##',[(self.strong,self.em,self.link),self.br,self.img,self.http_link])
-##            self.strong.child_tags = [(self.em,self.tt,self.link),self.br,self.img,self.http_link]
-##            self.em.child_tags = [(self.strong,self.tt,self.link),self.br,self.img,self.http_link]
-##            self.link.child_tags = [(self.strong, self.em,self.tt), self.img]
-##            header_children = [self.no_wiki,(self.strong, self.em, self.tt,self.link),
-##                               self.br,self.img,self.http_link]
-##
-##        else:
-##            self.em.child_tags = [(self.strong,self.link),self.br,self.img,self.http_link]
-##            self.strong.child_tags = [(self.em,self.link),self.br,self.img,self.http_link]
-##            self.link.child_tags = [(self.strong, self.em), self.img]
-##            header_children = [self.no_wiki,(self.strong, self.em, self.link),
-##                               self.br,self.img,self.http_link]
+        
+        self.em.child_tags = []
+        self.strong.child_tags = [self.em]
+        self.link.child_tags = [self.strong, self.em]
+        header_children = [self.no_wiki, self.img, self.link, self.br, self.http_link, self.strong, self.em]
+        table_cell_children = [self.br, self.http_link, self.strong, self.em]
 
         if use_additions:
-            self.tt = InlineElement('tt', '##',[self.strong,self.link,self.br,self.img,self.http_link,self.em])
-            self.strong.child_tags = [self.tt,self.link,self.br,self.img,self.http_link,self.em]
-            self.em.child_tags = [self.strong,self.tt,self.link,self.br,self.img,self.http_link]
-            self.link.child_tags = [self.strong, self.tt, self.img,self.em]
-            header_children = [self.no_wiki,self.strong, self.tt,self.link,
-                               self.br,self.img,self.http_link,self.em]
+            self.tt = InlineElement('tt', '##',[])
+            self.em.child_tags.extend([self.tt])
+            self.strong.child_tags.extend([self.tt])
+            self.link.child_tags.extend([self.tt])
+            header_children.extend([self.tt])
+            table_cell_children.extend([self.tt])
 
-        else:
-            self.em.child_tags = [self.strong,self.link,self.br,self.img,self.http_link]
-            self.strong.child_tags = [self.link,self.br,self.img,self.http_link,self.em]
-            self.link.child_tags = [self.strong, self.img,self.em]
-            header_children = [self.no_wiki,self.strong, self.link,
-                               self.br,self.img,self.http_link,self.em]
             
         self.hr = LoneElement('hr','----',[])
         #self.lone_br = LoneElement('br',r'\\',[])
@@ -98,10 +81,10 @@ class Creole10(object):
         self.h6 = Heading('h6','======',header_children)
 
         headings = [self.h1,self.h2,self.h3,self.h4,self.h5,self.h6]
-        
-        self.td = TableCell('td','|',header_children)
-        self.th = TableCell('th','|=',header_children)
-        self.tr = TableRow('tr','|',[self.th,self.td])
+
+        self.td = TableCell('td','|',table_cell_children)
+        self.th = TableCell('th','|=',table_cell_children)
+        self.tr = TableRow('tr','|',[self.no_wiki,self.img,self.link,self.th,self.td])
         self.table = Table('table','|',[self.tr])
 
         self.p = Paragraph('p',header_children)
@@ -115,8 +98,6 @@ class Creole10(object):
 
         self.pre = PreBlock('pre',['{{{','}}}'])
 
-##        self.parse_order = [self.pre,self.blank_line,self.table]+ headings\
-##                           + [self.hr,self.lone_br,self.ul,self.ol,self.p]
         self.parse_order = [self.pre,self.blank_line,self.table]+ headings\
                            + [self.hr,self.ul,self.ol,self.p]
         """These are the wiki elements that are searched at the top level of text to be

@@ -73,15 +73,12 @@ class WikiElement(object):
         """
         pass
 
-    def pre_escape(self,text):
-        """Finds the element in ``text`` and inserts an escape character \
-        to hide certain markup (i.e., | an //) contained within.
-
-        Returns the modified ``text``
-        """
-        pass
-
     def _process(self, mo, text, wiki_elements):
+        """Returns genshi Fragments (Elements and text)
+
+        This is mainly for block level markup. See InlineElement
+        for the other method.
+        """
         frags = []
         # call again for leading text and extend the result list 
         if mo.start():
@@ -99,17 +96,60 @@ class WikiElement(object):
     def __repr__(self):
         return "<WikiElement "+str(self.tag)+">"
 
+class InlineElement(WikiElement):
 
-class RawLink(WikiElement):
+    r"""For finding generic inline elements like ``strong`` and ``em``.
+
+    >>> em = InlineElement('em','//',[])
+    >>> mo1 = em.regexp.search('a //word// in a line')
+    >>> mo2 = em.regexp.search('a //word in a line\n or two\n')
+    >>> mo1.group(0),mo1.group(1)
+    ('//word//', 'word')
+    >>> mo2.group(0),mo2.group(1)
+    ('//word in a line\n or two', 'word in a line\n or two')
+
+    Use a list for the ``token`` argument to have different start
+    and end strings. These must be closed.
+
+    >>> foo = InlineElement('foo',['<<','>>'],[])
+    >>> mo = foo.regexp.search('blaa <<here it is >>\n')
+    >>> mo.group(1)
+    'here it is '
+        
+    """
+
+    def __init__(self, tag, token, child_tags=[]):
+        super(InlineElement,self).__init__(tag,token , child_tags)
+        self.regexp = re.compile(self.re_string(),re.DOTALL)
+
+    def re_string(self):
+        if isinstance(self.token,str):
+            content = '(.+?)'
+            end = '(' + esc_neg_look + re.escape(self.token) + r'|$)'
+            return esc_neg_look + re.escape(self.token) + content + end
+        else:
+            content = '(.+?)'
+            return esc_neg_look + re.escape(self.token[0]) + content + esc_neg_look + re.escape(self.token[1])
+
+    def _process(self, mo, text, wiki_elements):
+        """Returns genshi Fragments (Elements and text)"""
+        global store_id_seq
+        processed = self._build(mo)
+        store_id = str(store_id_seq) # str(hash(processed))
+        element_store[store_id] = processed
+        store_id_seq = store_id_seq + 1
+        text = ''.join([text[:mo.start()],'<<<',store_id,'>>>',
+                        text[mo.end():]])
+        frags = fragmentize(text,wiki_elements)
+        return frags
+
+
+class RawLink(InlineElement):
     
     """Used to find raw urls in wiki text and build xml from them.
 
-    In the example below, a tilde (~) is used to escape the "//" in
-    the url. This is normally done during preprocessing and it is used
-    to avoid conflict with other markup.
-
     >>> raw_link = RawLink(tag='a')
-    >>> mo = raw_link.regexp.search(" a http:~//www.google.com url ")
+    >>> mo = raw_link.regexp.search(" a http://www.google.com url ")
     >>> raw_link.href(mo)
     'http://www.google.com'
     >>> raw_link._build(mo).generate().render()
@@ -120,31 +160,32 @@ class RawLink(WikiElement):
     def __init__(self, tag):
         super(RawLink,self).__init__(tag=tag, token=None, child_tags=None)
         self.regexp = re.compile(self.re_string())
-        self.pre_escape_regexp = re.compile('(http(s?)|ftp)://')
-
-    def pre_escape(self,text):
-        return self.pre_escape_regexp.sub(r'\1:~//',text)
 
     def re_string(self):
-        protocol = '((https?:)' + re.escape(escape_char) + '(//'
-        rest_of_url = r'\S+?))'
-        look_ahead = r'(?=[,.?!:;"\']?(\s|$))' #allow one punctuation character
-        return esc_neg_look + protocol + rest_of_url + look_ahead
+        escape = '(' + re.escape(escape_char) + ')?'
+        protocol = '(https?://'
+        rest_of_url = r'\S+?)'
+        #allow one punctuation character or '**' or '//'
+        look_ahead = r'(?=([,.?!:;"\']|\*\*|//)?(\s|$))' 
+        return escape + protocol + rest_of_url + look_ahead
 
     def _build(self,mo):
-        return bldr.tag.__getattr__(self.tag)(self.alias(mo),
+        if not mo.group(1):
+            return bldr.tag.__getattr__(self.tag)(self.alias(mo),
                                               href=self.href(mo))
-
+        else:
+            return self.href(mo)
+        
     def href(self,mo):
         """Returns the string for the href attribute of the Element."""
-        return mo.group(2)+mo.group(3)
+        return mo.group(2)
 
     def alias(self,mo):
         """Returns the string for the content of the Element."""
         return self.href(mo)
 
 
-class InterWikiLink(WikiElement):
+class InterWikiLink(InlineElement):
 
     """Used to find interwiki links and return a href and alias.
 
@@ -186,7 +227,7 @@ class InterWikiLink(WikiElement):
         return ''.join([mo.group(1),self.delimiter,mo.group(2)])
 
 
-class WikiLink(WikiElement):
+class WikiLink(InlineElement):
 
     """Used to find wiki links and return a href and alias.
 
@@ -440,54 +481,6 @@ class TableCell(WikiElement):
                content + whitespace + look_ahead    
 
 
-class InlineElement(WikiElement):
-
-    r"""For finding generic inline elements like ``strong`` and ``em``.
-
-    >>> em = InlineElement('em','//',[])
-    >>> mo1 = em.regexp.search('a //word// in a line')
-    >>> mo2 = em.regexp.search('a //word in a line\n or two\n')
-    >>> mo1.group(0),mo1.group(1)
-    ('//word//', 'word')
-    >>> mo2.group(0),mo2.group(1)
-    ('//word in a line\n or two', 'word in a line\n or two')
-
-    Use a list for the ``token`` argument to have different start
-    and end strings. These must be closed.
-
-    >>> foo = InlineElement('foo',['<<','>>'],[])
-    >>> mo = foo.regexp.search('blaa <<here it is >>\n')
-    >>> mo.group(1)
-    'here it is '
-        
-    """
-
-    def __init__(self, tag, token, child_tags=[]):
-        super(InlineElement,self).__init__(tag,token , child_tags)
-        self.regexp = re.compile(self.re_string(),re.DOTALL)
-
-    def re_string(self):
-        if isinstance(self.token,str):
-            content = '(.+?)'
-            end = '(' + esc_neg_look + re.escape(self.token) + r'|$)'
-            return esc_neg_look + re.escape(self.token) + content + end
-        else:
-            content = '(.+?)'
-            return esc_neg_look + re.escape(self.token[0]) + content + esc_neg_look + re.escape(self.token[1])
-
-    def _process(self, mo, text, wiki_elements):
-
-        global store_id_seq
-        processed = self._build(mo)
-        store_id = str(store_id_seq) # str(hash(processed))
-        element_store[store_id] = processed
-        store_id_seq = store_id_seq + 1
-        text = ''.join([text[:mo.start()],'<<<',store_id,'>>>',
-                        text[mo.end():]])
-        frags = fragmentize(text,wiki_elements)
-        return frags
-
-             
 
 class Link(InlineElement):
 
@@ -498,18 +491,9 @@ class Link(InlineElement):
         self.regexp = re.compile(self.re_string())
         self.delimiter = delimiter
         self.link_types = link_types
-        self.pre_escape_regexp = re.compile(self.pre_escape_pattern())
-
-    def pre_escape(self,text):
-        return self.pre_escape_regexp.sub(r'\1~\2',text)
-
-    def pre_escape_pattern(self):
-        return '(' + re.escape(self.token[0]) + '.*?)' + \
-               '(' + re.escape(self.delimiter) + '.*?' + \
-               re.escape(self.token[1]) + ')'
         
     def _build(self,mo):
-        body = mo.group(1).split(escape_char + self.delimiter, 1)
+        body = mo.group(1).split(self.delimiter, 1)
         link = body[0]
         if len(body) == 1:
             alias = None
@@ -533,12 +517,8 @@ class Image(InlineElement):
 
     """Processes image elements.
 
-    In the example below, a tilde (~) is used to escape the "|".
-    This is normally done during preprocessing and it is used to avoid
-    conflict with other markup (it allows images to appear in tables).
-
     >>> img = Image('img',('{{','}}'),[], delimiter='|')
-    >>> mo = img.regexp.search('{{ picture.jpg ~| An image of a house }}')
+    >>> mo = img.regexp.search('{{ picture.jpg | An image of a house }}')
     >>> img._build(mo).generate().render()
     '<img src="picture.jpg" alt="An image of a house"/>'
 
@@ -549,18 +529,9 @@ class Image(InlineElement):
         self.regexp = re.compile(self.re_string())
         self.delimiter = delimiter
         self.src_regexp = re.compile(r'^\s*(\S+)\s*$')
-        self.pre_escape_regexp = re.compile(self.pre_escape_pattern())
-
-    def pre_escape(self,text):
-        return self.pre_escape_regexp.sub(r'\1~\2',text)
-
-    def pre_escape_pattern(self):
-        return '(' + re.escape(self.token[0]) + '.*?)' + \
-               '(' + re.escape(self.delimiter) + '.*?' + \
-               re.escape(self.token[1]) + ')'
 
     def _build(self,mo):
-        body = mo.group(1).split(escape_char+self.delimiter,1)
+        body = mo.group(1).split(self.delimiter,1)
         src_mo = self.src_regexp.search(body[0])
         if not src_mo:
             return bldr.tag.span('Bad Image src')
@@ -674,7 +645,7 @@ class BlankLine(WikiElement):
         return None
 
     
-class LineBreak(WikiElement):
+class LineBreak(InlineElement):
 
     """An inline line break."""
 

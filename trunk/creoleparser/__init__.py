@@ -11,11 +11,11 @@ The specification of that can be found at http://wikicreole.org/wiki/Creole1.0
 
 Basic Usage
 ===========
->>> from creoleparser import creole_to_xhtml
+>>> from creoleparser import text2html
 
-Simply call the creole_to_xhtml() function with one argument (the text to be parsed):
+Simply call the text2html() function with one argument (the text to be parsed):
 
->>> print creole_to_xhtml("Some real **simple** mark-up"),
+>>> print text2html("Some real **simple** mark-up"),
 <p>Some real <strong>simple</strong> mark-up</p>
 
 To customize things a little, create your own dialect and parser:
@@ -31,13 +31,15 @@ To customize things a little, create your own dialect and parser:
 >>> print my_parser("[[Home]] and [[wikicreole:Home]]"),
 <p><a href="http://www.mysite.net/Home">Home</a> and <a href="http://wikicreole.org/wiki/Home">wikicreole:Home</a></p>
 
+If you want pure Creole 1.0 (i.e., no additions), use creole2html() instead of text2html().
+
 TODO
 ====
- - Add (a lot) more docstrings (done)
- - Package this module properly and make it easy_install'able (done)
- - Add a 'use_additions' option to the Creole class (and implement them!)
- - Move the tests to a separate file (done)
- - Compile the re's used for preprocessing (done)
+ - Add more "Additions" to the Creole10 class (and implement them!)
+   - so far only monospace has been added
+ - Support adding a class attribute for links to nonexistent wiki pages
+ - Support macros (ideally some MoinMoin macro's to start with)
+
 """
 
 from core import Parser
@@ -45,13 +47,18 @@ from dialects import Creole10
 
 __docformat__ = 'restructuredtext en'
 
-
-creole_to_xhtml = Parser(dialect=Creole10(wiki_links_base_url='http://www.wikicreole.org/wiki/',
+creole2html = Parser(dialect=Creole10(wiki_links_base_url='http://www.wikicreole.org/wiki/',
                              interwiki_links_base_urls={'Ohana':'http://wikiohana.net/cgi-bin/wiki.pl/'},
-                         use_additions=True))
-"""This is a parser created for convenience"""
+                         use_additions=False,no_wiki_monospace=True))
+"""This is a pure Creole 1.0 parser created for convenience"""
 
-text2html = creole_to_xhtml
+creole_to_xhtml = creole2html
+"""Same as creole2html"""
+
+text2html = Parser(dialect=Creole10(wiki_links_base_url='http://www.wikicreole.org/wiki/',
+                             interwiki_links_base_urls={'Ohana':'http://wikiohana.net/cgi-bin/wiki.pl/'},
+                         use_additions=True,no_wiki_monospace=False))
+"""This is a Creole 1.0 parser (+ additions) created for convenience"""
 
 def _test():
     import doctest

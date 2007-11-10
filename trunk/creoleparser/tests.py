@@ -6,22 +6,22 @@
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 #
 
-from __init__ import creole_to_xhtml
+from __init__ import text2html
 from dialects import Creole10
 from core import Parser
 
-def test_creole_to_xhtml():
+def test_text2html():
 
-    assert creole_to_xhtml('**strong** soft\n') == '<p><strong>strong</strong> soft</p>\n'
-    assert creole_to_xhtml('//this**strong** soft//') == '<p><em>this<strong>strong</strong> soft</em></p>\n'
-    assert creole_to_xhtml('steve **is strong**\n{{{\nnot **weak**\n}}}\n') == \
+    assert text2html('**strong** soft\n') == '<p><strong>strong</strong> soft</p>\n'
+    assert text2html('//this**strong** soft//') == '<p><em>this<strong>strong</strong> soft</em></p>\n'
+    assert text2html('steve **is strong**\n{{{\nnot **weak**\n}}}\n') == \
             '<p>steve <strong>is strong</strong></p>\n<pre>not **weak**\n</pre>\n'
-    assert creole_to_xhtml('{{{no **wiki** in here}}} but //here// is fine') == \
-            '<p><tt>no **wiki** in here</tt> but <em>here</em> is fine</p>\n'
-    assert creole_to_xhtml('steve **is strong //you know\n dude{{{not **weak**}}}\n') == \
-            '<p>steve <strong>is strong <em>you know\n dude<tt>not **weak**</tt></em></strong></p>\n'
+    assert text2html('{{{no **wiki** in here}}} but //here// is fine') == \
+            '<p><span>no **wiki** in here</span> but <em>here</em> is fine</p>\n'
+    assert text2html('steve **is strong //you know\n dude{{{not **weak**}}}\n') == \
+            '<p>steve <strong>is strong <em>you know\n dude<span>not **weak**</span></em></strong></p>\n'
 
-    assert creole_to_xhtml(
+    assert text2html(
 r"""   |= Item|= Size|= Price |
   | fish | **big**  |cheap   |
   | crab | small|expesive|
@@ -40,7 +40,7 @@ r"""   |= Item|= Size|= Price |
 </table>
 """
 
-    assert creole_to_xhtml(r"""
+    assert text2html(r"""
   = Level 1 (largest) =
 == Level 2 ==
  === Level 3 ===
@@ -64,7 +64,7 @@ r"""   |= Item|= Size|= Price |
 <h3><strong>is</strong> <em>parsed</em></h3>
 """ 
 
-    assert creole_to_xhtml(r"""
+    assert text2html(r"""
 a lone escape ~ in the middle of a line
 or at the end ~
 a double ~~ in the middle
@@ -83,7 +83,7 @@ preventing ** <strong>bold</strong> and // <em>italics</em>
 </table>
 """
 
-    assert creole_to_xhtml("\
+    assert text2html("\
 Names of pages have to LookLikeThis.\r\nIt's called a WikiName.\r\nIf you write\
  a word that LookLikeThis.\r\n") == """\
 <p>Names of pages have to LookLikeThis.
@@ -91,7 +91,7 @@ It's called a WikiName.
 If you write a word that LookLikeThis.</p>
 """
 
-    assert creole_to_xhtml(r"""
+    assert text2html(r"""
 {{{
 ** some ** unformatted {{{ stuff }}} ~~~
  }}}
@@ -102,12 +102,12 @@ If you write a word that LookLikeThis.</p>
 </pre>
 """
 
-    assert creole_to_xhtml("""\
+    assert text2html("""\
 {{{** some ** unformatted {{{ stuff ~~ }}}}}}""") == """\
-<p><tt>** some ** unformatted {{{ stuff ~~ }}}</tt></p>
+<p><span>** some ** unformatted {{{ stuff ~~ }}}</span></p>
 """
 
-    assert creole_to_xhtml("""\
+    assert text2html("""\
 |http://www.google.com| steve|
 
 hello **[[http://www.google.com|Google]]**
@@ -121,7 +121,7 @@ hello **[[http://www.google.com|Google]]**
 <h2>http://www.yahoo.com</h2>
 """
 
-    assert creole_to_xhtml(r"""
+    assert text2html(r"""
 Go to [[http://www.google.com]], it is [[http://www.google.com| Google]]\\
 even [[This Page]] is nice like [[This Page|this]].\\
 As is [[Ohana:Home|This one]].""") == """\
@@ -130,7 +130,7 @@ even <a href="http://www.wikicreole.org/wiki/This_Page">This Page</a> is nice li
 As is <a href="http://wikiohana.net/cgi-bin/wiki.pl/Home">This one</a>.</p>
 """
 
-    assert creole_to_xhtml(r"""
+    assert text2html(r"""
 * this is list **item one**
 ** item one - //subitem 1//
 ### one **http://www.google.com**
@@ -195,7 +195,7 @@ drivel here
 </ol>
 """
 
-    assert creole_to_xhtml(r"""
+    assert text2html(r"""
 = Big Heading
 ----
 \\
@@ -210,11 +210,11 @@ drivel here
 """
 
 def test_no_wiki_monospace_option():
-    dialect = Creole10(no_wiki_monospace=False)
+    dialect = Creole10(no_wiki_monospace=True)
     parser = Parser(dialect)
     assert parser(r"""
 This block of {{{no_wiki **shouldn't** be monospace}}} now""") == """\
-<p>This block of <span>no_wiki **shouldn't** be monospace</span> now</p>
+<p>This block of <tt>no_wiki **shouldn't** be monospace</tt> now</p>
 """
     
 def test_use_additions_option():
@@ -228,7 +228,7 @@ This block of ##text **should** be monospace## now""") == """\
 def _test():
     import doctest
     doctest.testmod()
-    test_creole_to_xhtml()
+    test_text2html()
     test_no_wiki_monospace_option()
     test_use_additions_option()
 
