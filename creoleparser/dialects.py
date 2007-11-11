@@ -89,6 +89,11 @@ class Creole10(object):
 
         self.p = Paragraph('p',header_children)
 
+        if use_additions:
+            self.dd = DefinitionData('dd',':',[table_cell_children])
+            self.dt = DefinitionTitle('dt',';',[table_cell_children],stop_token=':')
+            self.dl = DefinitionList('dl',';',[self.no_wiki,self.img,self.link,self.dt,self.dd],stop_tokens='*#')
+     
         self.li = ListItem('li',child_tags=[],list_tokens='*#')
         self.ol = List('ol','#',[self.li],other_token='*')
         self.ul = List('ul','*',[self.li],other_token='#')
@@ -97,6 +102,10 @@ class Creole10(object):
         self.li.child_tags = [(self.nested_ol,self.nested_ul)] + header_children
 
         self.pre = PreBlock('pre',['{{{','}}}'])
+
+        if use_additions:
+            self.parse_order = [self.pre,self.blank_line,self.table]+ headings\
+                           + [self.hr,self.dl,self.ul,self.ol,self.p]
 
         self.parse_order = [self.pre,self.blank_line,self.table]+ headings\
                            + [self.hr,self.ul,self.ol,self.p]

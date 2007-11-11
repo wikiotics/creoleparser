@@ -33,13 +33,6 @@ To customize things a little, create your own dialect and parser:
 
 If you want pure Creole 1.0 (i.e., no additions), use creole2html() instead of text2html().
 
-TODO
-====
- - Add more "Additions" to the Creole10 class (and implement them!)
-   - so far only monospace has been added
- - Support adding a class attribute for links to nonexistent wiki pages
- - Support macros (ideally some MoinMoin macro's to start with)
-
 """
 
 from core import Parser

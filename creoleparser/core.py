@@ -7,7 +7,7 @@
 #
 
 import re
-import random
+import threading
 
 import genshi.builder as bldr
 
@@ -17,17 +17,17 @@ __docformat__ = 'restructuredtext en'
 escape_char = '~'
 esc_neg_look = '(?<!' + re.escape(escape_char) + ')'
 esc_to_remove = re.compile(''.join([r'(?<!',re.escape(escape_char),')',re.escape(escape_char),r'(?!([ \n]|$))']))
-element_store = {}
-store_id_seq = random.randrange(1000000,9990000)
+place_holder_re = re.compile(r'<<<(-?\d+?)>>>')
+element_store = threading.local()
 
 def fill_from_store(text):
     frags = []
-    mo = re.search(r'<<<(\d*?)>>>',text,re.DOTALL)
+    mo = place_holder_re.search(text)
     if mo:
         if mo.start():
             frags.append(text[:mo.start()])
-        frags.append(element_store.get(mo.group(1),
-                       '<<<' + str(mo.group(1)) + '>>>'))
+        frags.append(element_store.d.get(mo.group(1),
+                       mo.group(1).join(['<<<','>>>'])))
         if mo.end() < len(text):
             frags.extend(fill_from_store(text[mo.end():]))
     else:
@@ -113,6 +113,7 @@ class Parser(object):
     def generate(self,text):
         """Returns a Genshi Stream."""
         text = preprocess(text,self.dialect)
+        element_store.d = {} 
         return bldr.tag(fragmentize(text,self.dialect.parse_order)).generate()
 
     def render(self,text,**kwargs):
