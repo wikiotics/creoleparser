@@ -1,4 +1,12 @@
-Version 0.3 (Nov ?? 2007)
+Version 0.3.1 (Nov ?? 2007)
+-------------------------
+
+ * definition lists supported
+ * removed store_id_seq in favor of id()
+ * made element_store thread.local()
+
+
+Version 0.3 (Nov 10 2007)
 -------------------------
 
  * text2xhtml has no_wiki_monospace=True and use_additions=True

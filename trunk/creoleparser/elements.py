@@ -10,8 +10,7 @@ import re
 
 import genshi.builder as bldr
 
-from core import escape_char, esc_neg_look, fragmentize, \
-     element_store, store_id_seq
+from core import escape_char, esc_neg_look, fragmentize, element_store
 
 
 __docformat__ = 'restructuredtext en'
@@ -133,11 +132,9 @@ class InlineElement(WikiElement):
 
     def _process(self, mo, text, wiki_elements):
         """Returns genshi Fragments (Elements and text)"""
-        global store_id_seq
         processed = self._build(mo)
-        store_id = str(store_id_seq) # str(hash(processed))
-        element_store[store_id] = processed
-        store_id_seq = store_id_seq + 1
+        store_id = str(id(processed)) # str(hash(processed))
+        element_store.d[store_id] = processed
         text = ''.join([text[:mo.start()],'<<<',store_id,'>>>',
                         text[mo.end():]])
         frags = fragmentize(text,wiki_elements)
@@ -269,6 +266,70 @@ class BlockElement(WikiElement):
 
     append_newline = True
 
+class DefinitionList(BlockElement):
+
+    """Finds definition list wiki elements.
+
+    group(1) of the match object includes all lines from the list
+    including newline characters.
+        
+    """
+
+    def __init__(self, tag, token,child_tags,stop_tokens):
+        super(DefinitionList,self).__init__(tag, token, child_tags)
+        self.stop_tokens = stop_tokens
+        self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
+
+    def re_string(self):
+        leading_whitespace = r'^([ \t]*'
+        #only_one_token = re.escape(self.token)+'[^'+ re.escape(self.token) + ']'
+        rest_of_list = r'.*?\n)'
+        only_one_stop_token = '([' + re.escape(self.stop_tokens) + r'])(?!\3)'
+        look_ahead = r'(?=([ \t]*' + only_one_stop_token + '|$))'
+        return leading_whitespace + re.escape(self.token) + rest_of_list + \
+               look_ahead
+
+class DefinitionTitle(BlockElement):
+
+    """Finds definition titles.
+
+    group(1) of the match object is the title line or up to the first :
+        
+    """
+
+    def __init__(self, tag, token,child_tags,stop_token):
+        super(DefinitionTitle,self).__init__(tag, token, child_tags)
+        self.stop_token = stop_token
+        self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
+
+    def re_string(self):
+        leading_whitespace = r'^([ \t]*'
+        #only_one_token = re.escape(self.token)+'[^'+ re.escape(self.token) + ']'
+        rest_of_list = r'.*?\n)'
+        #only_one_stop_token = '([' + re.escape(self.stop_tokens) + r'])(?!\3)'
+        #look_ahead = r'(?=([ \t]*' + only_one_stop_token + '|$))'
+        return r'^[ \t]*' + re.escape(self.token) + r'[ \t]*(.*?)\s*(\n|(?=(' + \
+               re.escape(self.stop_token) + r'|$)))'
+
+class DefinitionData(BlockElement):
+
+    """Finds definitions.
+
+    group(1) of the match object includes all lines from the defintion
+    up to the next definition.
+        
+    """
+
+    def __init__(self, tag, token,child_tags):
+        super(DefinitionData,self).__init__(tag, token, child_tags)
+        self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
+
+    def re_string(self):
+        leading_whitespace = r'^([ \t]*'
+        rest_of_list = r'.*?\n)'
+        look_ahead = r'(?=([ \t]*' + re.escape(self.token) + r')|$)'
+        return r'^[ \t]*' + re.escape(self.token) + r'?[ \t]*(.+?)\s*\n(?=([ \t]*' + \
+               re.escape(self.token) + r')|$)'
 
 class List(BlockElement):
 
@@ -291,8 +352,8 @@ class List(BlockElement):
         leading_whitespace = r'^([ \t]*'
         only_one_token = re.escape(self.token)+'[^'+ re.escape(self.token) + ']'
         rest_of_list = r'.*?\n)'
-        only_one_other_token = re.escape(self.other_token)+'[^'+ \
-                               re.escape(self.other_token) + ']'
+        only_one_other_token = re.escape(self.other_token)+'(?!'+ \
+                               re.escape(self.other_token) + ')'
         look_ahead = '(?=([ \t]*' + only_one_other_token + '|$))'
         return leading_whitespace + only_one_token + rest_of_list + \
                look_ahead

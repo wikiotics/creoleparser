@@ -209,6 +209,36 @@ drivel here
 </table>
 """
 
+    assert text2html(r"""
+hello
+; This is a title
+: Yes, sir!
+** and this emphasized!
+; Another title : it's definition
+*this is a list!!
+; Wiki
+; Creole
+what about this?
+: something neat
+: two defintioins?""") == """\
+<p>hello</p>
+<dl><dt>This is a title</dt>
+<dd>Yes, sir!
+<strong> and this emphasized!</strong></dd>
+<dt>Another title</dt>
+<dd>it's definition</dd>
+</dl>
+<ul><li>this is a list!!
+</li>
+</ul>
+<dl><dt>Wiki</dt>
+<dt>Creole</dt>
+<dd>what about this?</dd>
+<dd>something neat</dd>
+<dd>two defintioins?</dd>
+</dl>
+"""
+
 def test_no_wiki_monospace_option():
     dialect = Creole10(no_wiki_monospace=True)
     parser = Parser(dialect)
@@ -223,6 +253,12 @@ def test_use_additions_option():
     assert parser(r"""
 This block of ##text **should** be monospace## now""") == """\
 <p>This block of <tt>text <strong>should</strong> be monospace</tt> now</p>
+"""
+
+def test_place_holders():
+    assert text2html(r"""
+This block of ##text <<<23>>> be <<<hi>>>monospace <<<>>>## now""") == """\
+<p>This block of <tt>text <<<23>>> be <<<hi>>>monospace <<<>>></tt> now</p>
 """
 
 def _test():
