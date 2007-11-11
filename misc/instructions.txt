@@ -24,7 +24,9 @@ This will automatically download and install Genshi and Creoleparser to your sit
 
 # download and install Genshi from that package's [[http://genshi.edgewall.org|site]].
 # download Creoleparser from [[http://pypi.python.org/pypi/Creoleparser|here]], unzip to a temporary folder, and run:
-{{{setup.py install}}}
+{{{
+setup.py install
+}}}
 This will install Creoleparser to your site-package directory.
 
 ==Basic Usage
@@ -53,7 +55,7 @@ If you want pure Creole 1.0 (i.e., no additions), use creole2html() instead of t
 
 ==TODO
 
- * Add more "Additions" to the Creole10 class (and implement them!)
+ * Add more [[http://www.wikicreole.org/wiki/CreoleAdditions|additions]] to the Creole10 class
  ** so far only monospace has been added
  * Support adding a class attribute for links to nonexistent wiki pages
  * Support macros (ideally some MoinMoin macro's to start with)
@@ -63,6 +65,12 @@ If you want pure Creole 1.0 (i.e., no additions), use creole2html() instead of t
 Would be appreciated, do it [[http://code.google.com/p/creoleparser/wiki/QuestionAndComments|here]], or email me directly <stephen h day at gm~**l com> :-)
 
 ==Changelog
+
+===Version 0.3.1 (Nov ?? 2007)
+
+ * definition lists supported
+ * removed store_id_seq in favor of id()
+ * made element_store thread.local()
 
 ===Version 0.3 (Nov 10 2007)
 
