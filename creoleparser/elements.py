@@ -259,16 +259,19 @@ class WikiLink(InlineElement):
 
 class BlockElement(WikiElement):
 
-    """Wiki elements wanting ``append_newline = True`` should use this
-    as the base.
+    """Block elements inherit form this class
+
+    Wiki elements wanting ``append_newline = True`` should use this
+    as the base also.
 
     """
 
     append_newline = True
 
-class DefinitionList(BlockElement):
 
-    """Finds definition list wiki elements.
+class List(BlockElement):
+
+    """Finds list (ordered, unordered, and definition) wiki elements.
 
     group(1) of the match object includes all lines from the list
     including newline characters.
@@ -276,85 +279,22 @@ class DefinitionList(BlockElement):
     """
 
     def __init__(self, tag, token,child_tags,stop_tokens):
-        super(DefinitionList,self).__init__(tag, token, child_tags)
+        super(List,self).__init__(tag, token, child_tags)
         self.stop_tokens = stop_tokens
         self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
 
     def re_string(self):
-        leading_whitespace = r'^([ \t]*'
-        #only_one_token = re.escape(self.token)+'[^'+ re.escape(self.token) + ']'
-        rest_of_list = r'.*?\n)'
-        only_one_stop_token = '([' + re.escape(self.stop_tokens) + r'])(?!\3)'
-        look_ahead = r'(?=([ \t]*' + only_one_stop_token + '|$))'
-        return leading_whitespace + re.escape(self.token) + rest_of_list + \
-               look_ahead
-
-class DefinitionTitle(BlockElement):
-
-    """Finds definition titles.
-
-    group(1) of the match object is the title line or up to the first :
-        
-    """
-
-    def __init__(self, tag, token,child_tags,stop_token):
-        super(DefinitionTitle,self).__init__(tag, token, child_tags)
-        self.stop_token = stop_token
-        self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
-
-    def re_string(self):
-        leading_whitespace = r'^([ \t]*'
-        #only_one_token = re.escape(self.token)+'[^'+ re.escape(self.token) + ']'
-        rest_of_list = r'.*?\n)'
-        #only_one_stop_token = '([' + re.escape(self.stop_tokens) + r'])(?!\3)'
-        #look_ahead = r'(?=([ \t]*' + only_one_stop_token + '|$))'
-        return r'^[ \t]*' + re.escape(self.token) + r'[ \t]*(.*?)\s*(\n|(?=(' + \
-               re.escape(self.stop_token) + r'|$)))'
-
-class DefinitionData(BlockElement):
-
-    """Finds definitions.
-
-    group(1) of the match object includes all lines from the defintion
-    up to the next definition.
-        
-    """
-
-    def __init__(self, tag, token,child_tags):
-        super(DefinitionData,self).__init__(tag, token, child_tags)
-        self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
-
-    def re_string(self):
-        leading_whitespace = r'^([ \t]*'
-        rest_of_list = r'.*?\n)'
-        look_ahead = r'(?=([ \t]*' + re.escape(self.token) + r')|$)'
-        return r'^[ \t]*' + re.escape(self.token) + r'?[ \t]*(.+?)\s*\n(?=([ \t]*' + \
-               re.escape(self.token) + r')|$)'
-
-class List(BlockElement):
-
-    """Finds list wiki elements.
-
-    group(1) of the match object includes all lines from the list
-    including newline characters.
-        
-    """
-
-    def __init__(self, tag, token,child_tags,other_token):
-        super(List,self).__init__(tag, token, child_tags)
-        self.other_token = other_token
-        self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
-
-    def re_string(self):
-        """Lists are the last outer level elements to be searched. The
-        regexp only has to know about lists.
+        """This re_string is for finding generic block elements like
+        lists (ordered, unordered, and definition) that start with a
+        single token.
         """
         leading_whitespace = r'^([ \t]*'
         only_one_token = re.escape(self.token)+'[^'+ re.escape(self.token) + ']'
         rest_of_list = r'.*?\n)'
-        only_one_other_token = re.escape(self.other_token)+'(?!'+ \
-                               re.escape(self.other_token) + ')'
-        look_ahead = '(?=([ \t]*' + only_one_other_token + '|$))'
+##        only_one_other_token = re.escape(self.other_token)+'(?!'+ \
+##                               re.escape(self.other_token) + ')'
+        only_one_stop_token = '([' + re.escape(self.stop_tokens) + r'])(?!\3)'        
+        look_ahead = '(?=([ \t]*' + only_one_stop_token + '|$))'
         return leading_whitespace + only_one_token + rest_of_list + \
                look_ahead
 
@@ -424,6 +364,51 @@ class NestedList(WikiElement):
         rest_of_list = '.*$)'
         return look_behind + '^' + whitespace + re.escape(self.token) + \
                rest_of_list
+
+
+class DefinitionTitle(BlockElement):
+
+    """Finds definition titles.
+
+    group(1) of the match object is the title line or up to the first ':'
+        
+    """
+
+    def __init__(self, tag, token,child_tags,stop_token):
+        super(DefinitionTitle,self).__init__(tag, token, child_tags)
+        self.stop_token = stop_token
+        self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
+
+    def re_string(self):
+        leading_whitespace = r'^([ \t]*'
+        #only_one_token = re.escape(self.token)+'[^'+ re.escape(self.token) + ']'
+        rest_of_list = r'.*?\n)'
+        #only_one_stop_token = '([' + re.escape(self.stop_tokens) + r'])(?!\3)'
+        #look_ahead = r'(?=([ \t]*' + only_one_stop_token + '|$))'
+        return r'^[ \t]*' + re.escape(self.token) + r'[ \t]*(.*?' + \
+               re.escape(self.stop_token) +  '?)\s*(\n|(?=(' + \
+               esc_neg_look + re.escape(self.stop_token) + r'|$)))'
+
+
+class DefinitionData(BlockElement):
+
+    """Finds definitions.
+
+    group(1) of the match object includes all lines from the defintion
+    up to the next definition.
+        
+    """
+
+    def __init__(self, tag, token,child_tags):
+        super(DefinitionData,self).__init__(tag, token, child_tags)
+        self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
+
+    def re_string(self):
+        leading_whitespace = r'^([ \t]*'
+        rest_of_list = r'.*?\n)'
+        look_ahead = r'(?=([ \t]*' + re.escape(self.token) + r')|$)'
+        return r'^[ \t]*' + re.escape(self.token) + r'?[ \t]*(.+?)\s*\n(?=([ \t]*' + \
+               re.escape(self.token) + r')|$)'
 
 
 class Paragraph(BlockElement):
@@ -617,7 +602,7 @@ class NoWikiElement(InlineElement):
 
     def __init__(self, tag, token, child_tags=[]):
         super(NoWikiElement,self).__init__(tag,token , child_tags)
-        self.regexp = re.compile(self.re_string()) 
+        self.regexp = re.compile(self.re_string(),re.DOTALL) 
 
     def _build(self,mo):
         if self.tag:

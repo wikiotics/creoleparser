@@ -208,13 +208,33 @@ drivel here
 <tr><td>same picture as a link</td><td><a href="http://google.com"><img src="campfire.jpg" alt="campfire.jpg" /></a></td></tr>
 </table>
 """
-
+##    print text2html(r"""
+##hello
+##; This is a title:
+##: Yes, sir!
+##; This is~: a another title:
+##: Yes, sir!
+##** and this emphasized!
+##; Another title : it's definition
+##; Another title ~: it's definition **NOT**
+##: here it is
+##*this is a list!!
+##; Wiki
+##; Creole
+##what about this?
+##: something neat
+##: two defintioins?""")
+    
     assert text2html(r"""
 hello
-; This is a title
+; This is a title:
+: Yes, sir!
+; This is~: a another title:
 : Yes, sir!
 ** and this emphasized!
 ; Another title : it's definition
+; Another title ~: it's definition **NOT**
+: here it is
 *this is a list!!
 ; Wiki
 ; Creole
@@ -222,11 +242,15 @@ what about this?
 : something neat
 : two defintioins?""") == """\
 <p>hello</p>
-<dl><dt>This is a title</dt>
+<dl><dt>This is a title:</dt>
+<dd>Yes, sir!</dd>
+<dt>This is: a another title:</dt>
 <dd>Yes, sir!
 <strong> and this emphasized!</strong></dd>
 <dt>Another title</dt>
 <dd>it's definition</dd>
+<dt>Another title : it's definition <strong>NOT</strong></dt>
+<dd>here it is</dd>
 </dl>
 <ul><li>this is a list!!
 </li>
@@ -238,6 +262,39 @@ what about this?
 <dd>two defintioins?</dd>
 </dl>
 """
+
+    assert text2html(r"""
+hello
+^^superscript^^
+,,subscript,,
+__underlined__
+
+//^^superscript^^
+,,subscript,,
+__underlined__//
+
+^^//superscript//\\hello^^
+,,sub**scr**ipt,,
+##__underlined__##
+
+{{{^^//superscript//\\hello^^
+,,sub**scr**ipt,,}}}
+##__underlined__##""") == """\
+<p>hello
+<sup>superscript</sup>
+<sub>subscript</sub>
+<u>underlined</u></p>
+<p><em><sup>superscript</sup>
+<sub>subscript</sub>
+<u>underlined</u></em></p>
+<p><sup><em>superscript</em><br />hello</sup>
+<sub>sub<strong>scr</strong>ipt</sub>
+<tt><u>underlined</u></tt></p>
+<p><span>^^//superscript//\\\\hello^^
+,,sub**scr**ipt,,</span>
+<tt><u>underlined</u></tt></p>
+"""
+
 
 def test_no_wiki_monospace_option():
     dialect = Creole10(no_wiki_monospace=True)

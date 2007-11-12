@@ -61,12 +61,15 @@ class Creole10(object):
         table_cell_children = [self.br, self.http_link, self.strong, self.em]
 
         if use_additions:
-            self.tt = InlineElement('tt', '##',[])
-            self.em.child_tags.extend([self.tt])
-            self.strong.child_tags.extend([self.tt])
-            self.link.child_tags.extend([self.tt])
-            header_children.extend([self.tt])
-            table_cell_children.extend([self.tt])
+            self.sub = InlineElement('sub', ',,',[])
+            self.sup = InlineElement('sup', '^^',[self.sub])
+            self.u = InlineElement('u', '__',[self.sup, self.sub])
+            self.tt = InlineElement('tt', '##',[self.u, self.sup, self.sub])
+            self.em.child_tags.extend([self.tt, self.u, self.sup, self.sub])
+            self.strong.child_tags.extend([self.tt, self.u, self.sup, self.sub])
+            self.link.child_tags.extend([self.tt, self.u, self.sup, self.sub])
+            header_children.extend([self.tt, self.u, self.sup, self.sub])
+            table_cell_children.extend([self.tt, self.u, self.sup, self.sub])
 
             
         self.hr = LoneElement('hr','----',[])
@@ -92,11 +95,11 @@ class Creole10(object):
         if use_additions:
             self.dd = DefinitionData('dd',':',[table_cell_children])
             self.dt = DefinitionTitle('dt',';',[table_cell_children],stop_token=':')
-            self.dl = DefinitionList('dl',';',[self.no_wiki,self.img,self.link,self.dt,self.dd],stop_tokens='*#')
+            self.dl = List('dl',';',[self.no_wiki,self.img,self.link,self.dt,self.dd],stop_tokens='*#')
      
         self.li = ListItem('li',child_tags=[],list_tokens='*#')
-        self.ol = List('ol','#',[self.li],other_token='*')
-        self.ul = List('ul','*',[self.li],other_token='#')
+        self.ol = List('ol','#',[self.li],stop_tokens='*')
+        self.ul = List('ul','*',[self.li],stop_tokens='#')
         self.nested_ol = NestedList('ol','#',[self.li])
         self.nested_ul = NestedList('ul','*',[self.li])
         self.li.child_tags = [(self.nested_ol,self.nested_ul)] + header_children
@@ -106,8 +109,8 @@ class Creole10(object):
         if use_additions:
             self.parse_order = [self.pre,self.blank_line,self.table]+ headings\
                            + [self.hr,self.dl,self.ul,self.ol,self.p]
-
-        self.parse_order = [self.pre,self.blank_line,self.table]+ headings\
+        else:
+            self.parse_order = [self.pre,self.blank_line,self.table]+ headings\
                            + [self.hr,self.ul,self.ol,self.p]
         """These are the wiki elements that are searched at the top level of text to be
         processed. The order matters because elements later in the list need not have any
