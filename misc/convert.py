@@ -1,4 +1,4 @@
-from creoleparser import creole_to_xhtml
+from creoleparser import text2html
 intext = file('instructions.txt','r').read()
-outtext = creole_to_xhtml(intext)
+outtext = text2html(intext)
 file('temp.html','w+').write(outtext)
