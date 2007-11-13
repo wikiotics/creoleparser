@@ -295,6 +295,26 @@ __underlined__//
 <tt><u>underlined</u></tt></p>
 """
 
+    assert text2html(r"""
+double tildes ~~ in the middle
+double tildes at the end ~~
+tilde in the middle ~ of a line
+tilde at the end of a line ~
+tilde at the end of a paragraph ~
+
+tilde at the start of a ~word
+double tilde at the start of a ~~word
+double tilde at the end of a paragraph ~~""") == """\
+<p>double tildes ~ in the middle
+double tildes at the end ~
+tilde in the middle ~ of a line
+tilde at the end of a line ~
+tilde at the end of a paragraph ~</p>
+<p>tilde at the start of a word
+double tilde at the start of a ~word
+double tilde at the end of a paragraph ~</p>
+"""
+
 
 def test_no_wiki_monospace_option():
     dialect = Creole10(no_wiki_monospace=True)

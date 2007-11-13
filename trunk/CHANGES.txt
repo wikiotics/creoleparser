@@ -1,7 +1,7 @@
 Version 0.3.1 (Nov ?? 2007)
 -------------------------
-
- * definition lists supported
+ * super (^^) and subscript (,,), and underline (__) support added
+ * definition lists supported (;)
  * removed store_id_seq in favor of id()
  * made element_store thread.local()
 
