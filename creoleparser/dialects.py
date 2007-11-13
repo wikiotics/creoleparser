@@ -36,6 +36,7 @@ class Creole10(object):
             Including monospace (##).
         """
 
+        self.text = TextElement(child_tags=[],markup=r'*#/\{}[]|;:,^_=')
         self.br = LineBreak('br', r'\\')
         self.http_link = RawLink('a')
         self.interwiki_link = InterWikiLink(delimiter=':',
@@ -56,17 +57,17 @@ class Creole10(object):
         
         self.em.child_tags = []
         self.strong.child_tags = [self.em]
-        self.link.child_tags = [self.strong, self.em]
-        header_children = [self.no_wiki, self.img, self.link, self.br, self.http_link, self.strong, self.em]
-        table_cell_children = [self.br, self.http_link, self.strong, self.em]
+        self.link.child_tags = [self.text,self.strong, self.em]
+        header_children = [self.text,self.no_wiki, self.img, self.link, self.br, self.http_link, self.strong, self.em]
+        table_cell_children = [self.text,self.br, self.http_link, self.strong, self.em]
 
         if use_additions:
             self.sub = InlineElement('sub', ',,',[])
-            self.sup = InlineElement('sup', '^^',[self.sub])
-            self.u = InlineElement('u', '__',[self.sup, self.sub])
-            self.tt = InlineElement('tt', '##',[self.u, self.sup, self.sub])
-            self.em.child_tags.extend([self.tt, self.u, self.sup, self.sub])
-            self.strong.child_tags.extend([self.tt, self.u, self.sup, self.sub])
+            self.sup = InlineElement('sup', '^^',[self.text,self.sub])
+            self.u = InlineElement('u', '__',[self.text,self.sup, self.sub])
+            self.tt = InlineElement('tt', '##',[self.text,self.u, self.sup, self.sub])
+            self.em.child_tags = [self.text,self.tt, self.u, self.sup, self.sub]
+            self.strong.child_tags = [self.text,self.em,self.tt, self.u, self.sup, self.sub]
             self.link.child_tags.extend([self.tt, self.u, self.sup, self.sub])
             header_children.extend([self.tt, self.u, self.sup, self.sub])
             table_cell_children.extend([self.tt, self.u, self.sup, self.sub])

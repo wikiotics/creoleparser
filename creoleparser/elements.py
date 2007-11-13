@@ -706,7 +706,23 @@ class LineBreak(InlineElement):
     def _build(self,mo):
         return bldr.tag.__getattr__(self.tag)()
 
+class TextElement(WikiElement):
 
+    """Matches text without mark-up"""
+
+    #append_newline = True
+    def __init__(self,child_tags=[],markup=None):
+        super(TextElement,self).__init__(tag=None,token=None , child_tags=child_tags)
+        self.markup = markup
+        self.regexp = re.compile(self.re_string(),re.DOTALL)
+
+    def re_string(self):
+        return '^[^' + re.escape(self.markup) + ']+$'
+
+    def _process(self, mo, text, wiki_elements):
+        return fragmentize(text,self.child_tags)
+
+    
 
 def _test():
     import doctest
