@@ -366,16 +366,23 @@ class NestedList(WikiElement):
                rest_of_list
 
 
-class DefinitionTitle(BlockElement):
+class DefinitionTerm(BlockElement):
 
-    """Finds definition titles.
+    r"""Processes definition terms.
 
-    group(1) of the match object is the title line or up to the first ':'
+    >>> term = DefinitionTerm('dt',';',[],stop_token=':')
+    >>> mo1,mo2 = term.regexp.finditer(";term1\n:def1\n;term2:def2\n")
+    >>> mo1.group(1), mo2.group(1)
+    ('term1', 'term2')
+    >>> mo1.group(0), mo2.group(0)
+    (';term1\n', ';term2')
+
+    group(1) of the match object is the term line or up to the first ':'
         
     """
 
     def __init__(self, tag, token,child_tags,stop_token):
-        super(DefinitionTitle,self).__init__(tag, token, child_tags)
+        super(DefinitionTerm,self).__init__(tag, token, child_tags)
         self.stop_token = stop_token
         self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
 
@@ -390,9 +397,16 @@ class DefinitionTitle(BlockElement):
                esc_neg_look + re.escape(self.stop_token) + r'|$)))'
 
 
-class DefinitionData(BlockElement):
+class DefinitionDef(BlockElement):
 
-    """Finds definitions.
+    r"""Processes definitions.
+
+    >>> definition = DefinitionDef('dd',':',[])
+    >>> mo1,mo2 = definition.regexp.finditer(":def1a\ndef1b\n:def2\n")
+    >>> mo1.group(1), mo2.group(1)
+    ('def1a\ndef1b', 'def2')
+    >>> mo1.group(0), mo2.group(0)
+    (':def1a\ndef1b\n', ':def2\n')
 
     group(1) of the match object includes all lines from the defintion
     up to the next definition.
@@ -400,7 +414,7 @@ class DefinitionData(BlockElement):
     """
 
     def __init__(self, tag, token,child_tags):
-        super(DefinitionData,self).__init__(tag, token, child_tags)
+        super(DefinitionDef,self).__init__(tag, token, child_tags)
         self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
 
     def re_string(self):

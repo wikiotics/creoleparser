@@ -93,8 +93,8 @@ class Creole10(object):
         self.p = Paragraph('p',header_children)
 
         if use_additions:
-            self.dd = DefinitionData('dd',':',[table_cell_children])
-            self.dt = DefinitionTitle('dt',';',[table_cell_children],stop_token=':')
+            self.dd = DefinitionDef('dd',':',[table_cell_children])
+            self.dt = DefinitionTerm('dt',';',[table_cell_children],stop_token=':')
             self.dl = List('dl',';',[self.no_wiki,self.img,self.link,self.dt,self.dd],stop_tokens='*#')
      
         self.li = ListItem('li',child_tags=[],list_tokens='*#')
