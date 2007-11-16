@@ -182,7 +182,55 @@ class RawLink(InlineElement):
         return self.href(mo)
 
 
-class InterWikiLink(InlineElement):
+class URLLink(WikiElement):
+    
+    """Used to find url type links.
+
+    The scope of these is within link markup only (i.e., [[url]]
+
+    >>> url_link = URLLink('a','',[],'|')
+    >>> mo = url_link.regexp.search(" http://www.google.com| here ")
+    >>> url_link.href(mo)
+    'http://www.google.com'
+    >>> url_link._build(mo).generate().render()
+    '<a href="http://www.google.com">here</a>'
+    
+    """
+
+    def __init__(self, tag,token,child_tags,delimiter):
+        super(URLLink,self).__init__(tag, token, child_tags)
+        self.delimiter = delimiter
+        self.regexp = re.compile(self.re_string())
+
+    def re_string(self):
+        #escape = '(' + re.escape(escape_char) + ')?'
+        protocol = r'^\s*(\S*?/'
+        rest_of_url = r'\S*?)\s*'
+        alias = r'(' + re.escape(self.delimiter) + r' *(.*?))? *$'
+        #allow one punctuation character or '**' or '//'
+        #look_ahead = r'(?=([,.?!:;"\']|\*\*|//)?(\s|$))' 
+        return protocol + rest_of_url + alias
+
+    def _build(self,mo):
+        return bldr.tag.__getattr__(self.tag)(self.alias(mo),
+                                              href=self.href(mo))
+       
+    def href(self,mo):
+        """Returns the string for the href attribute of the Element."""
+        return mo.group(1)
+
+    def alias(self,mo):
+        """Returns the string for the content of the Element."""
+        if not mo.group(3):
+            return self.href(mo)
+        else:
+            return fragmentize(mo.group(3),self.child_tags)
+
+
+
+
+
+class InterWikiLink(WikiElement):
 
     """Used to find interwiki links and return a href and alias.
 
@@ -224,7 +272,7 @@ class InterWikiLink(InlineElement):
         return ''.join([mo.group(1),self.delimiter,mo.group(2)])
 
 
-class WikiLink(InlineElement):
+class WikiLink(WikiElement):
 
     """Used to find wiki links and return a href and alias.
 
@@ -255,6 +303,51 @@ class WikiLink(InlineElement):
 
     def alias(self,mo):
         return mo.group(1)
+
+class WikiLink2(WikiElement):
+
+    """Used to find wiki links and return a href and alias.
+
+    The search scope for these is only inside links.
+
+    >>> wiki_link = WikiLink2('a','',[],'|',base_url='http://somewiki.org/',
+    ...                      space_char='_')
+    >>> mo = wiki_link.regexp.search(" Home Page |Home")
+    >>> wiki_link.href(mo)
+    'http://somewiki.org/Home_Page'
+    >>> wiki_link.alias(mo)
+    ['Home']
+    
+    """
+
+    def __init__(self, tag, token, child_tags,delimiter,base_url,space_char):
+        super(WikiLink2,self).__init__(tag, token, child_tags)
+        self.delimiter = delimiter
+        self.base_url = base_url
+        self.space_char = space_char
+        self.regexp = re.compile(self.re_string())
+
+    def re_string(self):
+        optional_spaces = ' *'
+        page_name = r'(\S+( +\S+)*?)' #allows any number of single spaces
+        alias = r'(' + re.escape(self.delimiter) + r' *(.*?))? *$'
+        return optional_spaces + page_name + optional_spaces + \
+               alias
+
+    def href(self,mo):
+        return self.base_url + mo.group(1).replace(' ',self.space_char)
+
+    def _build(self,mo):
+        return bldr.tag.__getattr__(self.tag)(self.alias(mo),
+                                              href=self.href(mo))
+    def alias(self,mo):
+        """Returns the string for the content of the Element."""
+        if not mo.group(3):
+            return mo.group(1)
+        else:
+            return fragmentize(mo.group(4),self.child_tags)
+
+
 
 
 class BlockElement(WikiElement):
