@@ -291,7 +291,7 @@ class WikiLink(WikiElement):
     The search scope for these is only inside links.
 
     >>> wiki_link = WikiLink('a','',[],'|',base_url='http://somewiki.org/',
-    ...                      space_char='_')
+    ...                      space_char='_',class_func=None)
     >>> mo = wiki_link.regexp.search(" Home Page |Home")
     >>> wiki_link.href(mo)
     'http://somewiki.org/Home_Page'
@@ -300,11 +300,13 @@ class WikiLink(WikiElement):
     
     """
 
-    def __init__(self, tag, token, child_tags,delimiter,base_url,space_char):
+    def __init__(self, tag, token, child_tags,delimiter,
+                 base_url,space_char,class_func):
         super(WikiLink,self).__init__(tag, token, child_tags)
         self.delimiter = delimiter
         self.base_url = base_url
         self.space_char = space_char
+        self.class_func = class_func
         self.regexp = re.compile(self.re_string())
 
     def re_string(self):
@@ -318,8 +320,14 @@ class WikiLink(WikiElement):
         return self.base_url + mo.group(1).replace(' ',self.space_char)
 
     def _build(self,mo):
+        if self.class_func:
+            the_class = self.class_func(mo.group(1))
+        else:
+            the_class = None
         return bldr.tag.__getattr__(self.tag)(self.alias(mo),
-                                              href=self.href(mo))
+                                              href=self.href(mo),
+                                              class_=the_class)
+    
     def alias(self,mo):
         """Returns the string for the content of the Element."""
         if not mo.group(3):

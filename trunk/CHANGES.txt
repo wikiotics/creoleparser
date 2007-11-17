@@ -1,3 +1,10 @@
+Version 0.3.2 (Nov ?? 2007)
+---------------------------
+
+ * added support for adding a class attribute to
+   wiki links (e.g., if the page doesn't exist).
+
+
 Version 0.3.1 (Nov 16 2007)
 ---------------------------
 
