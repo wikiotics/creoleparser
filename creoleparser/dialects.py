@@ -37,15 +37,15 @@ class Creole10(object):
         """
 
         self.br = LineBreak('br', r'\\')
-        self.http_link = RawLink('a')
-        self.interwiki_link = InterWikiLink(delimiter=':',
+        self.raw_link = RawLink('a')
+        self.url_link = URLLink('a','',[],delimiter = '|')
+        self.interwiki_link = InterWikiLink('a','',[],delimiter1=':',delimiter2='|',
                                             base_urls=interwiki_links_base_urls,
                                             space_char='_')
-        self.wiki_link = WikiLink(base_url=wiki_links_base_url,
+        self.wiki_link = WikiLink('a','',[],delimiter = '|', base_url=wiki_links_base_url,
                                   space_char=wiki_links_space_char)
         self.img = Image('img',('{{','}}'),[],delimiter='|')
-        self.link = Link('a',('[[',']]'),[],delimiter='|',
-                        link_types=[self.http_link,self.interwiki_link,self.wiki_link])
+        self.link = Link('',('[[',']]'),[self.url_link,self.interwiki_link,self.wiki_link])
         self.strong = InlineElement('strong', '**',[])
         self.em = InlineElement('em', '//',[])
         if no_wiki_monospace:
@@ -56,9 +56,9 @@ class Creole10(object):
         
         self.em.child_tags = []
         self.strong.child_tags = [self.em]
-        self.link.child_tags = [self.strong, self.em]
-        header_children = [self.no_wiki, self.img, self.link, self.br, self.http_link, self.strong, self.em]
-        table_cell_children = [self.br, self.http_link, self.strong, self.em]
+        link_child_tags = [self.strong, self.em]
+        header_children = [self.no_wiki, self.img, self.link, self.br, self.raw_link, self.strong, self.em]
+        table_cell_children = [self.br, self.raw_link, self.strong, self.em]
 
         if use_additions:
             self.sub = InlineElement('sub', ',,',[])
@@ -67,9 +67,13 @@ class Creole10(object):
             self.tt = InlineElement('tt', '##',[self.u, self.sup, self.sub])
             self.em.child_tags.extend([self.tt, self.u, self.sup, self.sub])
             self.strong.child_tags.extend([self.tt, self.u, self.sup, self.sub])
-            self.link.child_tags.extend([self.tt, self.u, self.sup, self.sub])
+            link_child_tags.extend([self.tt, self.u, self.sup, self.sub])
             header_children.extend([self.tt, self.u, self.sup, self.sub])
             table_cell_children.extend([self.tt, self.u, self.sup, self.sub])
+
+        self.wiki_link.child_tags = link_child_tags
+        self.url_link.child_tags = link_child_tags
+        self.interwiki_link.child_tags = link_child_tags
 
             
         self.hr = LoneElement('hr','----',[])

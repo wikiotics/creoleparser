@@ -1,7 +1,10 @@
-Version 0.3.1 (Nov ?? 2007)
--------------------------
- * super (^^) and subscript (,,), and underline (__) support added
+Version 0.3.1 (Nov 16 2007)
+---------------------------
+
+ * super (^^), subscript (,,), and underline (__) support added
  * definition lists supported (;)
+ * ftp://xxx no longer cause italics
+ * links refactored
  * removed store_id_seq in favor of id()
  * made element_store thread.local()
 
