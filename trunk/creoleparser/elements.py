@@ -17,7 +17,7 @@ __docformat__ = 'restructuredtext en'
 
 class WikiElement(object):
     
-    """Baseclass for all wiki WikiElements."""
+    """Baseclass for all wiki elements."""
     
     append_newline = False
     """Determines if newlines are appended to Element(s) during processing.
@@ -51,7 +51,7 @@ class WikiElement(object):
         """Returns a genshi Element that has ``self.tag`` as the
         outermost tag.
 
-        This methods if called exclusively by ``fragmentize``
+        This methods if called exclusively by ``_process``
 
         :parameters:
           mo
@@ -153,21 +153,22 @@ class RawLink(InlineElement):
     '<a href="http://www.google.com">http://www.google.com</a>'
     
     """
-
+    linking_protocols = ['http','https']
+    
     def __init__(self, tag):
         super(RawLink,self).__init__(tag=tag, token=None, child_tags=None)
         self.regexp = re.compile(self.re_string())
 
     def re_string(self):
         escape = '(' + re.escape(escape_char) + ')?'
-        protocol = '(https?://'
+        protocol = '((https?|ftp)://'
         rest_of_url = r'\S+?)'
         #allow one punctuation character or '**' or '//'
         look_ahead = r'(?=([,.?!:;"\']|\*\*|//)?(\s|$))' 
         return escape + protocol + rest_of_url + look_ahead
 
     def _build(self,mo):
-        if not mo.group(1):
+        if (not mo.group(1)) and (mo.group(3) in self.linking_protocols):
             return bldr.tag.__getattr__(self.tag)(self.alias(mo),
                                               href=self.href(mo))
         else:
@@ -184,7 +185,7 @@ class RawLink(InlineElement):
 
 class URLLink(WikiElement):
     
-    """Used to find url type links.
+    """Used to find url type links inside a link.
 
     The scope of these is within link markup only (i.e., [[url]]
 
@@ -204,7 +205,7 @@ class URLLink(WikiElement):
 
     def re_string(self):
         #escape = '(' + re.escape(escape_char) + ')?'
-        protocol = r'^\s*(\S*?/'
+        protocol = r'^\s*((\S+?://|/)'
         rest_of_url = r'\S*?)\s*'
         alias = r'(' + re.escape(self.delimiter) + r' *(.*?))? *$'
         #allow one punctuation character or '**' or '//'
@@ -221,36 +222,35 @@ class URLLink(WikiElement):
 
     def alias(self,mo):
         """Returns the string for the content of the Element."""
-        if not mo.group(3):
+        if not mo.group(4):
             return self.href(mo)
         else:
-            return fragmentize(mo.group(3),self.child_tags)
-
-
-
-
+            return fragmentize(mo.group(4),self.child_tags)
 
 class InterWikiLink(WikiElement):
 
-    """Used to find interwiki links and return a href and alias.
+    """Used to match interwiki links inside a link.
 
-    The search scope for these is only inside wiki links,
-    before the pipe(|)! 
+    The search scope for these is only inside links. 
 
-    >>> interwiki_link = InterWikiLink(delimiter=':',
+    >>> interwiki_link = InterWikiLink('a','',[],
+    ... delimiter1=':', delimiter2 = '|',
     ... base_urls=dict(somewiki='http://somewiki.org/',
     ...                bigwiki='http://bigwiki.net/'),
     ...                space_char='_')
-    >>> mo = interwiki_link.regexp.search(" somewiki:Home Page ")
+    >>> mo = interwiki_link.regexp.search(" somewiki:Home Page|steve ")
     >>> interwiki_link.href(mo)
     'http://somewiki.org/Home_Page'
     >>> interwiki_link.alias(mo)
-    'somewiki:Home Page'
+    ['steve']
     
     """
 
-    def __init__(self,delimiter,base_urls,space_char):
-        self.delimiter = delimiter
+    def __init__(self, tag, token, child_tags,delimiter1,
+                 delimiter2,base_urls,space_char):
+        super(InterWikiLink,self).__init__(tag, token, child_tags)
+        self.delimiter1 = delimiter1
+        self.delimiter2 = delimiter2
         self.regexp = re.compile(self.re_string())
         self.base_urls = base_urls
         self.space_char = space_char
@@ -258,9 +258,11 @@ class InterWikiLink(WikiElement):
     def re_string(self):
         wiki_id = r'(\w+)'
         optional_spaces = ' *'
-        page_name = r'(\S+( +\S+)*)' #allows any number of single spaces 
-        return wiki_id + optional_spaces + re.escape(self.delimiter) + \
-               optional_spaces + page_name + optional_spaces + '$'
+        page_name = r'(\S+?( +\S+?)*)' #allows any number of single spaces
+        alias = r'(' + re.escape(self.delimiter2) + r' *(.*?))? *$'
+        return wiki_id + optional_spaces + re.escape(self.delimiter1) + \
+               optional_spaces + page_name + optional_spaces + \
+               alias
 
     def href(self,mo):
         base_url = self.base_urls.get(mo.group(1))
@@ -268,49 +270,27 @@ class InterWikiLink(WikiElement):
             return None
         return base_url + mo.group(2).replace(' ',self.space_char)
 
+    def _build(self,mo):
+        if not self.href(mo):
+            return '[[' + mo.group(0) + ']]'
+        return bldr.tag.__getattr__(self.tag)(self.alias(mo),
+                                              href=self.href(mo))
     def alias(self,mo):
-        return ''.join([mo.group(1),self.delimiter,mo.group(2)])
+        """Returns the string for the content of the Element."""
+        if not mo.group(5):
+            return ''.join([mo.group(1),self.delimiter1,mo.group(2)])
+        else:
+            return fragmentize(mo.group(5),self.child_tags)
+
 
 
 class WikiLink(WikiElement):
 
-    """Used to find wiki links and return a href and alias.
-
-    The search scope for these is only inside wiki links, before the pipe(|)
-
-    >>> wiki_link = WikiLink(base_url='http://somewiki.org/',
-    ...                      space_char='_')
-    >>> mo = wiki_link.regexp.search(" Home Page ")
-    >>> wiki_link.href(mo)
-    'http://somewiki.org/Home_Page'
-    >>> wiki_link.alias(mo)
-    'Home Page'
-    
-    """
-
-    def __init__(self,base_url,space_char):
-        self.regexp = re.compile(self.re_string())
-        self.base_url = base_url
-        self.space_char = space_char
-
-    def re_string(self):
-        optional_spaces = ' *'
-        page_name = r'(\S+( +\S+)*)' #allows any number of single spaces 
-        return optional_spaces + page_name + optional_spaces + '$' 
-
-    def href(self,mo):
-        return self.base_url + mo.group(1).replace(' ',self.space_char)
-
-    def alias(self,mo):
-        return mo.group(1)
-
-class WikiLink2(WikiElement):
-
-    """Used to find wiki links and return a href and alias.
+    """Used to match wiki links inside a link.
 
     The search scope for these is only inside links.
 
-    >>> wiki_link = WikiLink2('a','',[],'|',base_url='http://somewiki.org/',
+    >>> wiki_link = WikiLink('a','',[],'|',base_url='http://somewiki.org/',
     ...                      space_char='_')
     >>> mo = wiki_link.regexp.search(" Home Page |Home")
     >>> wiki_link.href(mo)
@@ -321,7 +301,7 @@ class WikiLink2(WikiElement):
     """
 
     def __init__(self, tag, token, child_tags,delimiter,base_url,space_char):
-        super(WikiLink2,self).__init__(tag, token, child_tags)
+        super(WikiLink,self).__init__(tag, token, child_tags)
         self.delimiter = delimiter
         self.base_url = base_url
         self.space_char = space_char
@@ -329,7 +309,7 @@ class WikiLink2(WikiElement):
 
     def re_string(self):
         optional_spaces = ' *'
-        page_name = r'(\S+( +\S+)*?)' #allows any number of single spaces
+        page_name = r'(\S+?( +\S+?)*?)' #allows any number of single spaces
         alias = r'(' + re.escape(self.delimiter) + r' *(.*?))? *$'
         return optional_spaces + page_name + optional_spaces + \
                alias
@@ -639,32 +619,18 @@ class Link(InlineElement):
 
     """Finds and builds links."""
     
-    def __init__(self, tag, token, child_tags, delimiter,link_types):
+    def __init__(self, tag, token, child_tags):
         super(Link,self).__init__(tag,token , child_tags)
         self.regexp = re.compile(self.re_string())
-        self.delimiter = delimiter
-        self.link_types = link_types
-        
-    def _build(self,mo):
-        body = mo.group(1).split(self.delimiter, 1)
-        link = body[0]
-        if len(body) == 1:
-            alias = None
-        else:
-            alias = body[1].strip()
-        for link_type in self.link_types:
-            link_mo = link_type.regexp.search(link)
-            if link_mo:
-                href = link_type.href(link_mo)
-                break
-        if not link_mo:
-            return bldr.tag.span('Bad Link - ',link)
-        if not alias:
-            alias = link_type.alias(link_mo)
-        else:
-            alias = fragmentize(alias,self.child_tags)
-        return bldr.tag.__getattr__(self.tag)(alias ,href=link_type.href(link_mo))
 
+    def _build(self,mo):
+
+        link = fragmentize(mo.group(1),self.child_tags)
+
+        if link:
+            return bldr.tag(link)
+        else:
+            return token[0] + mo.group(0) + token[-1]
 
 class Image(InlineElement):
 

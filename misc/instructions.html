@@ -10,7 +10,6 @@
  </head>
  <body>
 
-    
 <p><em>Creoleparser</em> is a Python implementation of a parser for the Creole
 wiki markup language. The specification of that can be found at <a href="http://wikicreole.org/wiki/Creole1.0">http://wikicreole.org/wiki/Creole1.0</a></p>
 <h3><a href="http://pages.videotron.com/shday/Creole/apidocs/index.html">API documentation</a></h3>
@@ -52,12 +51,8 @@ wiki markup language. The specification of that can be found at <a href="http://
 &lt;p&gt;&lt;a href="http://www.mysite.net/Home"&gt;Home&lt;/a&gt; and &lt;a href="http://wikicreole.org/wiki/Home"&gt;wikicreole:Home&lt;/a&gt;&lt;/p&gt;
 </pre>
 <p>If you want pure Creole 1.0 (i.e., no additions), use creole2html() instead of text2html().</p>
-<h2>TODO</h2>
-<ul><li> Add more <a href="http://www.wikicreole.org/wiki/CreoleAdditions">additions</a> to the Creole10 class
-<ul><li> so far only monospace has been added
-</li>
-</ul></li>
-<li> Support adding a class attribute for links to nonexistent wiki pages
+<h2>ToDo</h2>
+<ul><li> Support adding a class attribute for links to nonexistent wiki pages
 </li>
 <li> Support macros (ideally some MoinMoin macro's to start with)
 </li>
@@ -65,6 +60,20 @@ wiki markup language. The specification of that can be found at <a href="http://
 <h2>Feedback</h2>
 <p>Would be appreciated, do it <a href="http://code.google.com/p/creoleparser/wiki/QuestionAndComments">here</a>, or email me directly &lt;stephen h day at gm**l com&gt; :-)</p>
 <h2>Changelog</h2>
+<h3>Version 0.3.1 (Nov 16 2007)</h3>
+<ul><li> superscript (^^), subscript (,,) and underline (__) support added
+</li>
+<li> definition lists supported (;)
+</li>
+<li> ftp://xxx no longer causes italics
+</li>
+<li> links refactored
+</li>
+<li> removed store_id_seq in favor of id()
+</li>
+<li> made element_store thread.local()
+</li>
+</ul>
 <h3>Version 0.3 (Nov 10 2007)</h3>
 <ul><li> text2html added, it has no_wiki_monospace=False and use_additions=True
 </li>

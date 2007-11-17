@@ -53,10 +53,8 @@ To customize things a little, create your own dialect and parser:
 }}}
 If you want pure Creole 1.0 (i.e., no additions), use creole2html() instead of text2html().
 
-==TODO
+==ToDo
 
- * Add more [[http://www.wikicreole.org/wiki/CreoleAdditions|additions]] to the Creole10 class
- ** so far only monospace has been added
  * Support adding a class attribute for links to nonexistent wiki pages
  * Support macros (ideally some MoinMoin macro's to start with)
                    
@@ -66,9 +64,12 @@ Would be appreciated, do it [[http://code.google.com/p/creoleparser/wiki/Questio
 
 ==Changelog
 
-===Version 0.3.1 (Nov ?? 2007)
+===Version 0.3.1 (Nov 16 2007)
 
- * definition lists supported
+ * superscript (~^^), subscript (~,,) and underline (~__) support added
+ * definition lists supported (;)
+ * ftp://xxx no longer causes italics
+ * links refactored
  * removed store_id_seq in favor of id()
  * made element_store thread.local()
 

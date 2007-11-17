@@ -58,26 +58,24 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class WikiLink</h1><span class="codelink"><a href="creoleparser.elements-pysrc.html#WikiLink">source&nbsp;code</a></span><br /><br />
 <pre class="base-tree">
- object --+        
-          |        
-<a href="creoleparser.elements.WikiElement-class.html">WikiElement</a> --+    
-              |    
-  <a href="creoleparser.elements.InlineElement-class.html">InlineElement</a> --+
-                  |
-                 <strong class="uidshort">WikiLink</strong>
+ object --+    
+          |    
+<a href="creoleparser.elements.WikiElement-class.html">WikiElement</a> --+
+              |
+             <strong class="uidshort">WikiLink</strong>
 </pre>
 
 <hr />
-<p>Used to find wiki links and return a href and alias.</p>
-<p>The search scope for these is only inside wiki links, before the pipe(|)</p>
+<p>Used to match wiki links inside a link.</p>
+<p>The search scope for these is only inside links.</p>
 <pre class="py-doctest">
-<span class="py-prompt">&gt;&gt;&gt; </span>wiki_link = WikiLink(base_url=<span class="py-string">'http://somewiki.org/'</span>,
+<span class="py-prompt">&gt;&gt;&gt; </span>wiki_link = WikiLink(<span class="py-string">'a'</span>,<span class="py-string">''</span>,[],<span class="py-string">'|'</span>,base_url=<span class="py-string">'http://somewiki.org/'</span>,
 <span class="py-more">... </span>                     space_char=<span class="py-string">'_'</span>)
-<span class="py-prompt">&gt;&gt;&gt; </span>mo = wiki_link.regexp.search(<span class="py-string">&quot; Home Page &quot;</span>)
+<span class="py-prompt">&gt;&gt;&gt; </span>mo = wiki_link.regexp.search(<span class="py-string">&quot; Home Page |Home&quot;</span>)
 <span class="py-prompt">&gt;&gt;&gt; </span>wiki_link.href(mo)
 <span class="py-output">'http://somewiki.org/Home_Page'</span>
 <span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>wiki_link.alias(mo)
-<span class="py-output">'Home Page'</span></pre><br /><br />
+<span class="py-output">['Home']</span></pre><br /><br />
 
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
@@ -103,6 +101,10 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="creoleparser.elements.WikiLink-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">tag</span>,
+        <span class="summary-sig-arg">token</span>,
+        <span class="summary-sig-arg">child_tags</span>,
+        <span class="summary-sig-arg">delimiter</span>,
         <span class="summary-sig-arg">base_url</span>,
         <span class="summary-sig-arg">space_char</span>)</span><br />
       Constructor for WikiElement objects.</td>
@@ -122,7 +124,7 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="creoleparser.elements.WikiLink-class.html#re_string" class="summary-sig-name">re_string</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      The regular expression pattern that is compiled into <tt class="rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-docutils literal rst-rst-rst-docutils literal rst-rst-docutils literal rst-docutils literal"><span class="pre">self.regexp</span></tt>.</td>
+      The regular expression pattern that is compiled into <tt class="rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-docutils literal rst-rst-rst-docutils literal rst-rst-docutils literal rst-docutils literal"><span class="pre">self.regexp</span></tt>.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="creoleparser.elements-pysrc.html#WikiLink.re_string">source&nbsp;code</a></span>
             
@@ -149,6 +151,25 @@
       
     </td>
   </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="creoleparser.elements.WikiLink-class.html#_build" class="summary-sig-name">_build</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">mo</span>)</span><br />
+      Returns a genshi Element that has <tt class="rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-docutils literal rst-rst-rst-docutils literal rst-rst-docutils literal rst-docutils literal"><span class="pre">self.tag</span></tt> as the
+outermost tag.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="creoleparser.elements-pysrc.html#WikiLink._build">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
@@ -156,7 +177,8 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a name="alias"></a><span class="summary-sig-name">alias</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">mo</span>)</span></td>
+        <span class="summary-sig-arg">mo</span>)</span><br />
+      Returns the string for the content of the Element.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="creoleparser.elements-pysrc.html#WikiLink.alias">source&nbsp;code</a></span>
             
@@ -178,29 +200,6 @@
       <code>__setattr__</code>,
       <code>__str__</code>
       </p>
-    </td>
-  </tr>
-<tr bgcolor="#e8f0f8"  class="private">
-  <th colspan="2" class="group-header"
-    >&nbsp;&nbsp;&nbsp;&nbsp;Inherited from <a href="creoleparser.elements.InlineElement-class.html">InlineElement</a></th></tr>
-<tr class="private">
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="creoleparser.elements.InlineElement-class.html#_process" class="summary-sig-name">_process</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">mo</span>,
-        <span class="summary-sig-arg">text</span>,
-        <span class="summary-sig-arg">wiki_elements</span>)</span><br />
-      Returns genshi Fragments (Elements and text)</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="creoleparser.elements-pysrc.html#InlineElement._process">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
     </td>
   </tr>
 <tr bgcolor="#e8f0f8" >
@@ -229,12 +228,13 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="creoleparser.elements.WikiElement-class.html#_build" class="summary-sig-name">_build</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">mo</span>)</span><br />
-      Returns a genshi Element that has <tt class="rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-docutils literal rst-rst-rst-docutils literal rst-rst-docutils literal rst-docutils literal"><span class="pre">self.tag</span></tt> as the
-outermost tag.</td>
+          <td><span class="summary-sig"><a href="creoleparser.elements.WikiElement-class.html#_process" class="summary-sig-name">_process</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">mo</span>,
+        <span class="summary-sig-arg">text</span>,
+        <span class="summary-sig-arg">wiki_elements</span>)</span><br />
+      Returns genshi Fragments (Elements and text)</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="creoleparser.elements-pysrc.html#WikiElement._build">source&nbsp;code</a></span>
+            <span class="codelink"><a href="creoleparser.elements-pysrc.html#WikiElement._process">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -323,6 +323,10 @@ outermost tag.</td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">tag</span>,
+        <span class="sig-arg">token</span>,
+        <span class="sig-arg">child_tags</span>,
+        <span class="sig-arg">delimiter</span>,
         <span class="sig-arg">base_url</span>,
         <span class="sig-arg">space_char</span>)</span>
     <br /><em class="fname">(Constructor)</em>
@@ -336,7 +340,8 @@ outermost tag.</td>
 <p>Subclasses may have other keyword arguments.</p>
   <dl class="fields">
     <dt>Overrides:
-      <a href="creoleparser.elements.InlineElement-class.html#__init__">InlineElement.__init__</a>
+      <a href="creoleparser.elements.WikiElement-class.html#__init__">WikiElement.__init__</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
     </dt>
   </dl>
 </td></tr></table>
@@ -355,15 +360,42 @@ outermost tag.</td>
     </td>
   </table>
   
-  <p>The regular expression pattern that is compiled into <tt class="rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-docutils literal rst-rst-rst-docutils literal rst-rst-docutils literal rst-docutils literal"><span class="pre">self.regexp</span></tt>.</p>
+  <p>The regular expression pattern that is compiled into <tt class="rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-docutils literal rst-rst-rst-docutils literal rst-rst-docutils literal rst-docutils literal"><span class="pre">self.regexp</span></tt>.</p>
 <p>The regular expression must consume the entire wiki element,
 including the tokens. For block elements, the newline on the last
 line must be consumed also. group(1) should normally be the
-entire string inside the tokens. If not, a custom <tt class="rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-docutils literal rst-rst-rst-docutils literal rst-rst-docutils literal rst-docutils literal"><span class="pre">_build</span></tt>
+entire string inside the tokens. If not, a custom <tt class="rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-docutils literal rst-rst-rst-docutils literal rst-rst-docutils literal rst-docutils literal"><span class="pre">_build</span></tt>
 method will be needed.</p>
   <dl class="fields">
     <dt>Overrides:
-      <a href="creoleparser.elements.InlineElement-class.html#re_string">InlineElement.re_string</a>
+      <a href="creoleparser.elements.WikiElement-class.html#re_string">WikiElement.re_string</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_build"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_build</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">mo</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="creoleparser.elements-pysrc.html#WikiLink._build">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </table>
+  
+  <p>Returns a genshi Element that has <tt class="rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-docutils literal rst-rst-rst-docutils literal rst-rst-docutils literal rst-docutils literal"><span class="pre">self.tag</span></tt> as the
+outermost tag.</p>
+<p>This methods if called exclusively by <tt class="rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-docutils literal rst-rst-rst-docutils literal rst-rst-docutils literal rst-docutils literal"><span class="pre">_process</span></tt></p>
+  <dl class="fields">
+    <dt>Overrides:
+      <a href="creoleparser.elements.WikiElement-class.html#_build">WikiElement._build</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
     </dt>
   </dl>
 </td></tr></table>
@@ -395,7 +427,7 @@ method will be needed.</p>
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0beta1 on Sat Nov 10 00:11:58 2007
+    Generated by Epydoc 3.0beta1 on Fri Nov 16 22:13:13 2007
     </td>
     <td align="right" class="footer">
       <a href="http://epydoc.sourceforge.net">http://epydoc.sourceforge.net</a>

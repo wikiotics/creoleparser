@@ -68,12 +68,10 @@
 <dl><dt>Known Subclasses:</dt>
 <dd>
     <a href="creoleparser.elements.Image-class.html">Image</a>,
-    <a href="creoleparser.elements.InterWikiLink-class.html">InterWikiLink</a>,
     <a href="creoleparser.elements.LineBreak-class.html">LineBreak</a>,
     <a href="creoleparser.elements.Link-class.html">Link</a>,
     <a href="creoleparser.elements.NoWikiElement-class.html">NoWikiElement</a>,
-    <a href="creoleparser.elements.RawLink-class.html">RawLink</a>,
-    <a href="creoleparser.elements.WikiLink-class.html">WikiLink</a>
+    <a href="creoleparser.elements.RawLink-class.html">RawLink</a>
 </dd></dl>
 
 <hr />
@@ -138,7 +136,7 @@ and end strings. These must be closed.</p>
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="creoleparser.elements.InlineElement-class.html#re_string" class="summary-sig-name">re_string</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      The regular expression pattern that is compiled into <tt class="rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-docutils literal rst-rst-rst-docutils literal rst-rst-docutils literal rst-docutils literal"><span class="pre">self.regexp</span></tt>.</td>
+      The regular expression pattern that is compiled into <tt class="rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-docutils literal rst-rst-rst-docutils literal rst-rst-docutils literal rst-docutils literal"><span class="pre">self.regexp</span></tt>.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="creoleparser.elements-pysrc.html#InlineElement.re_string">source&nbsp;code</a></span>
             
@@ -210,7 +208,7 @@ and end strings. These must be closed.</p>
         <tr>
           <td><span class="summary-sig"><a href="creoleparser.elements.WikiElement-class.html#_build" class="summary-sig-name">_build</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">mo</span>)</span><br />
-      Returns a genshi Element that has <tt class="rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-docutils literal rst-rst-rst-docutils literal rst-rst-docutils literal rst-docutils literal"><span class="pre">self.tag</span></tt> as the
+      Returns a genshi Element that has <tt class="rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-docutils literal rst-rst-rst-docutils literal rst-rst-docutils literal rst-docutils literal"><span class="pre">self.tag</span></tt> as the
 outermost tag.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="creoleparser.elements-pysrc.html#WikiElement._build">source&nbsp;code</a></span>
@@ -336,11 +334,11 @@ outermost tag.</td>
     </td>
   </table>
   
-  <p>The regular expression pattern that is compiled into <tt class="rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-docutils literal rst-rst-rst-docutils literal rst-rst-docutils literal rst-docutils literal"><span class="pre">self.regexp</span></tt>.</p>
+  <p>The regular expression pattern that is compiled into <tt class="rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-docutils literal rst-rst-rst-docutils literal rst-rst-docutils literal rst-docutils literal"><span class="pre">self.regexp</span></tt>.</p>
 <p>The regular expression must consume the entire wiki element,
 including the tokens. For block elements, the newline on the last
 line must be consumed also. group(1) should normally be the
-entire string inside the tokens. If not, a custom <tt class="rst-rst-rst-docutils literal rst-rst-docutils literal rst-docutils literal"><span class="pre">_build</span></tt>
+entire string inside the tokens. If not, a custom <tt class="rst-rst-rst-rst-rst-docutils literal rst-rst-rst-rst-docutils literal rst-rst-rst-docutils literal rst-rst-docutils literal rst-docutils literal"><span class="pre">_build</span></tt>
 method will be needed.</p>
   <dl class="fields">
     <dt>Overrides:
@@ -402,7 +400,7 @@ method will be needed.</p>
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0beta1 on Sat Nov 10 00:11:58 2007
+    Generated by Epydoc 3.0beta1 on Fri Nov 16 22:13:12 2007
     </td>
     <td align="right" class="footer">
       <a href="http://epydoc.sourceforge.net">http://epydoc.sourceforge.net</a>

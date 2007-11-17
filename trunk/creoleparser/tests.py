@@ -123,10 +123,10 @@ hello **[[http://www.google.com|Google]]**
 
     assert text2html(r"""
 Go to [[http://www.google.com]], it is [[http://www.google.com| Google]]\\
-even [[This Page]] is nice like [[This Page|this]].\\
+even [[This Page Here]] is nice like [[This Page|this]].\\
 As is [[Ohana:Home|This one]].""") == """\
 <p>Go to <a href="http://www.google.com">http://www.google.com</a>, it is <a href="http://www.google.com">Google</a><br />
-even <a href="http://www.wikicreole.org/wiki/This_Page">This Page</a> is nice like <a href="http://www.wikicreole.org/wiki/This_Page">this</a>.<br />
+even <a href="http://www.wikicreole.org/wiki/This_Page_Here">This Page Here</a> is nice like <a href="http://www.wikicreole.org/wiki/This_Page">this</a>.<br />
 As is <a href="http://wikiohana.net/cgi-bin/wiki.pl/Home">This one</a>.</p>
 """
 
