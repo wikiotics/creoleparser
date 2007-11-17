@@ -14,7 +14,8 @@ class Creole10(object):
 
     def __init__(self,wiki_links_base_url='http://',wiki_links_space_char='_',
                  interwiki_links_base_urls={},
-                 no_wiki_monospace=True, use_additions=False):
+                 no_wiki_monospace=True, use_additions=False,
+                 wiki_links_class_func=None):
         """Constructor for Creole10 oblects.
 
         Most attributes of new Creole objects are derived from the WikiElement
@@ -34,7 +35,14 @@ class Creole10(object):
           use_additions
             If ``True``, markup beyond the Creole 1.0 spec will be allowed.
             Including monospace (##).
-        """
+          wiki_links_class_func
+            If supplied, this fuction will be called when a wiki link is found and
+            the return value (should be a string) will be added as a class attribute
+            of the cooresponding link. The function must accept the page name (as it
+            appears in the link, but stripped) as it's first argument. If no class
+            attribute is to be added, return no value (or None).
+            
+         """
 
         self.br = LineBreak('br', r'\\')
         self.raw_link = RawLink('a')
@@ -43,7 +51,7 @@ class Creole10(object):
                                             base_urls=interwiki_links_base_urls,
                                             space_char='_')
         self.wiki_link = WikiLink('a','',[],delimiter = '|', base_url=wiki_links_base_url,
-                                  space_char=wiki_links_space_char)
+                                  space_char=wiki_links_space_char,class_func=wiki_links_class_func)
         self.img = Image('img',('{{','}}'),[],delimiter='|')
         self.link = Link('',('[[',']]'),[self.url_link,self.interwiki_link,self.wiki_link])
         self.strong = InlineElement('strong', '**',[])

@@ -335,7 +335,31 @@ This block of ##text **should** be monospace## now""") == """\
 def test_place_holders():
     assert text2html(r"""
 This block of ##text <<<23>>> be <<<hi>>>monospace <<<>>>## now""") == """\
-<p>This block of <tt>text <<<23>>> be <<<hi>>>monospace <<<>>></tt> now</p>
+<p>This block of <tt>text &lt;&lt;&lt;23&gt;&gt;&gt; be &lt;&lt;&lt;hi&gt;&gt;&gt;monospace &lt;&lt;&lt;&gt;&gt;&gt;</tt> now</p>
+"""
+
+def test_wiki_links_class_func():
+
+    def class_func(page_name):
+        if page_name == 'New Page':
+            return 'nonexistent'
+        
+    dialect = Creole10(
+        wiki_links_base_url='http://creoleparser.x10hosting.com/cgi-bin/creolepiki/',
+        wiki_links_space_char='',
+        use_additions=True,
+        no_wiki_monospace=False,
+        wiki_links_class_func=class_func)
+
+    parser = Parser(dialect)
+
+    assert parser(r"""
+Go to [[http://www.google.com]], it is [[http://www.google.com| Google]]\\
+even [[This Page Here]] is nice like [[New Page|this]].\\
+As is [[Ohana:Home|This one]].""") == """\
+<p>Go to <a href="http://www.google.com">http://www.google.com</a>, it is <a href="http://www.google.com">Google</a><br />
+even <a href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/ThisPageHere">This Page Here</a> is nice like <a class="nonexistent" href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/NewPage">this</a>.<br />
+As is [[Ohana:Home|This one]].</p>
 """
 
 def _test():
@@ -344,6 +368,8 @@ def _test():
     test_text2html()
     test_no_wiki_monospace_option()
     test_use_additions_option()
+    test_place_holders()
+    test_wiki_links_class_func()
 
 if __name__ == "__main__":
     _test()
