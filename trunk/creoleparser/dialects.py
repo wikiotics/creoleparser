@@ -15,7 +15,7 @@ class Creole10(object):
     def __init__(self,wiki_links_base_url='http://',wiki_links_space_char='_',
                  interwiki_links_base_urls={},
                  no_wiki_monospace=True, use_additions=False,
-                 wiki_links_class_func=None):
+                 wiki_links_class_func=None, macro_func=None):
         """Constructor for Creole10 oblects.
 
         Most attributes of new Creole objects are derived from the WikiElement
@@ -41,9 +41,16 @@ class Creole10(object):
             of the cooresponding link. The function must accept the page name (as it
             appears in the link, but stripped) as it's first argument. If no class
             attribute is to be added, return no value (or None).
-            
+          macro_func
+            If supplied, this fuction will be called when macro markup is found. The
+            function must accept the macro name as its first argument and the
+            argument string (indluding any delimter) as the second. The function may
+            return a string (which will be subject to further wiki processing) or a
+            Genshi Stream object. Of None is returned, the markup will be rendered
+            unchanged.
+                      
          """
-
+        self.macro = Macro('',('<<','>>'),[],func=macro_func)
         self.br = LineBreak('br', r'\\')
         self.raw_link = RawLink('a')
         self.url_link = URLLink('a','',[],delimiter = '|')
@@ -119,7 +126,7 @@ class Creole10(object):
         self.pre = PreBlock('pre',['{{{','}}}'])
 
         if use_additions:
-            self.parse_order = [self.pre,self.blank_line,self.table]+ headings\
+            self.parse_order = [self.macro,self.pre,self.blank_line,self.table]+ headings\
                            + [self.hr,self.dl,self.ul,self.ol,self.p]
         else:
             self.parse_order = [self.pre,self.blank_line,self.table]+ headings\
