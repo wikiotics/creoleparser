@@ -6,6 +6,8 @@
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 #
 
+import genshi.builder as bldr
+
 from __init__ import text2html
 from dialects import Creole10
 from core import Parser
@@ -63,6 +65,17 @@ r"""   |= Item|= Size|= Price |
 <h3>Also level 3</h3>
 <h3><strong>is</strong> <em>parsed</em></h3>
 """ 
+
+##    print text2html(r"""
+##a lone escape ~ in the middle of a line
+##or at the end ~
+##a double ~~ in the middle
+##at end ~~
+##preventing ~** **bold** and ~// //italics//
+## ~= stopping headers!
+##| in table~| cells | too!
+##""")
+
 
     assert text2html(r"""
 a lone escape ~ in the middle of a line
@@ -130,6 +143,29 @@ even <a href="http://www.wikicreole.org/wiki/This_Page_Here">This Page Here</a> 
 As is <a href="http://wikiohana.net/cgi-bin/wiki.pl/Home">This one</a>.</p>
 """
 
+    print text2html(r"""
+* this is list **item one**
+** item one - //subitem 1//
+### one **http://www.google.com**
+### two [[Creole1.0]]
+### three\\covers\\many\\lines
+** //subitem 2//
+### what is this?
+### no idea?
+**** A
+**** B
+### And lots of
+drivel here
+** //subitem 3//
+*** huh?
+* **item two
+* **item three**
+# new ordered list, item 1
+# item 2
+## sub item
+##sub item
+""")
+
     assert text2html(r"""
 * this is list **item one**
 ** item one - //subitem 1//
@@ -152,47 +188,26 @@ drivel here
 ## sub item
 ##sub item
 """) == """\
-<ul><li> this is list <strong>item one</strong>
-<ul><li> item one - <em>subitem 1</em>
-<ol><li> one <strong><a href="http://www.google.com">http://www.google.com</a></strong>
-</li>
-<li> two <a href="http://www.wikicreole.org/wiki/Creole1.0">Creole1.0</a>
-</li>
-<li> three<br />covers<br />many<br />lines
-</li>
-</ol></li>
-<li> <em>subitem 2</em>
-<ol><li> what is this?
-</li>
-<li> no idea?
-<ul><li> A
-</li>
-<li> B
-</li>
-</ul></li>
-<li> And lots of
-drivel here
-</li>
-</ol></li>
-<li> <em>subitem 3</em>
-<ul><li> huh?
-</li>
-</ul></li>
-</ul></li>
-<li> <strong>item two</strong>
-</li>
-<li> <strong>item three</strong>
-</li>
-</ul>
-<ol><li> new ordered list, item 1
-</li>
-<li> item 2
-<ol><li> sub item
-</li>
-<li>sub item
-</li>
-</ol></li>
-</ol>
+<ul><li>this is list <strong>item one</strong>
+<ul><li>item one - <em>subitem 1</em>
+<ol><li>one <strong><a href="http://www.google.com">http://www.google.com</a></strong></li>
+<li>two <a href="http://www.wikicreole.org/wiki/Creole1.0">Creole1.0</a></li>
+<li>three<br />covers<br />many<br />lines</li></ol></li>
+<li><em>subitem 2</em>
+<ol><li>what is this?</li>
+<li>no idea?
+<ul><li>A</li>
+<li>B</li></ul></li>
+<li>And lots of
+drivel here</li></ol></li>
+<li><em>subitem 3</em>
+<ul><li>huh?</li></ul></li></ul></li>
+<li><strong>item two</strong></li>
+<li><strong>item three</strong></li></ul>
+<ol><li>new ordered list, item 1</li>
+<li>item 2
+<ol><li>sub item</li>
+<li>sub item</li></ol></li></ol>
 """
 
     assert text2html(r"""
@@ -252,9 +267,7 @@ what about this?
 <dt>Another title : it's definition <strong>NOT</strong></dt>
 <dd>here it is</dd>
 </dl>
-<ul><li>this is a list!!
-</li>
-</ul>
+<ul><li>this is a list!!</li></ul>
 <dl><dt>Wiki</dt>
 <dt>Creole</dt>
 <dd>what about this?</dd>
@@ -332,6 +345,9 @@ This block of ##text **should** be monospace## now""") == """\
 <p>This block of <tt>text <strong>should</strong> be monospace</tt> now</p>
 """
 
+##    print text2html(r"""
+##This block of ##text <<<23>>> be <<<hi>>>monospace <<<>>>## now""")
+
 def test_place_holders():
     assert text2html(r"""
 This block of ##text <<<23>>> be <<<hi>>>monospace <<<>>>## now""") == """\
@@ -362,6 +378,45 @@ even <a href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/ThisPageHere
 As is [[Ohana:Home|This one]].</p>
 """
 
+def test_marco_func():
+
+    def a_macro_func(macro_name, arg_string):
+        if macro_name == 'steve':
+            return '**' + arg_string + '**'
+        if macro_name == 'luca':
+            return bldr.tag.strong(arg_string).generate()
+        
+    dialect = Creole10(
+        wiki_links_base_url='http://creoleparser.x10hosting.com/cgi-bin/creolepiki/',
+        wiki_links_space_char='',
+        use_additions=True,
+        no_wiki_monospace=False,
+        macro_func=a_macro_func)
+
+    parser = Parser(dialect)
+
+##    print parser(r"""
+##Go to [[http://www.google.com]], it is [[http://www.google.com| <<luca Google>>]]\\
+##even [[This Page Here]] is <<steve the steve macro!>> nice like [[New Page|this]].\\
+##This is the <<sue sue macro!>> and this is the <<luca luca macro!>>.\\
+##Don't touch {{{<<steve this!>>}}}.\\
+##As is [[Ohana:Home|This one]].""")
+
+    assert parser(r"""
+Go to [[http://www.google.com]], it is [[http://www.google.com| <<luca Google>>]]\\
+even [[This Page Here]] is <<steve the steve macro!>> nice like [[New Page|this]].\\
+This is the <<sue sue macro!>> and this is the <<luca luca macro!>>.\\
+Don't touch {{{<<steve this!>>}}}.\\
+As is [[Ohana:Home|This one]].""") == """\
+<p>Go to <a href="http://www.google.com">http://www.google.com</a>, it is <a href="http://www.google.com"><strong> Google</strong></a><br />
+even <a href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/ThisPageHere">This Page Here</a> is <strong> the steve macro!</strong> nice like <a href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/NewPage">this</a>.<br />
+This is the &lt;&lt;sue sue macro!&gt;&gt; and this is the <strong> luca macro!</strong>.<br />
+Don't touch <span>&lt;&lt;steve this!&gt;&gt;</span>.<br />
+As is [[Ohana:Home|This one]].</p>
+"""
+
+
+
 def _test():
     import doctest
     doctest.testmod()
@@ -370,6 +425,7 @@ def _test():
     test_use_additions_option()
     test_place_holders()
     test_wiki_links_class_func()
+    test_marco_func()
 
 if __name__ == "__main__":
     _test()

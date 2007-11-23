@@ -26,6 +26,7 @@ def fill_from_store(text):
     if mo:
         if mo.start():
             frags.append(text[:mo.start()])
+        #print mo.group(1), element_store.d.get(mo.group(1),'Empty')
         frags.append(element_store.d.get(mo.group(1),
                        mo.group(1).join(['<<<','>>>'])))
         if mo.end() < len(text):
@@ -34,7 +35,7 @@ def fill_from_store(text):
         frags = [text]
     return frags
 
-def fragmentize(text,wiki_elements, remove_escapes = True):
+def fragmentize(text,wiki_elements, remove_escapes = True, fill_stored = True):
 
     """Takes a string of wiki markup and outputs a list of genshi
     Fragments (Elements and strings).
@@ -60,7 +61,11 @@ def fragmentize(text,wiki_elements, remove_escapes = True):
     if not wiki_elements:
         if remove_escapes:
             text = esc_to_remove.sub('',text)
-        return fill_from_store(text)
+        if fill_stored:
+            frags = fill_from_store(text)
+        else:
+            frags = [text]
+        return frags
 
     # If the first supplied wiki_element is actually a list of elements, \
     # search for all of them and match the closest one only.
@@ -80,9 +85,9 @@ def fragmentize(text,wiki_elements, remove_escapes = True):
          
     frags = []
     if mo:
-        frags = wiki_element._process(mo, text, wiki_elements)
+        frags = wiki_element._process(mo, text, wiki_elements,remove_escapes=remove_escapes,fill_stored=fill_stored)
     else:
-        frags = fragmentize(text,wiki_elements[1:])
+        frags = fragmentize(text,wiki_elements[1:],remove_escapes=remove_escapes,fill_stored=fill_stored)
 
     return frags
 
@@ -113,7 +118,6 @@ class Parser(object):
     def generate(self,text):
         """Returns a Genshi Stream."""
         text = preprocess(text,self.dialect)
-        element_store.d = {} 
         return bldr.tag(fragmentize(text,self.dialect.parse_order)).generate()
 
     def render(self,text,**kwargs):
@@ -127,6 +131,7 @@ class Parser(object):
 
     def __call__(self,text):
         """Wrapper for the render method. Returns final output string."""
+        element_store.d = {}
         return self.render(text)
 
 def preprocess(text, dialect):
@@ -141,12 +146,17 @@ def preprocess(text, dialect):
     text = text.replace("\r\n", "\n")
     text = text.replace("\r", "\n")
     text = ''.join([text.rstrip(),'\n']) 
-##    text = ''.join(pre_escape(text,[dialect.pre,dialect.no_wiki],
-##                              [dialect.http_link]))
+    text = ''.join(encode_macros(text,[dialect.pre,dialect.no_wiki],
+                              [dialect.macro]))
+
+    #print pre_escape(text,[dialect.pre,dialect.no_wiki],
+    #                          [dialect.macro])
+
+    #print text
     return text
 
 
-def pre_escape(text, elements_to_skip=None,
+def encode_macros(text, elements_to_skip=None,
                elements_to_process=None):
     """This is used to escape certain markup before parsing. NOT USED.
 
@@ -159,22 +169,30 @@ def pre_escape(text, elements_to_skip=None,
         these wiki elements will have an escape added according to
         their ``esc_regexp``
     """
+
     if not elements_to_skip:
         for element in elements_to_process:
-            text = element.pre_escape(text)
+            text = element.encode(text)
         return [text]
+
+##    if not elements_to_skip:
+##        frags = []
+##        for element in elements_to_process:
+##            frags.extend(fragmentize(text,[element],remove_escapes=False,fill_stored=False))
+##        return frags
+
     mo = elements_to_skip[0].regexp.search(text)
     parts = []
     if mo:
         if mo.start():
-            parts.extend(pre_escape(text[:mo.start()],elements_to_skip[1:],
+            parts.extend(encode_macros(text[:mo.start()],elements_to_skip[1:],
                                     elements_to_process))
         parts.append(mo.group(0))
         if mo.end() < len(text):
-            parts.extend(pre_escape(text[mo.end():],elements_to_skip,
+            parts.extend(encode_macros(text[mo.end():],elements_to_skip,
                                     elements_to_process))
     else:
-        parts = pre_escape(text,elements_to_skip[1:],elements_to_process)
+        parts = encode_macros(text,elements_to_skip[1:],elements_to_process)
     return parts
      
 

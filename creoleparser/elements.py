@@ -72,7 +72,7 @@ class WikiElement(object):
         """
         pass
 
-    def _process(self, mo, text, wiki_elements):
+    def _process(self, mo, text, wiki_elements, remove_escapes=True,fill_stored=True):
         """Returns genshi Fragments (Elements and text)
 
         This is mainly for block level markup. See InlineElement
@@ -81,7 +81,8 @@ class WikiElement(object):
         frags = []
         # call again for leading text and extend the result list 
         if mo.start():
-            frags.extend(fragmentize(text[:mo.start()],wiki_elements[1:]))
+            frags.extend(fragmentize(text[:mo.start()],wiki_elements[1:],
+                                     remove_escapes=remove_escapes,fill_stored=fill_stored))
         # append the found wiki element to the result list
         frags.append(self._build(mo))
         # make the source output easier to read
@@ -89,7 +90,8 @@ class WikiElement(object):
             frags.append('\n')
         # call again for trailing text and extend the result list
         if mo.end() < len(text):
-            frags.extend(fragmentize(text[mo.end():],wiki_elements))
+            frags.extend(fragmentize(text[mo.end():],wiki_elements,
+                                     remove_escapes=remove_escapes,fill_stored=fill_stored))
         return frags
         
     def __repr__(self):
@@ -130,17 +132,82 @@ class InlineElement(WikiElement):
             content = '(.+?)'
             return esc_neg_look + re.escape(self.token[0]) + content + esc_neg_look + re.escape(self.token[1])
 
-    def _process(self, mo, text, wiki_elements):
+    def _process(self, mo, text, wiki_elements,remove_escapes=True,fill_stored=True):
         """Returns genshi Fragments (Elements and text)"""
         processed = self._build(mo)
         store_id = str(id(processed)) # str(hash(processed))
         element_store.d[store_id] = processed
         text = ''.join([text[:mo.start()],'<<<',store_id,'>>>',
                         text[mo.end():]])
-        frags = fragmentize(text,wiki_elements)
+        frags = fragmentize(text,wiki_elements,remove_escapes=remove_escapes,fill_stored=fill_stored)
         return frags
 
 
+
+class Macro(InlineElement):
+
+    def __init__(self, tag, token, child_tags,func):
+        super(Macro,self).__init__(tag,token , child_tags)
+        self.func = func
+        self.regexp = re.compile(self.re_string())
+        self.encode_regexp = re.compile(self.encode_pattern())
+
+    def encode(self,text):
+        #return text
+        return self.encode_regexp.sub(r'\1~\2',text)
+
+    def encode_pattern(self):
+        content = '(.+?)'
+        macro_name = '([a-z]([a-z-]*[a-z])?)'
+        return esc_neg_look + '(' +re.escape(self.token[0]) + ')(' + macro_name + \
+                   content + esc_neg_look + re.escape(self.token[1]) + ')'
+
+    def _process(self, mo, text, wiki_elements,remove_escapes=True,fill_stored=True):
+        """Returns genshi Fragments (Elements and text)"""
+        processed = self._build(mo)
+        if isinstance(processed, str):
+            text = ''.join([text[:mo.start()],processed,
+                        text[mo.end():]])
+        else:
+            store_id = str(id(processed)) # str(hash(processed))
+            element_store.d[store_id] = processed
+            text = ''.join([text[:mo.start()],'<<<',store_id,'>>>',
+                        text[mo.end():]])
+        frags = fragmentize(text,wiki_elements,remove_escapes=remove_escapes,fill_stored=fill_stored)
+        return frags
+
+
+    def re_string(self):
+        if isinstance(self.token,str):
+            content = '(.+?)'
+            end = '(' + esc_neg_look + re.escape(self.token) + r'|$)'
+            return esc_neg_look + re.escape(self.token) + content + end
+        else:
+            content = '(.*?))'
+            macro_name = r'\~(([a-z]([a-z-]*[a-z])?)'
+            return esc_neg_look + re.escape(self.token[0]) + macro_name + \
+                   content + esc_neg_look + re.escape(self.token[1])
+
+    def _build(self,mo):
+        if self.func:
+            value = self.func(mo.group(2),mo.group(4))
+        else:
+            value = None
+        if value is None:
+            return bldr.tag(self.token[0] + mo.group(1) + self.token[1])
+        elif isinstance(value,str):
+            return value
+        else:
+            return [value]
+        
+##        if self.tag:
+##            return bldr.tag.__getattr__(self.tag)(
+##                   fragmentize(mo.group(1), self.child_tags,
+##                               remove_escapes=False,fill_stored=False))
+##        else:
+##            return bldr.tag(self.token[0] + mo.group(1) + self.token[1])
+
+    
 class RawLink(InlineElement):
     
     """Used to find raw urls in wiki text and build xml from them.
@@ -388,13 +455,13 @@ class ListItem(WikiElement):
     >>> list_item = ListItem('li',[],'#*')
     >>> mo = list_item.regexp.search("*one\n**one.1\n**one.2\n*two\n")
     >>> mo.group(2)
-    'one\n**one.1\n**one.2\n'
+    'one\n**one.1\n**one.2'
     >>> mo.group(0)
-    '*one\n**one.1\n**one.2\n'
+    '*one\n**one.1\n**one.2'
     
     """
     
-    append_newline = True
+    append_newline = False
 
     def __init__(self, tag, child_tags, list_tokens):
         """Constructor for list items.
@@ -409,12 +476,12 @@ class ListItem(WikiElement):
         self.regexp = re.compile(self.re_string(),re.DOTALL)
 
     def re_string(self):
-        whitespace = r'\s*'
+        whitespace = r'[ \t]*'
         item_start = '([*#]+)'
-        rest_of_item = r'(.*?\n)'
+        rest_of_item = r'(.*?)\n?'
         start_of_same_level_item = r'\1(?![*#])'
-        look_ahead = '(?=(' + whitespace + start_of_same_level_item + '|$))'
-        return whitespace + item_start + whitespace + '?' + \
+        look_ahead = r'(?=(\n' + whitespace + start_of_same_level_item + '|$))'
+        return whitespace + item_start + whitespace + \
                rest_of_item + look_ahead
 
     def _build(self,mo):
@@ -782,7 +849,7 @@ class LineBreak(InlineElement):
         self.regexp = re.compile(self.re_string(),re.DOTALL)
 
     def re_string(self):
-        return re.escape(self.token)
+        return esc_neg_look + re.escape(self.token)
     
     def _build(self,mo):
         return bldr.tag.__getattr__(self.tag)()
