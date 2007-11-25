@@ -1,6 +1,8 @@
 Version 0.3.2 (Nov ?? 2007)
 ---------------------------
 
+ * line breaks (\\) can now be escaped with a tilde
+ * added macro support (<<macro arg_sring>>)
  * added support for adding a class attribute to
    wiki links (e.g., if the page doesn't exist).
 

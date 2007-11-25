@@ -44,7 +44,7 @@ class Creole10(object):
           macro_func
             If supplied, this fuction will be called when macro markup is found. The
             function must accept the macro name as its first argument and the
-            argument string (indluding any delimter) as the second. The function may
+            argument string (including any delimter) as the second. The function may
             return a string (which will be subject to further wiki processing) or a
             Genshi Stream object. Of None is returned, the markup will be rendered
             unchanged.
@@ -129,7 +129,7 @@ class Creole10(object):
             self.parse_order = [self.macro,self.pre,self.blank_line,self.table]+ headings\
                            + [self.hr,self.dl,self.ul,self.ol,self.p]
         else:
-            self.parse_order = [self.pre,self.blank_line,self.table]+ headings\
+            self.parse_order = [self.macro,self.pre,self.blank_line,self.table]+ headings\
                            + [self.hr,self.ul,self.ol,self.p]
         """These are the wiki elements that are searched at the top level of text to be
         processed. The order matters because elements later in the list need not have any
