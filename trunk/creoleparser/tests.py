@@ -143,35 +143,35 @@ even <a href="http://www.wikicreole.org/wiki/This_Page_Here">This Page Here</a> 
 As is <a href="http://wikiohana.net/cgi-bin/wiki.pl/Home">This one</a>.</p>
 """
 
-    print text2html(r"""
-* this is list **item one**
-** item one - //subitem 1//
-### one **http://www.google.com**
-### two [[Creole1.0]]
-### three\\covers\\many\\lines
-** //subitem 2//
-### what is this?
-### no idea?
-**** A
-**** B
-### And lots of
-drivel here
-** //subitem 3//
-*** huh?
-* **item two
-* **item three**
-# new ordered list, item 1
-# item 2
-## sub item
-##sub item
-""")
+##    print text2html(r"""
+##* this is list **item one**
+##** item one - //subitem 1//
+##### one **http://www.google.com**
+##### two [[Creole1.0]]
+##### three\\covers\\many\\lines
+##** //subitem 2//
+##### what is this?
+##### no idea?
+##**** A
+##**** B
+##### And lots of
+##drivel here
+##** //subitem 3//
+##*** huh?
+##* **item two
+##* **item three**
+### new ordered list, item 1
+### item 2
+#### sub item
+####sub item
+##""")
 
     assert text2html(r"""
 * this is list **item one**
 ** item one - //subitem 1//
 ### one **http://www.google.com**
 ### two [[Creole1.0]]
-### three\\covers\\many\\lines
+### three\\covers\\many~\\lines
 ** //subitem 2//
 ### what is this?
 ### no idea?
@@ -192,7 +192,7 @@ drivel here
 <ul><li>item one - <em>subitem 1</em>
 <ol><li>one <strong><a href="http://www.google.com">http://www.google.com</a></strong></li>
 <li>two <a href="http://www.wikicreole.org/wiki/Creole1.0">Creole1.0</a></li>
-<li>three<br />covers<br />many<br />lines</li></ol></li>
+<li>three<br />covers<br />many\\\\lines</li></ol></li>
 <li><em>subitem 2</em>
 <ol><li>what is this?</li>
 <li>no idea?

@@ -72,7 +72,7 @@ class WikiElement(object):
         """
         pass
 
-    def _process(self, mo, text, wiki_elements, remove_escapes=True,fill_stored=True):
+    def _process(self, mo, text, wiki_elements):
         """Returns genshi Fragments (Elements and text)
 
         This is mainly for block level markup. See InlineElement
@@ -81,8 +81,7 @@ class WikiElement(object):
         frags = []
         # call again for leading text and extend the result list 
         if mo.start():
-            frags.extend(fragmentize(text[:mo.start()],wiki_elements[1:],
-                                     remove_escapes=remove_escapes,fill_stored=fill_stored))
+            frags.extend(fragmentize(text[:mo.start()],wiki_elements[1:]))
         # append the found wiki element to the result list
         frags.append(self._build(mo))
         # make the source output easier to read
@@ -90,8 +89,7 @@ class WikiElement(object):
             frags.append('\n')
         # call again for trailing text and extend the result list
         if mo.end() < len(text):
-            frags.extend(fragmentize(text[mo.end():],wiki_elements,
-                                     remove_escapes=remove_escapes,fill_stored=fill_stored))
+            frags.extend(fragmentize(text[mo.end():],wiki_elements))
         return frags
         
     def __repr__(self):
@@ -132,19 +130,20 @@ class InlineElement(WikiElement):
             content = '(.+?)'
             return esc_neg_look + re.escape(self.token[0]) + content + esc_neg_look + re.escape(self.token[1])
 
-    def _process(self, mo, text, wiki_elements,remove_escapes=True,fill_stored=True):
+    def _process(self, mo, text, wiki_elements):
         """Returns genshi Fragments (Elements and text)"""
         processed = self._build(mo)
-        store_id = str(id(processed)) # str(hash(processed))
+        store_id = str(id(processed)) 
         element_store.d[store_id] = processed
         text = ''.join([text[:mo.start()],'<<<',store_id,'>>>',
                         text[mo.end():]])
-        frags = fragmentize(text,wiki_elements,remove_escapes=remove_escapes,fill_stored=fill_stored)
+        frags = fragmentize(text,wiki_elements)
         return frags
 
 
 
-class Macro(InlineElement):
+class Macro(WikiElement):
+    """Finds macros"""
 
     def __init__(self, tag, token, child_tags,func):
         super(Macro,self).__init__(tag,token , child_tags)
@@ -153,7 +152,6 @@ class Macro(InlineElement):
         self.encode_regexp = re.compile(self.encode_pattern())
 
     def encode(self,text):
-        #return text
         return self.encode_regexp.sub(r'\1~\2',text)
 
     def encode_pattern(self):
@@ -162,7 +160,7 @@ class Macro(InlineElement):
         return esc_neg_look + '(' +re.escape(self.token[0]) + ')(' + macro_name + \
                    content + esc_neg_look + re.escape(self.token[1]) + ')'
 
-    def _process(self, mo, text, wiki_elements,remove_escapes=True,fill_stored=True):
+    def _process(self, mo, text, wiki_elements):
         """Returns genshi Fragments (Elements and text)"""
         processed = self._build(mo)
         if isinstance(processed, str):
@@ -173,7 +171,7 @@ class Macro(InlineElement):
             element_store.d[store_id] = processed
             text = ''.join([text[:mo.start()],'<<<',store_id,'>>>',
                         text[mo.end():]])
-        frags = fragmentize(text,wiki_elements,remove_escapes=remove_escapes,fill_stored=fill_stored)
+        frags = fragmentize(text,wiki_elements)
         return frags
 
 

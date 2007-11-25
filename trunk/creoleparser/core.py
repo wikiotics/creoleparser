@@ -35,7 +35,7 @@ def fill_from_store(text):
         frags = [text]
     return frags
 
-def fragmentize(text,wiki_elements, remove_escapes = True, fill_stored = True):
+def fragmentize(text,wiki_elements, remove_escapes = True):
 
     """Takes a string of wiki markup and outputs a list of genshi
     Fragments (Elements and strings).
@@ -61,10 +61,7 @@ def fragmentize(text,wiki_elements, remove_escapes = True, fill_stored = True):
     if not wiki_elements:
         if remove_escapes:
             text = esc_to_remove.sub('',text)
-        if fill_stored:
-            frags = fill_from_store(text)
-        else:
-            frags = [text]
+        frags = fill_from_store(text)
         return frags
 
     # If the first supplied wiki_element is actually a list of elements, \
@@ -85,9 +82,9 @@ def fragmentize(text,wiki_elements, remove_escapes = True, fill_stored = True):
          
     frags = []
     if mo:
-        frags = wiki_element._process(mo, text, wiki_elements,remove_escapes=remove_escapes,fill_stored=fill_stored)
+        frags = wiki_element._process(mo, text, wiki_elements)
     else:
-        frags = fragmentize(text,wiki_elements[1:],remove_escapes=remove_escapes,fill_stored=fill_stored)
+        frags = fragmentize(text,wiki_elements[1:])
 
     return frags
 
@@ -148,17 +145,14 @@ def preprocess(text, dialect):
     text = ''.join([text.rstrip(),'\n']) 
     text = ''.join(encode_macros(text,[dialect.pre,dialect.no_wiki],
                               [dialect.macro]))
-
-    #print pre_escape(text,[dialect.pre,dialect.no_wiki],
-    #                          [dialect.macro])
-
-    #print text
     return text
 
 
 def encode_macros(text, elements_to_skip=None,
                elements_to_process=None):
-    """This is used to escape certain markup before parsing. NOT USED.
+    """This is used to flag macros that aren't in a nowiki
+    block before further before parsing. Only flagged
+    macros will be processed later.
 
     :parameters:
       text
@@ -167,19 +161,13 @@ def encode_macros(text, elements_to_skip=None,
         these wiki elements will not be processed.
       elements_to_process
         these wiki elements will have an escape added according to
-        their ``esc_regexp``
+        their ``encode`` method
     """
 
     if not elements_to_skip:
         for element in elements_to_process:
             text = element.encode(text)
         return [text]
-
-##    if not elements_to_skip:
-##        frags = []
-##        for element in elements_to_process:
-##            frags.extend(fragmentize(text,[element],remove_escapes=False,fill_stored=False))
-##        return frags
 
     mo = elements_to_skip[0].regexp.search(text)
     parts = []
