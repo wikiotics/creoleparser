@@ -7,6 +7,17 @@ wiki markup language. The specification of that can be found at http://wikicreol
 
 ===[[http://creoleparser.x10hosting.com/cgi-bin/creolepiki/CreoleparserSandBox|Sandbox]]
 
+==Features/Notes
+
+* //Creoleparser// is a complete [[http://wikicreole.org/wiki/Creole1.0|Creole 1.0]] implementation, plus
+optional additions. See the complete list of markup [[http://creoleparser.x10hosting.com/cgi-bin/creolepiki/CheatSheetPlus|here]].
+* Uses [[http://genshi.edgewall.org|Genshi]] - the //Python toolkit for generation of output for the web// 
+** guarantees valid xml output by default
+** can instantly switch between HTML 4.01 and XHTML 1.0 (or other formats)
+** [[http://genshi.edgewall.org/|many other useful features]]
+* Allows mixing of ordered and unordered lists (using a syntax similar to Confluence). Near the bottom of the source file are test cases - including mixed lists.
+* Macro support. [[http://creoleparser.x10hosting.com/cgi-bin/creolepiki/CheatSheetPlus|This page]] uses some simple macros supplied by the wiki engine.
+
 ==Installation Instructions==
 
 //You need [[http://www.python.org|Python]] 2.4 or higher.// 
@@ -63,6 +74,13 @@ If you want pure Creole 1.0 (i.e., no additions), use creole2html() instead of t
 Would be appreciated, do it [[http://code.google.com/p/creoleparser/wiki/QuestionAndComments|here]], or email me directly <stephen h day at gm~**l com> :-)
 
 ==Changelog
+
+===Version 0.3.2 (Nov ?? 2007)
+
+ * line breaks (~\\) can now be escaped with a tilde
+ * added macro support (<<macro arg_sring>>)
+ * added support for adding a class attribute to
+   wiki links (e.g., if the page doesn't exist).
 
 ===Version 0.3.1 (Nov 16 2007)
 

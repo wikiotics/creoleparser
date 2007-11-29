@@ -9,12 +9,12 @@ except ImportError:
 
 
 setup(name='Creoleparser',
-      version='0.3.1',
+      version='0.3.2',
       install_requires=['Genshi>=0.4'],
       description='Parser for the Creole common wiki markup language',
       author='Stephen Day',
       author_email='stephen.h.day@gm**l.com',
-      url='http://pages.infinit.net/shday/Creole/instructions.html',
+      url='http://pages.infinit.net/shday/Creoleparser/index.html',
       packages=['creoleparser'],
       license = 'MIT',
       zip_safe = False,
