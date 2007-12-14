@@ -18,24 +18,24 @@ escape_char = '~'
 esc_neg_look = '(?<!' + re.escape(escape_char) + ')'
 esc_to_remove = re.compile(''.join([r'(?<!',re.escape(escape_char),')',re.escape(escape_char),r'(?!([ \n]|$))']))
 place_holder_re = re.compile(r'<<<(-?\d+?)>>>')
-element_store = threading.local()
+#element_store = threading.local()
 
-def fill_from_store(text):
+def fill_from_store(text,element_store):
     frags = []
     mo = place_holder_re.search(text)
     if mo:
         if mo.start():
             frags.append(text[:mo.start()])
         #print mo.group(1), element_store.d.get(mo.group(1),'Empty')
-        frags.append(element_store.d.get(mo.group(1),
+        frags.append(element_store.get(mo.group(1),
                        mo.group(1).join(['<<<','>>>'])))
         if mo.end() < len(text):
-            frags.extend(fill_from_store(text[mo.end():]))
+            frags.extend(fill_from_store(text[mo.end():],element_store))
     else:
         frags = [text]
     return frags
 
-def fragmentize(text,wiki_elements, remove_escapes = True):
+def fragmentize(text,wiki_elements, element_store,remove_escapes=True):
 
     """Takes a string of wiki markup and outputs a list of genshi
     Fragments (Elements and strings).
@@ -61,7 +61,7 @@ def fragmentize(text,wiki_elements, remove_escapes = True):
     if not wiki_elements:
         if remove_escapes:
             text = esc_to_remove.sub('',text)
-        frags = fill_from_store(text)
+        frags = fill_from_store(text,element_store)
         return frags
 
     # If the first supplied wiki_element is actually a list of elements, \
@@ -82,9 +82,9 @@ def fragmentize(text,wiki_elements, remove_escapes = True):
          
     frags = []
     if mo:
-        frags = wiki_element._process(mo, text, wiki_elements)
+        frags = wiki_element._process(mo, text, wiki_elements, element_store)
     else:
-        frags = fragmentize(text,wiki_elements[1:])
+        frags = fragmentize(text,wiki_elements[1:],element_store)
 
     return frags
 
@@ -112,24 +112,24 @@ class Parser(object):
         self.strip_whitespace = strip_whitespace
         self.encoding=encoding
 
-    def generate(self,text):
+    def generate(self,text,element_store={}):
         """Returns a Genshi Stream."""
         text = preprocess(text,self.dialect)
-        return bldr.tag(fragmentize(text,self.dialect.parse_order)).generate()
+        return bldr.tag(fragmentize(text,self.dialect.parse_order,element_store)).generate()
 
-    def render(self,text,**kwargs):
+    def render(self,text,element_store={},**kwargs):
         """Returns final output string (e.g., xhtml)
 
         :parameters:
           See Genshi documentation for additional keyword arguments.
         """
-        return self.generate(text).render(method=self.method,strip_whitespace=self.strip_whitespace,
+        return self.generate(text,element_store).render(method=self.method,strip_whitespace=self.strip_whitespace,
                                           encoding=self.encoding,**kwargs)
 
-    def __call__(self,text):
+    def __call__(self,text,element_store={}):
         """Wrapper for the render method. Returns final output string."""
-        element_store.d = {}
-        return self.render(text)
+        #element_store.d = {}
+        return self.render(text,element_store)
 
 def preprocess(text, dialect):
     """This should generally be called before fragmentize().

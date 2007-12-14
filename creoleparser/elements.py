@@ -10,7 +10,7 @@ import re
 
 import genshi.builder as bldr
 
-from core import escape_char, esc_neg_look, fragmentize, element_store
+from core import escape_char, esc_neg_look, fragmentize #, element_store
 
 
 __docformat__ = 'restructuredtext en'
@@ -47,7 +47,7 @@ class WikiElement(object):
         self.token = token
         self.child_tags = child_tags
                 
-    def _build(self,mo):
+    def _build(self,mo,element_store):
         """Returns a genshi Element that has ``self.tag`` as the
         outermost tag.
 
@@ -59,7 +59,8 @@ class WikiElement(object):
             self.regexp.search(s) 
         """
         return bldr.tag.__getattr__(self.tag)(fragmentize(mo.group(1),
-                                                          self.child_tags))
+                                                          self.child_tags,
+                                                          element_store))
 
     def re_string(self):
         """The regular expression pattern that is compiled into ``self.regexp``.
@@ -72,7 +73,7 @@ class WikiElement(object):
         """
         pass
 
-    def _process(self, mo, text, wiki_elements):
+    def _process(self, mo, text, wiki_elements,element_store):
         """Returns genshi Fragments (Elements and text)
 
         This is mainly for block level markup. See InlineElement
@@ -81,15 +82,17 @@ class WikiElement(object):
         frags = []
         # call again for leading text and extend the result list 
         if mo.start():
-            frags.extend(fragmentize(text[:mo.start()],wiki_elements[1:]))
+            frags.extend(fragmentize(text[:mo.start()],wiki_elements[1:],
+                                     element_store))
         # append the found wiki element to the result list
-        frags.append(self._build(mo))
+        frags.append(self._build(mo,element_store))
         # make the source output easier to read
         if self.append_newline:
             frags.append('\n')
         # call again for trailing text and extend the result list
         if mo.end() < len(text):
-            frags.extend(fragmentize(text[mo.end():],wiki_elements))
+            frags.extend(fragmentize(text[mo.end():],wiki_elements,
+                                     element_store))
         return frags
         
     def __repr__(self):
@@ -130,14 +133,14 @@ class InlineElement(WikiElement):
             content = '(.+?)'
             return esc_neg_look + re.escape(self.token[0]) + content + esc_neg_look + re.escape(self.token[1])
 
-    def _process(self, mo, text, wiki_elements):
+    def _process(self, mo, text, wiki_elements, element_store):
         """Returns genshi Fragments (Elements and text)"""
-        processed = self._build(mo)
+        processed = self._build(mo,element_store)
         store_id = str(id(processed)) 
-        element_store.d[store_id] = processed
+        element_store[store_id] = processed
         text = ''.join([text[:mo.start()],'<<<',store_id,'>>>',
                         text[mo.end():]])
-        frags = fragmentize(text,wiki_elements)
+        frags = fragmentize(text,wiki_elements,element_store)
         return frags
 
 
@@ -160,18 +163,18 @@ class Macro(WikiElement):
         return esc_neg_look + '(' +re.escape(self.token[0]) + ')(' + macro_name + \
                    content + esc_neg_look + re.escape(self.token[1]) + ')'
 
-    def _process(self, mo, text, wiki_elements):
+    def _process(self, mo, text, wiki_elements,element_store):
         """Returns genshi Fragments (Elements and text)"""
-        processed = self._build(mo)
+        processed = self._build(mo,element_store)
         if isinstance(processed, str):
             text = ''.join([text[:mo.start()],processed,
                         text[mo.end():]])
         else:
             store_id = str(id(processed)) # str(hash(processed))
-            element_store.d[store_id] = processed
+            element_store[store_id] = processed
             text = ''.join([text[:mo.start()],'<<<',store_id,'>>>',
                         text[mo.end():]])
-        frags = fragmentize(text,wiki_elements)
+        frags = fragmentize(text,wiki_elements,element_store)
         return frags
 
 
@@ -186,7 +189,7 @@ class Macro(WikiElement):
             return esc_neg_look + re.escape(self.token[0]) + macro_name + \
                    content + esc_neg_look + re.escape(self.token[1])
 
-    def _build(self,mo):
+    def _build(self,mo,element_store):
         if self.func:
             value = self.func(mo.group(2),mo.group(4))
         else:
@@ -214,7 +217,7 @@ class RawLink(InlineElement):
     >>> mo = raw_link.regexp.search(" a http://www.google.com url ")
     >>> raw_link.href(mo)
     'http://www.google.com'
-    >>> raw_link._build(mo).generate().render()
+    >>> raw_link._build(mo,{}).generate().render()
     '<a href="http://www.google.com">http://www.google.com</a>'
     
     """
@@ -232,9 +235,9 @@ class RawLink(InlineElement):
         look_ahead = r'(?=([,.?!:;"\']|\*\*|//)?(\s|$))' 
         return escape + protocol + rest_of_url + look_ahead
 
-    def _build(self,mo):
+    def _build(self,mo,element_store):
         if (not mo.group(1)) and (mo.group(3) in self.linking_protocols):
-            return bldr.tag.__getattr__(self.tag)(self.alias(mo),
+            return bldr.tag.__getattr__(self.tag)(self.alias(mo,element_store),
                                               href=self.href(mo))
         else:
             return self.href(mo)
@@ -243,7 +246,7 @@ class RawLink(InlineElement):
         """Returns the string for the href attribute of the Element."""
         return mo.group(2)
 
-    def alias(self,mo):
+    def alias(self,mo,element_store):
         """Returns the string for the content of the Element."""
         return self.href(mo)
 
@@ -258,7 +261,7 @@ class URLLink(WikiElement):
     >>> mo = url_link.regexp.search(" http://www.google.com| here ")
     >>> url_link.href(mo)
     'http://www.google.com'
-    >>> url_link._build(mo).generate().render()
+    >>> url_link._build(mo,{}).generate().render()
     '<a href="http://www.google.com">here</a>'
     
     """
@@ -277,20 +280,20 @@ class URLLink(WikiElement):
         #look_ahead = r'(?=([,.?!:;"\']|\*\*|//)?(\s|$))' 
         return protocol + rest_of_url + alias
 
-    def _build(self,mo):
-        return bldr.tag.__getattr__(self.tag)(self.alias(mo),
+    def _build(self,mo,element_store):
+        return bldr.tag.__getattr__(self.tag)(self.alias(mo,element_store),
                                               href=self.href(mo))
        
     def href(self,mo):
         """Returns the string for the href attribute of the Element."""
         return mo.group(1)
 
-    def alias(self,mo):
+    def alias(self,mo,element_store):
         """Returns the string for the content of the Element."""
         if not mo.group(4):
             return self.href(mo)
         else:
-            return fragmentize(mo.group(4),self.child_tags)
+            return fragmentize(mo.group(4),self.child_tags,element_store)
 
 class InterWikiLink(WikiElement):
 
@@ -306,7 +309,7 @@ class InterWikiLink(WikiElement):
     >>> mo = interwiki_link.regexp.search(" somewiki:Home Page|steve ")
     >>> interwiki_link.href(mo)
     'http://somewiki.org/Home_Page'
-    >>> interwiki_link.alias(mo)
+    >>> interwiki_link.alias(mo,{})
     ['steve']
     
     """
@@ -335,17 +338,17 @@ class InterWikiLink(WikiElement):
             return None
         return base_url + mo.group(2).replace(' ',self.space_char)
 
-    def _build(self,mo):
+    def _build(self,mo,element_store):
         if not self.href(mo):
             return '[[' + mo.group(0) + ']]'
-        return bldr.tag.__getattr__(self.tag)(self.alias(mo),
+        return bldr.tag.__getattr__(self.tag)(self.alias(mo,element_store),
                                               href=self.href(mo))
-    def alias(self,mo):
+    def alias(self,mo,element_store):
         """Returns the string for the content of the Element."""
         if not mo.group(5):
             return ''.join([mo.group(1),self.delimiter1,mo.group(2)])
         else:
-            return fragmentize(mo.group(5),self.child_tags)
+            return fragmentize(mo.group(5),self.child_tags,element_store)
 
 
 
@@ -360,7 +363,7 @@ class WikiLink(WikiElement):
     >>> mo = wiki_link.regexp.search(" Home Page |Home")
     >>> wiki_link.href(mo)
     'http://somewiki.org/Home_Page'
-    >>> wiki_link.alias(mo)
+    >>> wiki_link.alias(mo,{})
     ['Home']
     
     """
@@ -384,21 +387,21 @@ class WikiLink(WikiElement):
     def href(self,mo):
         return self.base_url + mo.group(1).replace(' ',self.space_char)
 
-    def _build(self,mo):
+    def _build(self,mo,element_store):
         if self.class_func:
             the_class = self.class_func(mo.group(1))
         else:
             the_class = None
-        return bldr.tag.__getattr__(self.tag)(self.alias(mo),
+        return bldr.tag.__getattr__(self.tag)(self.alias(mo,element_store),
                                               href=self.href(mo),
                                               class_=the_class)
     
-    def alias(self,mo):
+    def alias(self,mo,element_store):
         """Returns the string for the content of the Element."""
         if not mo.group(3):
             return mo.group(1)
         else:
-            return fragmentize(mo.group(4),self.child_tags)
+            return fragmentize(mo.group(4),self.child_tags,element_store)
 
 
 
@@ -482,9 +485,10 @@ class ListItem(WikiElement):
         return whitespace + item_start + whitespace + \
                rest_of_item + look_ahead
 
-    def _build(self,mo):
+    def _build(self,mo,element_store):
         return bldr.tag.__getattr__(self.tag)(fragmentize(mo.group(2),
-                                                          self.child_tags))
+                                                          self.child_tags,
+                                                          element_store))
 
 
 class NestedList(WikiElement):
@@ -696,9 +700,9 @@ class Link(InlineElement):
         super(Link,self).__init__(tag,token , child_tags)
         self.regexp = re.compile(self.re_string())
 
-    def _build(self,mo):
+    def _build(self,mo,element_store):
 
-        link = fragmentize(mo.group(1),self.child_tags)
+        link = fragmentize(mo.group(1),self.child_tags,element_store)
 
         if link:
             return bldr.tag(link)
@@ -711,7 +715,7 @@ class Image(InlineElement):
 
     >>> img = Image('img',('{{','}}'),[], delimiter='|')
     >>> mo = img.regexp.search('{{ picture.jpg | An image of a house }}')
-    >>> img._build(mo).generate().render()
+    >>> img._build(mo,{}).generate().render()
     '<img src="picture.jpg" alt="An image of a house"/>'
 
     """
@@ -722,7 +726,7 @@ class Image(InlineElement):
         self.delimiter = delimiter
         self.src_regexp = re.compile(r'^\s*(\S+)\s*$')
 
-    def _build(self,mo):
+    def _build(self,mo,element_store):
         body = mo.group(1).split(self.delimiter,1)
         src_mo = self.src_regexp.search(body[0])
         if not src_mo:
@@ -750,13 +754,15 @@ class NoWikiElement(InlineElement):
         super(NoWikiElement,self).__init__(tag,token , child_tags)
         self.regexp = re.compile(self.re_string(),re.DOTALL) 
 
-    def _build(self,mo):
+    def _build(self,mo,element_store):
         if self.tag:
             return bldr.tag.__getattr__(self.tag)(
                    fragmentize(mo.group(1), self.child_tags,
+                               element_store,
                                remove_escapes=False))
         else:
             return bldr.tag(fragmentize(mo.group(1),self.child_tags,
+                                        element_store,
                                         remove_escapes=False))
 
     def re_string(self):
@@ -801,10 +807,12 @@ class PreBlock(BlockElement):
         else:
             return r'^ (\s*?' + re.escape(self.token[1]) + r'\s*?\n)'
 
-    def _build(self,mo):
+    def _build(self,mo,element_store):
         match = self.regexp2.sub(r'\1',mo.group(1))
         
-        return bldr.tag.__getattr__(self.tag)(fragmentize(match,self.child_tags,remove_escapes=False))
+        return bldr.tag.__getattr__(self.tag)(
+            fragmentize(match,self.child_tags,
+                        element_store,remove_escapes=False))
 
 
 class LoneElement(BlockElement):
@@ -818,7 +826,7 @@ class LoneElement(BlockElement):
     def re_string(self):
         return r'^(\s*?' + re.escape(self.token) + r'\s*?\n)'
 
-    def _build(self,mo):
+    def _build(self,mo,element_store):
         return bldr.tag.__getattr__(self.tag)()
 
  
@@ -833,7 +841,7 @@ class BlankLine(WikiElement):
     def re_string(self):
         return r'^(\s*\n)+'
      
-    def _build(self,mo):
+    def _build(self,mo,element_store):
         return None
 
     
@@ -849,7 +857,7 @@ class LineBreak(InlineElement):
     def re_string(self):
         return esc_neg_look + re.escape(self.token)
     
-    def _build(self,mo):
+    def _build(self,mo,element_store):
         return bldr.tag.__getattr__(self.tag)()
 
 
