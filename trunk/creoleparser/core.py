@@ -7,7 +7,7 @@
 #
 
 import re
-import threading
+#import threading
 
 import genshi.builder as bldr
 
