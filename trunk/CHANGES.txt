@@ -1,3 +1,9 @@
+Version 0.3.3 (Dec ?? 2007)
+---------------------------
+
+ * added support for macros with bodies (<<macro arg_string>>the body<</macro>>)
+ * removed use of global element_store and thread.local()
+
 Version 0.3.2 (Nov ?? 2007)
 ---------------------------
 
@@ -5,7 +11,6 @@ Version 0.3.2 (Nov ?? 2007)
  * added macro support (<<macro arg_sring>>)
  * added support for adding a class attribute to
    wiki links (e.g., if the page doesn't exist).
-
 
 Version 0.3.1 (Nov 16 2007)
 ---------------------------
@@ -16,7 +21,6 @@ Version 0.3.1 (Nov 16 2007)
  * links refactored
  * removed store_id_seq in favor of id()
  * made element_store thread.local()
-
 
 Version 0.3 (Nov 10 2007)
 -------------------------
