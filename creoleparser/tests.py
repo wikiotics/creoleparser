@@ -380,11 +380,13 @@ As is [[Ohana:Home|This one]].</p>
 
 def test_marco_func():
 
-    def a_macro_func(macro_name, arg_string):
+    def a_macro_func(macro_name, arg_string,body):
         if macro_name == 'steve':
             return '**' + arg_string + '**'
         if macro_name == 'luca':
             return bldr.tag.strong(arg_string).generate()
+        if macro_name == 'mateo':
+            return bldr.tag.em(body).generate()
         
     dialect = Creole10(
         wiki_links_base_url='http://creoleparser.x10hosting.com/cgi-bin/creolepiki/',
@@ -400,6 +402,7 @@ def test_marco_func():
 ##even [[This Page Here]] is <<steve the steve macro!>> nice like [[New Page|this]].\\
 ##This is the <<sue sue macro!>> and this is the <<luca luca macro!>>.\\
 ##Don't touch {{{<<steve this!>>}}}.\\
+##<<mateo>>A body!<</mateo>>\\
 ##As is [[Ohana:Home|This one]].""")
 
     assert parser(r"""
@@ -407,14 +410,35 @@ Go to [[http://www.google.com]], it is [[http://www.google.com| <<luca Google>>]
 even [[This Page Here]] is <<steve the steve macro!>> nice like [[New Page|this]].\\
 This is the <<sue sue macro!>> and this is the <<luca luca macro!>>.\\
 Don't touch {{{<<steve this!>>}}}.\\
+<<mateo>>A body!<</mateo>>\\
 As is [[Ohana:Home|This one]].""") == """\
 <p>Go to <a href="http://www.google.com">http://www.google.com</a>, it is <a href="http://www.google.com"><strong> Google</strong></a><br />
 even <a href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/ThisPageHere">This Page Here</a> is <strong> the steve macro!</strong> nice like <a href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/NewPage">this</a>.<br />
 This is the &lt;&lt;sue sue macro!&gt;&gt; and this is the <strong> luca macro!</strong>.<br />
 Don't touch <span>&lt;&lt;steve this!&gt;&gt;</span>.<br />
+<em>A body!</em><br />
 As is [[Ohana:Home|This one]].</p>
 """
 
+##    print parser(r"""
+##Go to [[http://www.google.com]], it is [[http://www.google.com| <<luca Google>>]]\\
+##even [[This Page Here]] is <<steve the steve macro!>> nice like [[New Page|this]].\\
+##<<mateo>>This is the some random text
+##over two lines<</mateo>><<mila>>A body!<</mila>>\\
+##As is [[Ohana:Home|This one]].""")
+
+    assert parser(r"""
+Go to [[http://www.google.com]], it is [[http://www.google.com| <<luca Google>>]]\\
+even [[This Page Here]] is <<steve the steve macro!>> nice like [[New Page|this]].\\
+<<mateo>>This is the some random text
+over two lines<</mateo>><<mila>>A body!<</mila>>\\
+As is [[Ohana:Home|This one]].""") == """\
+<p>Go to <a href="http://www.google.com">http://www.google.com</a>, it is <a href="http://www.google.com"><strong> Google</strong></a><br />
+even <a href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/ThisPageHere">This Page Here</a> is <strong> the steve macro!</strong> nice like <a href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/NewPage">this</a>.<br />
+<em>This is the some random text
+over two lines</em>&lt;&lt;mila&gt;&gt;A body!&lt;&lt;/mila&gt;&gt;<br />
+As is [[Ohana:Home|This one]].</p>
+"""
 
 
 def _test():

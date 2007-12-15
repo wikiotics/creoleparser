@@ -43,14 +43,19 @@ class Creole10(object):
             attribute is to be added, return no value (or None).
           macro_func
             If supplied, this fuction will be called when macro markup is found. The
-            function must accept the macro name as its first argument and the
-            argument string (including any delimter) as the second. The function may
-            return a string (which will be subject to further wiki processing) or a
-            Genshi Stream object. Of None is returned, the markup will be rendered
-            unchanged.
+            function must accept the macro name (lower_case and hyphens only) as its
+            first argument, the argument string (including any delimter) as the second,
+            and the macro body as it's third (will be None for a macro without a body).
+            The function may return a string (which will be subject to further wiki
+            processing) or a Genshi Stream object. If None is returned, the markup will
+            be rendered unchanged.
+            Examples:
+            1) <<macro-name arg_string>>the body<</macro-name>>
+            2) <<macro-name I have no body, just this argument string>>
                       
          """
         self.macro = Macro('',('<<','>>'),[],func=macro_func)
+        self.bodiedmacro = BodiedMacro('',('<<','>>'),[],func=macro_func)
         self.br = LineBreak('br', r'\\')
         self.raw_link = RawLink('a')
         self.url_link = URLLink('a','',[],delimiter = '|')
@@ -126,10 +131,10 @@ class Creole10(object):
         self.pre = PreBlock('pre',['{{{','}}}'])
 
         if use_additions:
-            self.parse_order = [self.macro,self.pre,self.blank_line,self.table]+ headings\
+            self.parse_order = [self.bodiedmacro,self.macro,self.pre,self.blank_line,self.table]+ headings\
                            + [self.hr,self.dl,self.ul,self.ol,self.p]
         else:
-            self.parse_order = [self.macro,self.pre,self.blank_line,self.table]+ headings\
+            self.parse_order = [self.bodiedmacro,self.macro,self.pre,self.blank_line,self.table]+ headings\
                            + [self.hr,self.ul,self.ol,self.p]
         """These are the wiki elements that are searched at the top level of text to be
         processed. The order matters because elements later in the list need not have any

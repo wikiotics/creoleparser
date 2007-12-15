@@ -158,9 +158,9 @@ class Macro(WikiElement):
         return self.encode_regexp.sub(r'\1~\2',text)
 
     def encode_pattern(self):
-        content = '(.+?)'
+        content = '(.*?)'
         macro_name = '([a-z]([a-z-]*[a-z])?)'
-        return esc_neg_look + '(' +re.escape(self.token[0]) + ')(' + macro_name + \
+        return esc_neg_look + '(' +re.escape(self.token[0]) + '/?)(' + macro_name + \
                    content + esc_neg_look + re.escape(self.token[1]) + ')'
 
     def _process(self, mo, text, wiki_elements,element_store):
@@ -179,19 +179,14 @@ class Macro(WikiElement):
 
 
     def re_string(self):
-        if isinstance(self.token,str):
-            content = '(.+?)'
-            end = '(' + esc_neg_look + re.escape(self.token) + r'|$)'
-            return esc_neg_look + re.escape(self.token) + content + end
-        else:
-            content = '(.*?))'
-            macro_name = r'\~(([a-z]([a-z-]*[a-z])?)'
-            return esc_neg_look + re.escape(self.token[0]) + macro_name + \
-                   content + esc_neg_look + re.escape(self.token[1])
+        content = '(.*?)'
+        macro_name = r'([a-z]([a-z-]*[a-z])?)'
+        return esc_neg_look + re.escape(self.token[0]) + r'\~(' + macro_name + \
+               content + ')' + esc_neg_look + re.escape(self.token[1])
 
     def _build(self,mo,element_store):
         if self.func:
-            value = self.func(mo.group(2),mo.group(4))
+            value = self.func(mo.group(2),mo.group(4),None)
         else:
             value = None
         if value is None:
@@ -208,6 +203,37 @@ class Macro(WikiElement):
 ##        else:
 ##            return bldr.tag(self.token[0] + mo.group(1) + self.token[1])
 
+class BodiedMacro(Macro):
+    """Finds macros with bodies"""
+
+    def __init__(self, tag, token, child_tags,func):
+        super(BodiedMacro,self).__init__(tag,token , child_tags,func)
+        self.func = func
+        self.regexp = re.compile(self.re_string(),re.DOTALL)
+
+    def re_string(self):
+        content = r'([ \S]*?)'
+        macro_name = r'([a-z]([a-z-]*[a-z])?)'
+        body = '(.+?)'
+        return esc_neg_look + re.escape(self.token[0]) + r'\~(' + macro_name + \
+               content + ')'+ esc_neg_look + re.escape(self.token[1]) + \
+               body + esc_neg_look + re.escape(self.token[0]) + \
+               r'/\~\2' + re.escape(self.token[1])
+
+    def _build(self,mo,element_store):
+        if self.func:
+            value = self.func(mo.group(2),mo.group(4),mo.group(5))
+        else:
+            value = None
+        if value is None:
+            return bldr.tag(self.token[0] + mo.group(1) + self.token[1]
+                            + mo.group(5) + self.token[0] + '/'
+                            + mo.group(1) + self.token[1])
+        elif isinstance(value,str):
+            return value
+        else:
+            return [value]
+        
     
 class RawLink(InlineElement):
     
