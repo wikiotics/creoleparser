@@ -75,9 +75,9 @@ Would be appreciated, do it [[http://code.google.com/p/creoleparser/wiki/Questio
 
 ==Changelog
 
-===Version 0.3.3 (Dec 15 2007)
+===Version 0.3.3 (Dec 16 2007)
 
- * changed api slightly for wiki_links_class_func (see Creole10 doc strings)
+ * changed api slightly for wiki_links_class_func (see source)
  * added suport for custom urls for wiki links
  * added support for macros with bodies (~<<macro arg_string>>the body~<</macro>>)
  * removed use of global element_store and thread.local()
@@ -85,7 +85,7 @@ Would be appreciated, do it [[http://code.google.com/p/creoleparser/wiki/Questio
 ===Version 0.3.2 (Nov 28 2007)
 
  * line breaks (~\\) can now be escaped with a tilde
- * added macro support (<<macro arg_sring>>)
+ * added macro support (<<macro arg_string>>)
  * added support for adding a class attribute to
    wiki links (e.g., if the page doesn't exist).
 

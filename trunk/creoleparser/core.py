@@ -152,9 +152,9 @@ def preprocess(text, dialect):
 
 def encode_macros(text, elements_to_skip=None,
                elements_to_process=None):
-    """This is used to flag macros that aren't in a nowiki
-    block before further before parsing. Only flagged
-    macros will be processed later.
+    """This is used to flag macros that aren't in a nowiki block
+    before further parsing. Only flagged macros will be processed
+    later.
 
     :parameters:
       text
