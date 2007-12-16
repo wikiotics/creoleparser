@@ -7,6 +7,7 @@
 #
 
 import re
+import urlparse
 
 import genshi.builder as bldr
 
@@ -362,7 +363,7 @@ class InterWikiLink(WikiElement):
         base_url = self.base_urls.get(mo.group(1))
         if not base_url:
             return None
-        return base_url + mo.group(2).replace(' ',self.space_char)
+        return urlparse.urljoin(base_url,mo.group(2).replace(' ',self.space_char))
 
     def _build(self,mo,element_store):
         if not self.href(mo):
@@ -385,7 +386,7 @@ class WikiLink(WikiElement):
     The search scope for these is only inside links.
 
     >>> wiki_link = WikiLink('a','',[],'|',base_url='http://somewiki.org/',
-    ...                      space_char='_',class_func=None)
+    ...                      space_char='_',class_func=None, path_func=None)
     >>> mo = wiki_link.regexp.search(" Home Page |Home")
     >>> wiki_link.href(mo)
     'http://somewiki.org/Home_Page'
@@ -395,12 +396,13 @@ class WikiLink(WikiElement):
     """
 
     def __init__(self, tag, token, child_tags,delimiter,
-                 base_url,space_char,class_func):
+                 base_url,space_char,class_func,path_func):
         super(WikiLink,self).__init__(tag, token, child_tags)
         self.delimiter = delimiter
         self.base_url = base_url
         self.space_char = space_char
         self.class_func = class_func
+        self.path_func = path_func
         self.regexp = re.compile(self.re_string())
 
     def re_string(self):
@@ -410,12 +412,19 @@ class WikiLink(WikiElement):
         return optional_spaces + page_name + optional_spaces + \
                alias
 
+    def page_name(self,mo):
+        return mo.group(1).replace(' ',self.space_char)
+    
     def href(self,mo):
-        return self.base_url + mo.group(1).replace(' ',self.space_char)
+        if self.path_func:
+            the_path = self.path_func(self.page_name(mo))
+        else:
+            the_path = self.page_name(mo)
+        return urlparse.urljoin(self.base_url, the_path)
 
     def _build(self,mo,element_store):
         if self.class_func:
-            the_class = self.class_func(mo.group(1))
+            the_class = self.class_func(self.page_name(mo))
         else:
             the_class = None
         return bldr.tag.__getattr__(self.tag)(self.alias(mo,element_store),

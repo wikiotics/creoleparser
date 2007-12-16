@@ -75,7 +75,14 @@ Would be appreciated, do it [[http://code.google.com/p/creoleparser/wiki/Questio
 
 ==Changelog
 
-===Version 0.3.2 (Nov ?? 2007)
+===Version 0.3.3 (Dec 15 2007)
+
+ * changed api slightly for wiki_links_class_func (see Creole10 doc strings)
+ * added suport for custom urls for wiki links
+ * added support for macros with bodies (~<<macro arg_string>>the body~<</macro>>)
+ * removed use of global element_store and thread.local()
+
+===Version 0.3.2 (Nov 28 2007)
 
  * line breaks (~\\) can now be escaped with a tilde
  * added macro support (<<macro arg_sring>>)

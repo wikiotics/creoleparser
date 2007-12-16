@@ -15,7 +15,8 @@ class Creole10(object):
     def __init__(self,wiki_links_base_url='http://',wiki_links_space_char='_',
                  interwiki_links_base_urls={},
                  no_wiki_monospace=True, use_additions=False,
-                 wiki_links_class_func=None, macro_func=None):
+                 wiki_links_class_func=None, macro_func=None,
+                 wiki_links_path_func=None):
         """Constructor for Creole10 oblects.
 
         Most attributes of new Creole objects are derived from the WikiElement
@@ -38,9 +39,15 @@ class Creole10(object):
           wiki_links_class_func
             If supplied, this fuction will be called when a wiki link is found and
             the return value (should be a string) will be added as a class attribute
-            of the cooresponding link. The function must accept the page name (as it
-            appears in the link, but stripped) as it's first argument. If no class
-            attribute is to be added, return no value (or None).
+            of the cooresponding link. The function must accept the page name (any
+            spaces will have been replaced THIS IS NEW IN 0.3.3) as it's only argument.
+            If no class attribute is to be added, return no value (or None).
+          wiki_links_path_func
+            If supplied, this fuction will be called when a wiki link is found and
+            the return value (should be a string) will be appended to the base_url
+            to form the href. The function must accept the page name (any
+            spaces will have been replaced) as it's only argument. Returning the
+            unaltered page name is equivalent to not supplying this function at all.
           macro_func
             If supplied, this fuction will be called when macro markup is found. The
             function must accept the macro name (lower_case and hyphens only) as its
@@ -63,7 +70,8 @@ class Creole10(object):
                                             base_urls=interwiki_links_base_urls,
                                             space_char='_')
         self.wiki_link = WikiLink('a','',[],delimiter = '|', base_url=wiki_links_base_url,
-                                  space_char=wiki_links_space_char,class_func=wiki_links_class_func)
+                                  space_char=wiki_links_space_char,class_func=wiki_links_class_func,
+                                  path_func=wiki_links_path_func)
         self.img = Image('img',('{{','}}'),[],delimiter='|')
         self.link = Link('',('[[',']]'),[self.url_link,self.interwiki_link,self.wiki_link])
         self.strong = InlineElement('strong', '**',[])
