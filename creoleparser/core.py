@@ -7,10 +7,8 @@
 #
 
 import re
-#import threading
 
 import genshi.builder as bldr
-
 
 __docformat__ = 'restructuredtext en'
 
@@ -18,7 +16,6 @@ escape_char = '~'
 esc_neg_look = '(?<!' + re.escape(escape_char) + ')'
 esc_to_remove = re.compile(''.join([r'(?<!',re.escape(escape_char),')',re.escape(escape_char),r'(?!([ \n]|$))']))
 place_holder_re = re.compile(r'<<<(-?\d+?)>>>')
-#element_store = threading.local()
 
 def fill_from_store(text,element_store):
     frags = []
@@ -112,23 +109,28 @@ class Parser(object):
         self.strip_whitespace = strip_whitespace
         self.encoding=encoding
 
-    def generate(self,text,element_store={}):
+    def generate(self,text,element_store=None):
         """Returns a Genshi Stream."""
+        if element_store is None:
+            element_store = {}
         text = preprocess(text,self.dialect)
         return bldr.tag(fragmentize(text,self.dialect.parse_order,element_store)).generate()
 
-    def render(self,text,element_store={},**kwargs):
+    def render(self,text,element_store=None,**kwargs):
         """Returns final output string (e.g., xhtml)
 
         :parameters:
           See Genshi documentation for additional keyword arguments.
         """
+        if element_store is None:
+            element_store = {}
         return self.generate(text,element_store).render(method=self.method,strip_whitespace=self.strip_whitespace,
                                           encoding=self.encoding,**kwargs)
 
-    def __call__(self,text,element_store={}):
+    def __call__(self,text,element_store=None):
         """Wrapper for the render method. Returns final output string."""
-        #element_store.d = {}
+        if element_store is None:
+            element_store = {}
         return self.render(text,element_store)
 
 def preprocess(text, dialect):

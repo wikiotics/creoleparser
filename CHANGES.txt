@@ -1,6 +1,8 @@
 Version 0.3.3 (Dec ?? 2007)
 ---------------------------
 
+ * changed api slightly for wiki_links_class_func (see source)
+ * added suport for custom urls for wiki links (wiki_links_path_func)
  * added support for macros with bodies (<<macro arg_string>>the body<</macro>>)
  * removed use of global element_store and thread.local()
 

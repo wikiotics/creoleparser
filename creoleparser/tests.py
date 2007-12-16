@@ -357,24 +357,38 @@ This block of ##text <<<23>>> be <<<hi>>>monospace <<<>>>## now""") == """\
 def test_wiki_links_class_func():
 
     def class_func(page_name):
-        if page_name == 'New Page':
+        if page_name == 'NewPage':
             return 'nonexistent'
+
+    def path_func(page_name):
+        if page_name == 'ThisPageHere':
+            path = 'Special/ThisPageHere'
+        else:
+            path = page_name
+        return path
+            
         
     dialect = Creole10(
         wiki_links_base_url='http://creoleparser.x10hosting.com/cgi-bin/creolepiki/',
         wiki_links_space_char='',
         use_additions=True,
         no_wiki_monospace=False,
-        wiki_links_class_func=class_func)
+        wiki_links_class_func=class_func,
+        wiki_links_path_func=path_func)
 
     parser = Parser(dialect)
+
+##    print parser(r"""
+##Go to [[http://www.google.com]], it is [[http://www.google.com| Google]]\\
+##even [[This Page Here]] is nice like [[New Page|this]].\\
+##As is [[Ohana:Home|This one]].""")
 
     assert parser(r"""
 Go to [[http://www.google.com]], it is [[http://www.google.com| Google]]\\
 even [[This Page Here]] is nice like [[New Page|this]].\\
 As is [[Ohana:Home|This one]].""") == """\
 <p>Go to <a href="http://www.google.com">http://www.google.com</a>, it is <a href="http://www.google.com">Google</a><br />
-even <a href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/ThisPageHere">This Page Here</a> is nice like <a class="nonexistent" href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/NewPage">this</a>.<br />
+even <a href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/Special/ThisPageHere">This Page Here</a> is nice like <a class="nonexistent" href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/NewPage">this</a>.<br />
 As is [[Ohana:Home|This one]].</p>
 """
 
