@@ -12,7 +12,7 @@ class Creole10(object):
 
     """This class contains most of the logic and specification of the markup."""
 
-    def __init__(self,wiki_links_base_url='http://',wiki_links_space_char='_',
+    def __init__(self,wiki_links_base_url='',wiki_links_space_char='_',
                  interwiki_links_base_urls={},
                  no_wiki_monospace=True, use_additions=False,
                  wiki_links_class_func=None, macro_func=None,
@@ -44,8 +44,8 @@ class Creole10(object):
             If no class attribute is to be added, return no value (or None).
           wiki_links_path_func
             If supplied, this fuction will be called when a wiki link is found and
-            the return value (should be a string) will be appended to the base_url
-            to form the href. The function must accept the page name (any
+            the return value (should be a string) will be joined to the base_url
+            to form the url for href. The function must accept the page name (any
             spaces will have been replaced) as it's only argument. Returning the
             unaltered page name is equivalent to not supplying this function at all.
           macro_func
