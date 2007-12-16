@@ -142,7 +142,7 @@ class Creole10(object):
             self.parse_order = [self.bodiedmacro,self.macro,self.pre,self.blank_line,self.table]+ headings\
                            + [self.hr,self.dl,self.ul,self.ol,self.p]
         else:
-            self.parse_order = [self.bodiedmacro,self.macro,self.pre,self.blank_line,self.table]+ headings\
+            self.parse_order = [self.pre,self.blank_line,self.table]+ headings\
                            + [self.hr,self.ul,self.ol,self.p]
         """These are the wiki elements that are searched at the top level of text to be
         processed. The order matters because elements later in the list need not have any
