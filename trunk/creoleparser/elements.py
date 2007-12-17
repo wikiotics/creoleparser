@@ -864,6 +864,23 @@ class LoneElement(BlockElement):
     def _build(self,mo,element_store):
         return bldr.tag.__getattr__(self.tag)()
 
+class LonePlaceHolder(BlockElement):
+
+    """A place holder on a line by itself or with other place holders.
+    This is used to avoid these being enclosed in a paragraph.
+
+    """
+    append_newline = False
+    def __init__(self, tag, token, child_tags):
+        super(LonePlaceHolder,self).__init__(tag,token , child_tags)
+        self.regexp = re.compile(self.re_string(),re.MULTILINE)
+
+    def re_string(self):
+        place_holder = re.escape(self.token[0]) + r'\S*?' + re.escape(self.token[1])
+        return r'^\s*?(' + place_holder +   r'\s*$)+\s*?\n'
+
+    def _build(self,mo,element_store):
+        return bldr.tag(fragmentize(mo.group(0),[],element_store))
  
 class BlankLine(WikiElement):
 
