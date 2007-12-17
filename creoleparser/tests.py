@@ -14,13 +14,13 @@ from core import Parser
 
 def test_creole2html():
 
-    print creole2html(r"""
-Go to [[http://www.google.com]], it is [[http://www.google.com| <<luca Google>>]]\\
-even [[This Page Here]] is <<steve the steve macro!>> nice like [[New Page|this]].\\
-This is the <<sue sue macro!>> and this is the <<luca luca macro!>>.\\
-Don't touch {{{<<steve this!>>}}}.\\
-<<mateo>>A body!<</mateo>>\\
-As is [[Ohana:Home|This one]].""")
+##    print creole2html(r"""
+##Go to [[http://www.google.com]], it is [[http://www.google.com| <<luca Google>>]]\\
+##even [[This Page Here]] is <<steve the steve macro!>> nice like [[New Page|this]].\\
+##This is the <<sue sue macro!>> and this is the <<luca luca macro!>>.\\
+##Don't touch {{{<<steve this!>>}}}.\\
+##<<mateo>>A body!<</mateo>>\\
+##As is [[Ohana:Home|This one]].""")
     
     assert creole2html(r"""
 Go to [[http://www.google.com]], it is [[http://www.google.com| <<luca Google>>]]\\
@@ -37,18 +37,10 @@ Don't touch <tt>&lt;&lt;steve this!&gt;&gt;</tt>.<br />
 As is <a href="http://wikiohana.net/cgi-bin/wiki.pl/Home">This one</a>.</p>
 """
 
-    """
-<p>Go to <a href="http://www.google.com">http://www.google.com</a>, it is <a href="http://www.google.com">&lt;&lt;luca Google&gt;&gt;</a><br />
-even <a href="http://www.wikicreole.org/wiki/This_Page_Here">This Page Here</a> is &lt;&lt;steve the steve macro!&gt;&gt; nice like <a href="http://www.wikicreole.org/wiki/New_Page">this</a>.<br />
-This is the &lt;&lt;sue sue macro!&gt;&gt; and this is the &lt;&lt;luca luca macro!&gt;&gt;.<br />
-Don't touch <tt>&lt;&lt;steve this!&gt;&gt;</tt>.<br />
-&lt;&lt;mateo&gt;&gt;A body!&lt;&lt;/mateo&gt;&gt;<br />
-As is <a href="http://wikiohana.net/cgi-bin/wiki.pl/Home">This one</a>.</p>"""
-
-    print creole2html(r"""
-<<mateo>>This is the some random text
-over two lines<</mateo>><<mila>>A body!<</mila>>\\
-As is [[Ohana:Home|This one]].""")
+##    print creole2html(r"""
+##<<mateo>>This is the some random text
+##over two lines<</mateo>><<mila>>A body!<</mila>>\\
+##As is [[Ohana:Home|This one]].""")
 
     assert creole2html(r"""
 <<mateo>>This is the some random text
@@ -56,12 +48,6 @@ over two lines<</mateo>><<mila>>A body!<</mila>>\\
 As is [[Ohana:Home|This one]].""") == """\
 <p>&lt;&lt;mateo&gt;&gt;This is the some random text
 over two lines&lt;&lt;/mateo&gt;&gt;&lt;&lt;mila&gt;&gt;A body!&lt;&lt;/mila&gt;&gt;<br />
-As is <a href="http://wikiohana.net/cgi-bin/wiki.pl/Home">This one</a>.</p>
-"""
-"""
-<p>&lt;&lt;mateo&gt;&gt;This is the some random text
-over two lines&lt;&lt;/mateo&gt;&gt;&lt;&lt;mila&gt;&gt;A body!&lt;&lt;/mila&gt;
-&gt;<br />
 As is <a href="http://wikiohana.net/cgi-bin/wiki.pl/Home">This one</a>.</p>
 """
 
@@ -492,19 +478,22 @@ As is [[Ohana:Home|This one]].</p>
 ##even [[This Page Here]] is <<steve the steve macro!>> nice like [[New Page|this]].\\
 ##<<mateo>>This is the some random text
 ##over two lines<</mateo>><<mila>>A body!<</mila>>\\
-##As is [[Ohana:Home|This one]].""")
+##As is [[Ohana:Home|This one]].
+##<<mila>>A body!<</mila>>""")
 
     assert parser(r"""
 Go to [[http://www.google.com]], it is [[http://www.google.com| <<luca Google>>]]\\
 even [[This Page Here]] is <<steve the steve macro!>> nice like [[New Page|this]].\\
 <<mateo>>This is the some random text
 over two lines<</mateo>><<mila>>A body!<</mila>>\\
-As is [[Ohana:Home|This one]].""") == """\
+As is [[Ohana:Home|This one]].
+<<mila>>A body!<</mila>>""") == """\
 <p>Go to <a href="http://www.google.com">http://www.google.com</a>, it is <a href="http://www.google.com"><strong> Google</strong></a><br />
 even <a href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/ThisPageHere">This Page Here</a> is <strong> the steve macro!</strong> nice like <a href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/NewPage">this</a>.<br />
 <em>This is the some random text
 over two lines</em>&lt;&lt;mila&gt;&gt;A body!&lt;&lt;/mila&gt;&gt;<br />
 As is [[Ohana:Home|This one]].</p>
+&lt;&lt;mila&gt;&gt;A body!&lt;&lt;/mila&gt;&gt;
 """
 
 

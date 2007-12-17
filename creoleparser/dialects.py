@@ -107,6 +107,7 @@ class Creole10(object):
         self.hr = LoneElement('hr','----',[])
         #self.lone_br = LoneElement('br',r'\\',[])
         self.blank_line = BlankLine()
+        self.lone_place_holder = LonePlaceHolder('',['<<<','>>>'],[])
 
         self.h1 = Heading('h1','=',header_children)
         self.h2 = Heading('h2','==',header_children)
@@ -140,10 +141,10 @@ class Creole10(object):
 
         if use_additions:
             self.parse_order = [self.bodiedmacro,self.macro,self.pre,self.blank_line,self.table]+ headings\
-                           + [self.hr,self.dl,self.ul,self.ol,self.p]
+                           + [self.hr,self.dl,self.ul,self.ol,self.lone_place_holder,self.p]
         else:
             self.parse_order = [self.pre,self.blank_line,self.table]+ headings\
-                           + [self.hr,self.ul,self.ol,self.p]
+                           + [self.hr,self.ul,self.ol,self.lone_place_holder,self.p]
         """These are the wiki elements that are searched at the top level of text to be
         processed. The order matters because elements later in the list need not have any
         knowledge of those before (as those were parsed out already). This makes the
