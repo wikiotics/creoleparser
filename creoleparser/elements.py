@@ -764,7 +764,7 @@ class Image(InlineElement):
     def _build(self,mo,element_store):
         body = mo.group(1).split(self.delimiter,1)
         src_mo = self.src_regexp.search(body[0])
-        if not src_mo:
+        if not src_mo or re.match('javascript',src_mo.group(1),re.I):
             return bldr.tag.span('Bad Image src')
         link = src_mo.group(1)
         if len(body) == 1:
