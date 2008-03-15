@@ -496,6 +496,33 @@ As is [[Ohana:Home|This one]].</p>
 &lt;&lt;mila&gt;&gt;A body!&lt;&lt;/mila&gt;&gt;
 """
 
+def test_interwiki_links():
+
+    def iw_func(name):
+        return name[::-1]
+
+    d = Creole10(
+        interwiki_links_funcs={
+            'moo':iw_func,
+            'goo':iw_func,
+        },
+        interwiki_links_base_urls={
+            'goo': 'http://example.org',
+            'poo': 'http://example.org',
+        },
+    )
+    p = Parser(d)
+
+    def checklink(m, a, p=p):
+        out = '<p>%s</p>\n' % a
+        gen = str(p.generate(m))
+        assert out == gen
+
+    checklink('[[moo:foo|Foo]]', '<a href="oof">Foo</a>')
+    checklink('[[goo:foo|Foo]]', '<a href="http://example.org/oof">Foo</a>')
+    checklink('[[poo:foo|Foo]]', '<a href="http://example.org/foo">Foo</a>')
+    assert '[[noo:foo|Foo]]' == '[[noo:foo|Foo]]'
+
 
 def _test():
     import doctest
@@ -507,8 +534,10 @@ def _test():
     test_place_holders()
     test_wiki_links_class_func()
     test_marco_func()
+    test_interwiki_links()
 
 if __name__ == "__main__":
     _test()
+
 
 

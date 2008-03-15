@@ -342,12 +342,13 @@ class InterWikiLink(WikiElement):
     """
 
     def __init__(self, tag, token, child_tags,delimiter1,
-                 delimiter2,base_urls,space_char):
+                 delimiter2,base_urls,links_funcs,space_char):
         super(InterWikiLink,self).__init__(tag, token, child_tags)
         self.delimiter1 = delimiter1
         self.delimiter2 = delimiter2
         self.regexp = re.compile(self.re_string())
         self.base_urls = base_urls
+        self.links_funcs = links_funcs
         self.space_char = space_char
 
     def re_string(self):
@@ -360,10 +361,19 @@ class InterWikiLink(WikiElement):
                alias
 
     def href(self,mo):
-        base_url = self.base_urls.get(mo.group(1))
-        if not base_url:
+        linktype, linkname = mo.group(1), mo.group(2)
+        linkname = linkname.replace(' ', self.space_char)
+        base_url = self.base_urls.get(linktype)
+        link_func = self.links_funcs.get(linktype)
+        if not (link_func or base_url):
             return None
-        return urlparse.urljoin(base_url,mo.group(2).replace(' ',self.space_char))
+        else:
+            href = linkname
+            if link_func:
+                href = link_func(href)
+            if base_url:
+                href = urlparse.urljoin(base_url, href)
+            return href
 
     def _build(self,mo,element_store):
         if not self.href(mo):
