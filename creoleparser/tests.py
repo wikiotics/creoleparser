@@ -12,6 +12,14 @@ from __init__ import text2html, creole2html
 from dialects import Creole10
 from core import Parser
 
+def check_inline(m, s, p=text2html):
+    out = '<p>%s</p>\n' % s
+    #print out
+    gen = p.render(m)
+    #print gen
+    assert out == gen
+
+
 def test_creole2html():
 
 ##    print creole2html(r"""
@@ -61,7 +69,7 @@ def test_text2html():
             '<p><span>no **wiki** in here</span> but <em>here</em> is fine</p>\n'
     assert text2html('steve **is strong //you know\n dude{{{not **weak**}}}\n') == \
             '<p>steve <strong>is strong <em>you know\n dude<span>not **weak**</span></em></strong></p>\n'
-
+    
     assert text2html(
 r"""   |= Item|= Size|= Price |
   | fish | **big**  |cheap   |
@@ -250,7 +258,7 @@ drivel here</li></ol></li>
 """
 
     assert text2html(r"""
-= Big Heading
+= Big Heading 
 ----
 \\
 |nice picture |{{campfire.jpg}}|\\
@@ -523,6 +531,9 @@ def test_interwiki_links():
     checklink('[[poo:foo|Foo]]', '<a href="http://example.org/foo">Foo</a>')
     assert '[[noo:foo|Foo]]' == '[[noo:foo|Foo]]'
 
+def test_sanitizing():
+    check_inline('{{javascript:alert(document.cookie)}}','<img src="unsafe_uri_detected" alt="unsafe_uri_detected" />')
+    
 
 def _test():
     import doctest
@@ -535,6 +546,7 @@ def _test():
     test_wiki_links_class_func()
     test_marco_func()
     test_interwiki_links()
+    test_sanitizing()
 
 if __name__ == "__main__":
     _test()
