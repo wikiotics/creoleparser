@@ -2,6 +2,8 @@ Version 0.4.0 (March XX 2008)
 ---------------------------
 
  * added support for custom urls for interwiki links (interwiki_links_funcs)
+ * user supplied uri sanitation added
+ * a macro on a line by itself will no longer be <p>aragraphed 
 
 Version 0.3.3 (Dec 16 2007)
 ---------------------------

@@ -10,9 +10,11 @@ import re
 import urlparse
 
 import genshi.builder as bldr
+from genshi.filters import HTMLSanitizer
 
 from core import escape_char, esc_neg_look, fragmentize #, element_store
 
+sanitizer = HTMLSanitizer()
 
 __docformat__ = 'restructuredtext en'
 
@@ -271,7 +273,10 @@ class RawLink(InlineElement):
         
     def href(self,mo):
         """Returns the string for the href attribute of the Element."""
-        return mo.group(2)
+        if sanitizer.is_safe_uri(mo.group(2)):
+            return mo.group(2)
+        else:
+            return "unsafe_uri_detected"
 
     def alias(self,mo,element_store):
         """Returns the string for the content of the Element."""
@@ -313,7 +318,11 @@ class URLLink(WikiElement):
        
     def href(self,mo):
         """Returns the string for the href attribute of the Element."""
-        return mo.group(1)
+        if sanitizer.is_safe_uri(mo.group(1)):
+            return mo.group(1)
+        else:
+            return "unsafe_uri_detected"
+            
 
     def alias(self,mo,element_store):
         """Returns the string for the content of the Element."""
@@ -321,6 +330,8 @@ class URLLink(WikiElement):
             return self.href(mo)
         else:
             return fragmentize(mo.group(4),self.child_tags,element_store)
+
+
 
 class InterWikiLink(WikiElement):
 
@@ -332,7 +343,7 @@ class InterWikiLink(WikiElement):
     ... delimiter1=':', delimiter2 = '|',
     ... base_urls=dict(somewiki='http://somewiki.org/',
     ...                bigwiki='http://bigwiki.net/'),
-    ...                space_char='_')
+    ...                links_funcs={},space_char='_')
     >>> mo = interwiki_link.regexp.search(" somewiki:Home Page|steve ")
     >>> interwiki_link.href(mo)
     'http://somewiki.org/Home_Page'
@@ -774,9 +785,12 @@ class Image(InlineElement):
     def _build(self,mo,element_store):
         body = mo.group(1).split(self.delimiter,1)
         src_mo = self.src_regexp.search(body[0])
-        if not src_mo or re.match('javascript',src_mo.group(1),re.I):
+        if not src_mo:
             return bldr.tag.span('Bad Image src')
-        link = src_mo.group(1)
+        if sanitizer.is_safe_uri(src_mo.group(1)):
+            link = src_mo.group(1)
+        else:
+            link = "unsafe_uri_detected"
         if len(body) == 1:
             alias = link
         else:
