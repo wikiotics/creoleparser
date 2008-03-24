@@ -304,12 +304,9 @@ class URLLink(WikiElement):
         self.regexp = re.compile(self.re_string())
 
     def re_string(self):
-        #escape = '(' + re.escape(escape_char) + ')?'
-        protocol = r'^\s*((\S+?://|/)'
+        protocol = r'^\s*((\w+?://|/)'
         rest_of_url = r'\S*?)\s*'
         alias = r'(' + re.escape(self.delimiter) + r' *(.*?))? *$'
-        #allow one punctuation character or '**' or '//'
-        #look_ahead = r'(?=([,.?!:;"\']|\*\*|//)?(\s|$))' 
         return protocol + rest_of_url + alias
 
     def _build(self,mo,element_store):
