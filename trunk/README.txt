@@ -5,5 +5,5 @@ Creoleparser is a Python implementation of a parser for the Creole wiki markup l
 
 For more information please visit:
 
-http://pages.infinit.net/shday/Creole/instructions.html
+http://creoleparser.googlepages.com
 
