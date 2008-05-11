@@ -518,17 +518,24 @@ def test_interwiki_links():
             'goo': 'http://example.org',
             'poo': 'http://example.org',
         },
+        interwiki_links_space_chars={
+            'goo': '+', 
+            'poo': '+',
+        },
     )
     p = Parser(d)
 
     def checklink(m, a, p=p):
         out = '<p>%s</p>\n' % a
         gen = str(p.generate(m))
+        #print gen
         assert out == gen
 
-    checklink('[[moo:foo|Foo]]', '<a href="oof">Foo</a>')
+    checklink('[[moo:foo bar|Foo]]', '<a href="rab_oof">Foo</a>')
     checklink('[[goo:foo|Foo]]', '<a href="http://example.org/oof">Foo</a>')
     checklink('[[poo:foo|Foo]]', '<a href="http://example.org/foo">Foo</a>')
+    checklink('[[poo:foo bar|Foo]]', '<a href="http://example.org/foo+bar">Foo</a>')
+    checklink('[[goo:foo bar|Foo]]', '<a href="http://example.org/rab+oof">Foo</a>')
     assert '[[noo:foo|Foo]]' == '[[noo:foo|Foo]]'
 
 def test_sanitizing():

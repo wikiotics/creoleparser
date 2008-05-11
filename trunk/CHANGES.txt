@@ -1,5 +1,13 @@
+Version 0.5.0 (?)
+-----------------------------
+
+ * added support for custom space characters for interwiki
+   links (interwiki_links_space_chars)
+ * api changed for default interwiki links space character, the
+   wiki_links_space_char is used instead of an underscore.
+
 Version 0.4.0 (March 24 2008)
----------------------------
+-----------------------------
 
  * added support for custom urls for interwiki links (interwiki_links_funcs)
  * user supplied uri sanitation added

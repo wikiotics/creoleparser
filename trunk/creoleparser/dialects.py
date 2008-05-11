@@ -16,7 +16,8 @@ class Creole10(object):
                  interwiki_links_base_urls={},
                  no_wiki_monospace=True, use_additions=False,
                  wiki_links_class_func=None, macro_func=None,
-                 wiki_links_path_func=None, interwiki_links_funcs={}):
+                 wiki_links_path_func=None, interwiki_links_funcs={},
+                 interwiki_links_space_chars={},):
         """Constructor for Creole10 oblects.
 
         Most attributes of new Creole objects are derived from the WikiElement
@@ -31,6 +32,10 @@ class Creole10(object):
             the url. 
           interwiki_links_base_urls
             Dictionary of urls for interwiki links.
+          interwiki_links_space_chars
+            Dictionary of characters that that will be used to replace spaces
+            that occur in interwiki_links. If no key is present for an interwiki
+            name, the wiki_links_space_char will be used.
           interwiki_links_funcs
             Dictionary of functions that will be called for interwiki link
             names. Works like wiki_links_path_func
@@ -72,7 +77,8 @@ class Creole10(object):
         self.interwiki_link = InterWikiLink('a','',[],delimiter1=':',delimiter2='|',
                                             base_urls=interwiki_links_base_urls,
                                             links_funcs=interwiki_links_funcs,
-                                            space_char='_')
+                                            default_space_char=wiki_links_space_char,
+                                            space_chars=interwiki_links_space_chars)
         self.wiki_link = WikiLink('a','',[],delimiter = '|', base_url=wiki_links_base_url,
                                   space_char=wiki_links_space_char,class_func=wiki_links_class_func,
                                   path_func=wiki_links_path_func)

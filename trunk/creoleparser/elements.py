@@ -340,7 +340,8 @@ class InterWikiLink(WikiElement):
     ... delimiter1=':', delimiter2 = '|',
     ... base_urls=dict(somewiki='http://somewiki.org/',
     ...                bigwiki='http://bigwiki.net/'),
-    ...                links_funcs={},space_char='_')
+    ...                links_funcs={},default_space_char='_',
+    ...                space_chars={})
     >>> mo = interwiki_link.regexp.search(" somewiki:Home Page|steve ")
     >>> interwiki_link.href(mo)
     'http://somewiki.org/Home_Page'
@@ -350,14 +351,15 @@ class InterWikiLink(WikiElement):
     """
 
     def __init__(self, tag, token, child_tags,delimiter1,
-                 delimiter2,base_urls,links_funcs,space_char):
+                 delimiter2,base_urls,links_funcs,default_space_char,space_chars):
         super(InterWikiLink,self).__init__(tag, token, child_tags)
         self.delimiter1 = delimiter1
         self.delimiter2 = delimiter2
         self.regexp = re.compile(self.re_string())
         self.base_urls = base_urls
         self.links_funcs = links_funcs
-        self.space_char = space_char
+        self.default_space_char = default_space_char
+        self.space_chars = space_chars
 
     def re_string(self):
         wiki_id = r'(\w+)'
@@ -368,15 +370,19 @@ class InterWikiLink(WikiElement):
                optional_spaces + page_name + optional_spaces + \
                alias
 
+    def page_name(self,mo):
+        space_char = self.space_chars.get(mo.group(1),self.default_space_char)
+        return mo.group(2).replace(' ',space_char)
+
+
     def href(self,mo):
-        linktype, linkname = mo.group(1), mo.group(2)
-        linkname = linkname.replace(' ', self.space_char)
+        linktype = mo.group(1)
         base_url = self.base_urls.get(linktype)
         link_func = self.links_funcs.get(linktype)
         if not (link_func or base_url):
             return None
         else:
-            href = linkname
+            href = self.page_name(mo)
             if link_func:
                 href = link_func(href)
             if base_url:
