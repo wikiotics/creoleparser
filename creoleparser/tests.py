@@ -1,4 +1,4 @@
-# tests.py
+﻿# tests.py
 #
 # Copyright (c) 2007 Stephen Day
 #
@@ -12,13 +12,15 @@ from __init__ import text2html, creole2html
 from dialects import Creole10
 from core import Parser
 
-def check_inline(m, s, p=text2html):
-    out = '<p>%s</p>\n' % s
-    #print out
+def check_markup(m, s, p=text2html,paragraph=True):
+    if paragraph:
+        out = '<p>%s</p>\n' % s
+    else:
+        out = s + '\n'
+    #print repr(out)
     gen = p.render(m)
-    #print gen
+    #print repr(gen)
     assert out == gen
-
 
 def test_creole2html():
 
@@ -448,6 +450,14 @@ def test_marco_func():
             return bldr.tag.strong(arg_string).generate()
         if macro_name == 'mateo':
             return bldr.tag.em(body).generate()
+        if macro_name == 'Reverse':
+            return body[::-1]
+        if macro_name == 'Reverse-it':
+            return body[::-1]
+        if macro_name == 'ReverseIt':
+            return body[::-1]
+        if macro_name == 'lib.ReverseIt-now':
+            return body[::-1]
         
     dialect = Creole10(
         wiki_links_base_url='http://creoleparser.x10hosting.com/cgi-bin/creolepiki/',
@@ -457,6 +467,21 @@ def test_marco_func():
         macro_func=a_macro_func)
 
     parser = Parser(dialect)
+
+    check_markup(u'<<mateo>>fooɤ<</mateo>>','<em>foo\xc9\xa4</em>',p=parser,paragraph=False)
+    check_markup(u'<<steve fooɤ>>','<strong> foo\xc9\xa4</strong>',p=parser)
+    check_markup('<<Reverse>>foo<</Reverse>>','oof',p=parser)
+    check_markup('<<Reverse-it>>foo<</Reverse-it>>','oof',p=parser)
+    check_markup('<<ReverseIt>>foo<</ReverseIt>>','oof',p=parser)
+    check_markup('<<lib.ReverseIt-now>>foo<</lib.ReverseIt-now>>','oof',p=parser)
+    check_markup('<<bad name>>foo<</bad name>>',
+                 '&lt;&lt;bad name&gt;&gt;foo&lt;&lt;/bad name&gt;&gt;',p=parser)
+    check_markup('<<unknown>>foo<</unknown>>',
+                 '&lt;&lt;unknown&gt;&gt;foo&lt;&lt;/unknown&gt;&gt;',p=parser,paragraph=False)
+    check_markup(u'<<luca boo>>foo<</unknown>>',
+                 '<strong> boo</strong>foo&lt;&lt;/unknown&gt;&gt;',p=parser)
+
+    
 
 ##    print parser(r"""
 ##Go to [[http://www.google.com]], it is [[http://www.google.com| <<luca Google>>]]\\
@@ -536,10 +561,11 @@ def test_interwiki_links():
     checklink('[[poo:foo|Foo]]', '<a href="http://example.org/foo">Foo</a>')
     checklink('[[poo:foo bar|Foo]]', '<a href="http://example.org/foo+bar">Foo</a>')
     checklink('[[goo:foo bar|Foo]]', '<a href="http://example.org/rab+oof">Foo</a>')
+    checklink('[[roo:foo bar|Foo]]', '[[roo:foo bar|Foo]]')
     assert '[[noo:foo|Foo]]' == '[[noo:foo|Foo]]'
 
 def test_sanitizing():
-    check_inline('{{javascript:alert(document.cookie)}}','<img src="unsafe_uri_detected" alt="unsafe_uri_detected" />')
+    check_markup('{{javascript:alert(document.cookie)}}','<img src="unsafe_uri_detected" alt="unsafe_uri_detected" />')
     
 
 def _test():

@@ -58,12 +58,14 @@ class Creole10(object):
             unaltered page name is equivalent to not supplying this function at all.
           macro_func
             If supplied, this fuction will be called when macro markup is found. The
-            function must accept the macro name (lower_case and hyphens only) as its
-            first argument, the argument string (including any delimter) as the second,
-            and the macro body as it's third (will be None for a macro without a body).
+            function must accept the macro name as its first argument, the argument
+            string (including any delimter) as the second, and the macro body as it's
+            third (will be None for a macro without a body).
             The function may return a string (which will be subject to further wiki
             processing) or a Genshi Stream object. If None is returned, the markup will
             be rendered unchanged.
+            The macro name must start with a letter and can include letters, numbers,
+            and non-repeating periods and hyphens.
             Examples:
             1) <<macro-name arg_string>>the body<</macro-name>>
             2) <<macro-name I have no body, just this argument string>>
