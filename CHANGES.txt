@@ -1,6 +1,7 @@
 Version 0.5.0 (?)
 -----------------------------
-
+ * fixed bug with macros that output unicode strings
+ * macro names can now include capitals and periods
  * added support for custom space characters for interwiki
    links (interwiki_links_space_chars)
  * api changed for default interwiki links space character, the
