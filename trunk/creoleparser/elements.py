@@ -162,14 +162,14 @@ class Macro(WikiElement):
 
     def encode_pattern(self):
         content = '(.*?)'
-        macro_name = '([a-z]([a-z-]*[a-z])?)'
+        macro_name = r'([a-zA-Z]+([-.][a-zA-Z0-9]+)*)' 
         return esc_neg_look + '(' +re.escape(self.token[0]) + '/?)(' + macro_name + \
                    content + esc_neg_look + re.escape(self.token[1]) + ')'
 
     def _process(self, mo, text, wiki_elements,element_store):
         """Returns genshi Fragments (Elements and text)"""
         processed = self._build(mo,element_store)
-        if isinstance(processed, str):
+        if isinstance(processed, basestring):
             text = ''.join([text[:mo.start()],processed,
                         text[mo.end():]])
         else:
@@ -183,7 +183,11 @@ class Macro(WikiElement):
 
     def re_string(self):
         content = '(.*?)'
-        macro_name = r'([a-z]([a-z-]*[a-z])?)'
+
+        
+        macro_name = r'([a-zA-Z]+([-.][a-zA-Z0-9]+)*)'
+        # allows any number of non-repeating hyphens or periods
+        # underscore is not included because hyphen is
         return esc_neg_look + re.escape(self.token[0]) + r'\~(' + macro_name + \
                content + ')' + esc_neg_look + re.escape(self.token[1])
 
@@ -194,7 +198,7 @@ class Macro(WikiElement):
             value = None
         if value is None:
             return bldr.tag(self.token[0] + mo.group(1) + self.token[1])
-        elif isinstance(value,str):
+        elif isinstance(value,basestring):
             return value
         else:
             return [value]
@@ -216,7 +220,7 @@ class BodiedMacro(Macro):
 
     def re_string(self):
         content = r'([ \S]*?)'
-        macro_name = r'([a-z]([a-z-]*[a-z])?)'
+        macro_name = r'([a-zA-Z]+([-.][a-zA-Z0-9]+)*)'
         body = '(.+?)'
         return esc_neg_look + re.escape(self.token[0]) + r'\~(' + macro_name + \
                content + ')'+ esc_neg_look + re.escape(self.token[1]) + \
@@ -232,7 +236,7 @@ class BodiedMacro(Macro):
             return bldr.tag(self.token[0] + mo.group(1) + self.token[1]
                             + mo.group(5) + self.token[0] + '/'
                             + mo.group(1) + self.token[1])
-        elif isinstance(value,str):
+        elif isinstance(value, basestring):
             return value
         else:
             return [value]
@@ -364,7 +368,7 @@ class InterWikiLink(WikiElement):
     def re_string(self):
         wiki_id = r'(\w+)'
         optional_spaces = ' *'
-        page_name = r'(\S+?( +\S+?)*)' #allows any number of single spaces
+        page_name = r'(\S+?( \S+?)*)' #allows any number of single spaces
         alias = r'(' + re.escape(self.delimiter2) + r' *(.*?))? *$'
         return wiki_id + optional_spaces + re.escape(self.delimiter1) + \
                optional_spaces + page_name + optional_spaces + \
@@ -373,7 +377,6 @@ class InterWikiLink(WikiElement):
     def page_name(self,mo):
         space_char = self.space_chars.get(mo.group(1),self.default_space_char)
         return mo.group(2).replace(' ',space_char)
-
 
     def href(self,mo):
         linktype = mo.group(1)
