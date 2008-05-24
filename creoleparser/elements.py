@@ -10,6 +10,7 @@ import re
 import urlparse
 
 import genshi.builder as bldr
+from genshi.core import Stream
 from genshi.filters import HTMLSanitizer
 
 from core import escape_char, esc_neg_look, fragmentize #, element_store
@@ -200,8 +201,10 @@ class Macro(WikiElement):
             return bldr.tag(self.token[0] + mo.group(1) + self.token[1])
         elif isinstance(value,basestring):
             return value
-        else:
+        elif isinstance(value, (bldr.Element, Stream)):
             return [value]
+        else:
+            raise "Marcos can only return strings and Genshi Streams" 
         
 ##        if self.tag:
 ##            return bldr.tag.__getattr__(self.tag)(
@@ -238,8 +241,10 @@ class BodiedMacro(Macro):
                             + mo.group(1) + self.token[1])
         elif isinstance(value, basestring):
             return value
-        else:
+        elif isinstance(value, (bldr.Element, Stream)):
             return [value]
+        else:
+            raise "macros can only return strings and genshi Streams"
         
     
 class RawLink(InlineElement):
