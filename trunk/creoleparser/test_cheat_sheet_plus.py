@@ -1,5 +1,5 @@
 import genshi.builder as bldr
-import creoleparser as cp
+import dialects, core
 import os
 
 class Page(object):
@@ -67,7 +67,7 @@ def source(string):
 def pre(string):
     return bldr.tag.pre(string)
     
-dialect = cp.dialects.Creole10(
+dialect = dialects.Creole10(
     wiki_links_base_url='http://creoleparser.srcom.org/cgi-bin/creolepiki/',
     wiki_links_space_char='',
     use_additions=True,
@@ -76,7 +76,7 @@ dialect = cp.dialects.Creole10(
     wiki_links_path_func=path_func,
     macro_func=macro_func)
 
-text2html = cp.Parser(dialect)
+text2html = core.Parser(dialect)
 
 
 if __name__ == '__main__':
