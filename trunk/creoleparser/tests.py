@@ -16,10 +16,10 @@ def check_markup(m, s, p=text2html,paragraph=True):
     if paragraph:
         out = '<p>%s</p>\n' % s
     else:
-        out = s + '\n'
-    #print repr(out)
+        out = s 
     gen = p.render(m)
-    #print repr(gen)
+    #print 'obtained:', repr(gen)
+    #print 'expected:', repr(out)
     assert out == gen
 
 def test_creole2html():
@@ -458,6 +458,20 @@ def test_marco_func():
             return body[::-1]
         if macro_name == 'lib.ReverseIt-now':
             return body[::-1]
+        if macro_name == 'ifloggedin':
+            return body
+        if macro_name == 'username':
+            return 'Joe Blow'
+        if macro_name == 'center':
+            return bldr.tag.span(body, class_='centered').generate()
+        if macro_name == 'footer':
+            return '<<center>>This is a footer.<</center>>'
+        if macro_name == 'reverse-lines':
+            l = reversed(body.rstrip().split('\n'))
+            if arg_string.strip() == 'output=wiki':
+                return '\n'.join(l) + '\n'
+            else:
+                return bldr.tag('\n'.join(l) + '\n').generate()
         
     dialect = Creole10(
         wiki_links_base_url='http://creoleparser.x10hosting.com/cgi-bin/creolepiki/',
@@ -468,7 +482,7 @@ def test_marco_func():
 
     parser = Parser(dialect)
 
-    check_markup(u'<<mateo>>fooɤ<</mateo>>','<em>foo\xc9\xa4</em>',p=parser,paragraph=False)
+    check_markup(u'<<mateo>>fooɤ<</mateo>>','<em>foo\xc9\xa4</em>',p=parser)
     check_markup(u'<<steve fooɤ>>','<strong> foo\xc9\xa4</strong>',p=parser)
     check_markup('<<Reverse>>foo<</Reverse>>','oof',p=parser)
     check_markup('<<Reverse-it>>foo<</Reverse-it>>','oof',p=parser)
@@ -477,9 +491,49 @@ def test_marco_func():
     check_markup('<<bad name>>foo<</bad name>>',
                  '&lt;&lt;bad name&gt;&gt;foo&lt;&lt;/bad name&gt;&gt;',p=parser)
     check_markup('<<unknown>>foo<</unknown>>',
-                 '&lt;&lt;unknown&gt;&gt;foo&lt;&lt;/unknown&gt;&gt;',p=parser,paragraph=False)
+                 '&lt;&lt;unknown&gt;&gt;foo&lt;&lt;/unknown&gt;&gt;',p=parser)
     check_markup(u'<<luca boo>>foo<</unknown>>',
                  '<strong> boo</strong>foo&lt;&lt;/unknown&gt;&gt;',p=parser)
+    check_markup('Hello<<ifloggedin>> <<username>><</ifloggedin>>!',
+                 'Hello Joe Blow!',p=parser)
+    check_markup(' <<footer>>',' <span class="centered">This is a footer.</span>',p=parser)
+    check_markup('<<luca foobar>>','<strong> foobar</strong>',p=parser,paragraph=False)
+    check_markup("""\
+<<reverse-lines>>
+one
+two
+{{{
+three
+}}}
+
+four
+<</reverse-lines>>
+""","""\
+four
+
+}}}
+three
+{{{
+two
+one
+""",p=parser,paragraph=False)
+    check_markup("""\
+<<reverse-lines output=wiki>>
+one
+two
+}}}
+three
+{{{
+
+four
+<</reverse-lines>>
+""","""\
+<p>four</p>
+<pre>three
+</pre>
+<p>two
+one</p>
+""",p=parser,paragraph=False)
 
     
 
@@ -525,8 +579,8 @@ As is [[Ohana:Home|This one]].
 even <a href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/ThisPageHere">This Page Here</a> is <strong> the steve macro!</strong> nice like <a href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/NewPage">this</a>.<br />
 <em>This is the some random text
 over two lines</em>&lt;&lt;mila&gt;&gt;A body!&lt;&lt;/mila&gt;&gt;<br />
-As is [[Ohana:Home|This one]].</p>
-&lt;&lt;mila&gt;&gt;A body!&lt;&lt;/mila&gt;&gt;
+As is [[Ohana:Home|This one]].
+&lt;&lt;mila&gt;&gt;A body!&lt;&lt;/mila&gt;&gt;</p>
 """
 
 def test_interwiki_links():

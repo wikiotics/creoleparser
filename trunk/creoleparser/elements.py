@@ -156,16 +156,7 @@ class Macro(WikiElement):
         super(Macro,self).__init__(tag,token , child_tags)
         self.func = func
         self.regexp = re.compile(self.re_string())
-        self.encode_regexp = re.compile(self.encode_pattern())
 
-    def encode(self,text):
-        return self.encode_regexp.sub(r'\1~\2',text)
-
-    def encode_pattern(self):
-        content = '(.*?)'
-        macro_name = r'([a-zA-Z]+([-.][a-zA-Z0-9]+)*)' 
-        return esc_neg_look + '(' +re.escape(self.token[0]) + '/?)(' + macro_name + \
-                   content + esc_neg_look + re.escape(self.token[1]) + ')'
 
     def _process(self, mo, text, wiki_elements,element_store):
         """Returns genshi Fragments (Elements and text)"""
@@ -189,7 +180,7 @@ class Macro(WikiElement):
         macro_name = r'([a-zA-Z]+([-.][a-zA-Z0-9]+)*)'
         # allows any number of non-repeating hyphens or periods
         # underscore is not included because hyphen is
-        return esc_neg_look + re.escape(self.token[0]) + r'\~(' + macro_name + \
+        return esc_neg_look + re.escape(self.token[0]) + r'(' + macro_name + \
                content + ')' + esc_neg_look + re.escape(self.token[1])
 
     def _build(self,mo,element_store):
@@ -206,15 +197,10 @@ class Macro(WikiElement):
         else:
             raise "Marcos can only return strings and Genshi Streams" 
         
-##        if self.tag:
-##            return bldr.tag.__getattr__(self.tag)(
-##                   fragmentize(mo.group(1), self.child_tags,
-##                               remove_escapes=False,fill_stored=False))
-##        else:
-##            return bldr.tag(self.token[0] + mo.group(1) + self.token[1])
 
 class BodiedMacro(Macro):
-    """Finds macros with bodies"""
+    """Finds macros with bodies. Does not span across top level block markup
+    (see BodiedBlockMacro's for that)."""
 
     def __init__(self, tag, token, child_tags,func):
         super(BodiedMacro,self).__init__(tag,token , child_tags,func)
@@ -225,12 +211,122 @@ class BodiedMacro(Macro):
         content = r'([ \S]*?)'
         macro_name = r'([a-zA-Z]+([-.][a-zA-Z0-9]+)*)'
         body = '(.+?)'
-        return esc_neg_look + re.escape(self.token[0]) + r'\~(' + macro_name + \
+        return esc_neg_look + re.escape(self.token[0]) + r'(' + macro_name + \
                content + ')'+ esc_neg_look + re.escape(self.token[1]) + \
                body + esc_neg_look + re.escape(self.token[0]) + \
-               r'/\~\2' + re.escape(self.token[1])
+               r'/\2' + re.escape(self.token[1])
 
     def _build(self,mo,element_store):
+        if self.func:
+            value = self.func(mo.group(2),mo.group(4),mo.group(5))
+        else:
+            value = None
+        if value is None:
+            return bldr.tag(self.token[0] + mo.group(1) + self.token[1]
+                            + mo.group(5) + self.token[0] + '/'
+                            + mo.group(1) + self.token[1])
+        elif isinstance(value, basestring):
+            return value
+        elif isinstance(value, (bldr.Element, Stream)):
+            return [value]
+        else:
+            raise "macros can only return strings and genshi Streams"
+
+class BlockMacro(WikiElement):
+    """Finds a macro on a line alone without leading spaces. Resulting
+    output with not be enclosed in paragraph marks or consumed by
+    other markup (except pre blocks and BodiedBlockMacro's)
+    """
+
+    def __init__(self, tag, token, child_tags,func):
+        super(BlockMacro,self).__init__(tag,token , child_tags)
+        self.func = func
+        self.regexp = re.compile(self.re_string(),re.MULTILINE)
+
+    def _process(self, mo, text, wiki_elements,element_store):
+        """Returns genshi Fragments (Elements and text)
+
+        This is mainly for block level markup. See InlineElement
+        for the other method.
+        """
+
+        processed = self._build(mo,element_store)
+        if isinstance(processed, basestring):
+            #print '_process', repr(processed)
+            text = ''.join([text[:mo.start()],processed,
+                        text[mo.end():]])
+            frags = fragmentize(text,wiki_elements,element_store)
+        else:
+        
+            frags = []
+            # call again for leading text and extend the result list 
+            if mo.start():
+                frags.extend(fragmentize(text[:mo.start()],wiki_elements[1:],
+                                         element_store))
+            # append the found wiki element to the result list
+            frags.append(processed)
+            # make the source output easier to read
+            if self.append_newline:
+                frags.append('\n')
+            # call again for trailing text and extend the result list
+            if mo.end() < len(text):
+                frags.extend(fragmentize(text[mo.end():],wiki_elements,
+                                         element_store))
+        return frags
+
+
+    def re_string(self):
+        arg_string = '((?!.*>>.*>>).*?)'
+
+        
+        macro_name = r'([a-zA-Z]+([-.][a-zA-Z0-9]+)*)'
+        # allows any number of non-repeating hyphens or periods
+        # underscore is not included because hyphen is
+        start = '^' + re.escape(self.token[0])
+        end = re.escape(self.token[1]) + r'\s*?\n'
+                
+        return start + '(' + macro_name + arg_string + ')' + end
+
+
+    def _build(self,mo,element_store):
+        #print 'block_macro', mo.groups()
+        if self.func:
+            value = self.func(mo.group(2),mo.group(4),None)
+        else:
+            value = None
+        if value is None:
+            return bldr.tag(self.token[0] + mo.group(1) + self.token[1])
+        elif isinstance(value,basestring):
+            return ''.join([value.rstrip(),'\n'])
+        elif isinstance(value, (bldr.Element, Stream)):
+            return [value]
+        else:
+            raise "Marcos can only return strings and Genshi Streams" 
+        
+
+class BodiedBlockMacro(BlockMacro):
+    """Finds macros with bodies where the opening and closing tokens are each on
+    a line alone without leading spaces. These macros can enclose other block
+    level markup including pre blocks and other BodiedBlockMacro's."""
+
+    def __init__(self, tag, token, child_tags,func):
+        super(BodiedBlockMacro,self).__init__(tag,token , child_tags,func)
+        self.func = func
+        self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
+
+    def re_string(self):
+        arg_string = r'((?![^\n]*>>[^\n]*>>)[ \S]*?)'
+        start = '^' + re.escape(self.token[0])
+        macro_name = r'([a-zA-Z]+([-.][a-zA-Z0-9]+)*)'
+        body = r'(.*?\n)'
+        end = re.escape(self.token[0]) + \
+               r'/\2' + re.escape(self.token[1]) + r'\s*?\n'
+        
+        return start + '(' + macro_name + arg_string + ')' + re.escape(self.token[1]) + \
+               r'\s*?\n' + body + end
+
+    def _build(self,mo,element_store):
+        #print 'block_bodied_macro', mo.groups()
         if self.func:
             value = self.func(mo.group(2),mo.group(4),mo.group(5))
         else:
@@ -851,7 +947,7 @@ class PreBlock(BlockElement):
     """A preformatted block.
 
     If a closing token is found on a line with a space as the first
-    character, it will be remove from the output.
+    character, the space will be removed from the output.
     
     """
 
@@ -866,12 +962,12 @@ class PreBlock(BlockElement):
                    re.escape(self.token) + r'\s*?\n'
         else:
             start = '^' + re.escape(self.token[0]) + r'\s*?\n'
-            content = r'(.*?\n)'
+            content = r'(.+?\n)'
             end = re.escape(self.token[1]) + r'\s*?\n'
             return start + content + end
 
     def re_string2(self):
-        """Finds a closing token will a space at the start of the line."""
+        """Finds a closing token with a space at the start of the line."""
         if isinstance(self.token,str):
             return r'^ (\s*?' + re.escape(self.token) + r'\s*?\n)'
         else:
