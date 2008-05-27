@@ -466,6 +466,8 @@ def test_marco_func():
             return bldr.tag.span(body, class_='centered').generate()
         if macro_name == 'footer':
             return '<<center>>This is a footer.<</center>>'
+        if macro_name == 'footer2':
+            return '<<center>>\nThis is a footer.\n<</center>>'
         if macro_name == 'reverse-lines':
             l = reversed(body.rstrip().split('\n'))
             if arg_string.strip() == 'output=wiki':
@@ -497,6 +499,7 @@ def test_marco_func():
     check_markup('Hello<<ifloggedin>> <<username>><</ifloggedin>>!',
                  'Hello Joe Blow!',p=parser)
     check_markup(' <<footer>>',' <span class="centered">This is a footer.</span>',p=parser)
+    check_markup('<<footer2>>','<span class="centered">This is a footer.\n</span>',p=parser,paragraph=False)
     check_markup('<<luca foobar>>','<strong> foobar</strong>',p=parser,paragraph=False)
     check_markup("""\
 <<reverse-lines>>

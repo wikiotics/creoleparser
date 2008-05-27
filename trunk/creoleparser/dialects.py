@@ -114,7 +114,7 @@ class Creole10(object):
             #header_children.insert(1,self.macro)
             header_children.extend([self.tt, self.u, self.sup, self.sub])
             table_cell_children.extend([self.tt, self.u, self.sup, self.sub])
-
+        
         self.wiki_link.child_tags = link_child_tags
         self.url_link.child_tags = link_child_tags
         self.interwiki_link.child_tags = link_child_tags
@@ -136,7 +136,10 @@ class Creole10(object):
 
         self.td = TableCell('td','|',table_cell_children)
         self.th = TableCell('th','|=',table_cell_children)
-        self.tr = TableRow('tr','|',[(self.no_wiki,self.bodiedmacro,self.macro),self.img,self.link,self.th,self.td])
+        if use_additions:
+            self.tr = TableRow('tr','|',[(self.no_wiki,self.bodiedmacro,self.macro),self.img,self.link,self.th,self.td])
+        else:
+            self.tr = TableRow('tr','|',[self.no_wiki,self.img,self.link,self.th,self.td])
         self.table = Table('table','|',[self.tr])
 
         self.p = Paragraph('p',header_children)
@@ -156,7 +159,7 @@ class Creole10(object):
         self.pre = PreBlock('pre',['{{{','}}}'])
 
         if use_additions:
-            self.parse_order = [(self.bodied_block_macro,self.pre),self.block_macro,self.blank_line,self.table]+ headings\
+            self.parse_order = [(self.bodied_block_macro,self.pre,self.block_macro),self.blank_line,self.table]+ headings\
                    + [self.hr,self.dl,self.ul,self.ol,self.lone_place_holder,self.p]
 
         else:
