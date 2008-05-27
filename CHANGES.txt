@@ -1,12 +1,15 @@
 Version 0.5.0 (?)
 -----------------------------
 
- * fixed bug with macros that output unicode strings
- * macro names can now include capitals and periods
+ * special sytax introduced for macros spanning block level markup 
+ * macros returning Croele can contain other macros (issue 6)
+ * macros refactored, pre-processing no longer used, more robust
+ * fixed bug with macros that output unicode strings (issue 4)
+ * macro names can now include capitals and periods (issue 5)
  * added support for custom space characters for interwiki
-   links (interwiki_links_space_chars)
+   links (interwiki_links_space_chars) 
  * api changed for default interwiki links space character, the
-   wiki_links_space_char is used instead of an underscore.
+   wiki_links_space_char is used instead of an underscore. (issue 3)
 
 Version 0.4.0 (March 24 2008)
 -----------------------------
