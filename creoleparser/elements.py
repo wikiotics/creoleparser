@@ -177,7 +177,7 @@ class Macro(WikiElement):
         content = '(.*?)'
 
         
-        macro_name = r'([a-zA-Z]+([-.][a-zA-Z0-9]+)*)'
+        macro_name = r'([a-zA-Z]+([-.]?[a-zA-Z0-9]+)*)'
         # allows any number of non-repeating hyphens or periods
         # underscore is not included because hyphen is
         return esc_neg_look + re.escape(self.token[0]) + r'(' + macro_name + \
@@ -209,7 +209,7 @@ class BodiedMacro(Macro):
 
     def re_string(self):
         content = r'([ \S]*?)'
-        macro_name = r'([a-zA-Z]+([-.][a-zA-Z0-9]+)*)'
+        macro_name = r'([a-zA-Z]+([-.]?[a-zA-Z0-9]+)*)'
         body = '(.+?)'
         return esc_neg_look + re.escape(self.token[0]) + r'(' + macro_name + \
                content + ')'+ esc_neg_look + re.escape(self.token[1]) + \
@@ -279,7 +279,7 @@ class BlockMacro(WikiElement):
         arg_string = '((?!.*>>.*>>).*?)'
 
         
-        macro_name = r'([a-zA-Z]+([-.][a-zA-Z0-9]+)*)'
+        macro_name = r'([a-zA-Z]+([-.]?[a-zA-Z0-9]+)*)'
         # allows any number of non-repeating hyphens or periods
         # underscore is not included because hyphen is
         start = '^' + re.escape(self.token[0])
@@ -317,7 +317,7 @@ class BodiedBlockMacro(BlockMacro):
     def re_string(self):
         arg_string = r'((?![^\n]*>>[^\n]*>>)[ \S]*?)'
         start = '^' + re.escape(self.token[0])
-        macro_name = r'([a-zA-Z]+([-.][a-zA-Z0-9]+)*)'
+        macro_name = r'([a-zA-Z]+([-.]?[a-zA-Z0-9]+)*)'
         body = r'(.*?\n)'
         end = re.escape(self.token[0]) + \
                r'/\2' + re.escape(self.token[1]) + r'\s*?\n'

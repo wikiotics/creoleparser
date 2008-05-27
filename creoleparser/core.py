@@ -64,15 +64,16 @@ def fragmentize(text,wiki_elements, element_store,remove_escapes=True):
     # If the first supplied wiki_element is actually a list of elements, \
     # search for all of them and match the closest one only.
     if isinstance(wiki_elements[0],(list,tuple)):
-        found_elements = []
-        for wiki_element in wiki_elements[0]:
-            mo = wiki_element.regexp.search(text)
-            if mo:
-                found_elements.append((mo.start(),wiki_element,mo))
-        if found_elements:
-            x,wiki_element,mo = min(found_elements)
-        else:
-            mo = None
+        x = None
+        mo = None
+        for element in wiki_elements[0]:
+            m = element.regexp.search(text)
+            if m:
+                if x is None:
+                    x,wiki_element,mo = m.start(),element,m
+                elif m.start() < x:
+                    x,wiki_element,mo = m.start(),element,m
+ 
     else:
         wiki_element = wiki_elements[0]
         mo = wiki_element.regexp.search(text)
@@ -150,40 +151,40 @@ def preprocess(text, dialect):
     return text
 
 
-def encode_macros(text, elements_to_skip=None,
-               elements_to_process=None):
-    """This is used to flag macros that aren't in a nowiki block
-    before further parsing. Only flagged macros will be processed
-    later.
-
-    :parameters:
-      text
-        text to be processsed.
-      elements_to_skip
-        these wiki elements will not be processed.
-      elements_to_process
-        these wiki elements will have an escape added according to
-        their ``encode`` method
-    """
-
-    if not elements_to_skip:
-        for element in elements_to_process:
-            text = element.encode(text)
-        return [text]
-
-    mo = elements_to_skip[0].regexp.search(text)
-    parts = []
-    if mo:
-        if mo.start():
-            parts.extend(encode_macros(text[:mo.start()],elements_to_skip[1:],
-                                    elements_to_process))
-        parts.append(mo.group(0))
-        if mo.end() < len(text):
-            parts.extend(encode_macros(text[mo.end():],elements_to_skip,
-                                    elements_to_process))
-    else:
-        parts = encode_macros(text,elements_to_skip[1:],elements_to_process)
-    return parts
+##def encode_macros(text, elements_to_skip=None,
+##               elements_to_process=None):
+##    """This is used to flag macros that aren't in a nowiki block
+##    before further parsing. Only flagged macros will be processed
+##    later.
+##
+##    :parameters:
+##      text
+##        text to be processsed.
+##      elements_to_skip
+##        these wiki elements will not be processed.
+##      elements_to_process
+##        these wiki elements will have an escape added according to
+##        their ``encode`` method
+##    """
+##
+##    if not elements_to_skip:
+##        for element in elements_to_process:
+##            text = element.encode(text)
+##        return [text]
+##
+##    mo = elements_to_skip[0].regexp.search(text)
+##    parts = []
+##    if mo:
+##        if mo.start():
+##            parts.extend(encode_macros(text[:mo.start()],elements_to_skip[1:],
+##                                    elements_to_process))
+##        parts.append(mo.group(0))
+##        if mo.end() < len(text):
+##            parts.extend(encode_macros(text[mo.end():],elements_to_skip,
+##                                    elements_to_process))
+##    else:
+##        parts = encode_macros(text,elements_to_skip[1:],elements_to_process)
+##    return parts
      
 
 def _test():
