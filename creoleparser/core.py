@@ -145,8 +145,8 @@ def preprocess(text, dialect):
     text = text.replace("\r\n", "\n")
     text = text.replace("\r", "\n")
     text = ''.join([text.rstrip(),'\n']) 
-    text = ''.join(encode_macros(text,[dialect.pre,dialect.no_wiki],
-                              [dialect.macro]))
+    #text = ''.join(encode_macros(text,[dialect.pre,dialect.no_wiki],
+    #                          [dialect.macro]))
     return text
 
 

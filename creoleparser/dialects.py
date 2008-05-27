@@ -73,6 +73,8 @@ class Creole10(object):
          """
         self.macro = Macro('',('<<','>>'),[],func=macro_func)
         self.bodiedmacro = BodiedMacro('',('<<','>>'),[],func=macro_func)
+        self.block_macro = BlockMacro('',('<<','>>'),[],func=macro_func)
+        self.bodied_block_macro = BodiedBlockMacro('',('<<','>>'),[],func=macro_func)
         self.br = LineBreak('br', r'\\')
         self.raw_link = RawLink('a')
         self.url_link = URLLink('a','',[],delimiter = '|')
@@ -108,6 +110,8 @@ class Creole10(object):
             self.em.child_tags.extend([self.tt, self.u, self.sup, self.sub])
             self.strong.child_tags.extend([self.tt, self.u, self.sup, self.sub])
             link_child_tags.extend([self.tt, self.u, self.sup, self.sub])
+            header_children[0] = (self.no_wiki,self.bodiedmacro,self.macro)
+            #header_children.insert(1,self.macro)
             header_children.extend([self.tt, self.u, self.sup, self.sub])
             table_cell_children.extend([self.tt, self.u, self.sup, self.sub])
 
@@ -132,7 +136,7 @@ class Creole10(object):
 
         self.td = TableCell('td','|',table_cell_children)
         self.th = TableCell('th','|=',table_cell_children)
-        self.tr = TableRow('tr','|',[self.no_wiki,self.img,self.link,self.th,self.td])
+        self.tr = TableRow('tr','|',[(self.no_wiki,self.bodiedmacro,self.macro),self.img,self.link,self.th,self.td])
         self.table = Table('table','|',[self.tr])
 
         self.p = Paragraph('p',header_children)
@@ -140,7 +144,7 @@ class Creole10(object):
         if use_additions:
             self.dd = DefinitionDef('dd',':',[table_cell_children])
             self.dt = DefinitionTerm('dt',';',[table_cell_children],stop_token=':')
-            self.dl = List('dl',';',[self.no_wiki,self.img,self.link,self.dt,self.dd],stop_tokens='*#')
+            self.dl = List('dl',';',[(self.no_wiki,self.bodiedmacro,self.macro),self.img,self.link,self.dt,self.dd],stop_tokens='*#')
      
         self.li = ListItem('li',child_tags=[],list_tokens='*#')
         self.ol = List('ol','#',[self.li],stop_tokens='*')
@@ -152,8 +156,9 @@ class Creole10(object):
         self.pre = PreBlock('pre',['{{{','}}}'])
 
         if use_additions:
-            self.parse_order = [self.bodiedmacro,self.macro,self.pre,self.blank_line,self.table]+ headings\
-                           + [self.hr,self.dl,self.ul,self.ol,self.lone_place_holder,self.p]
+            self.parse_order = [(self.bodied_block_macro,self.pre),self.block_macro,self.blank_line,self.table]+ headings\
+                   + [self.hr,self.dl,self.ul,self.ol,self.lone_place_holder,self.p]
+
         else:
             self.parse_order = [self.pre,self.blank_line,self.table]+ headings\
                            + [self.hr,self.ul,self.ol,self.lone_place_holder,self.p]
