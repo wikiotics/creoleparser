@@ -20,16 +20,18 @@ place_holder_re = re.compile(r'<<<(-?\d+?)>>>')
 def fill_from_store(text,element_store):
     frags = []
     mo = place_holder_re.search(text)
-    if mo:
+    while mo:
         if mo.start():
             frags.append(text[:mo.start()])
-        #print mo.group(1), element_store.d.get(mo.group(1),'Empty')
         frags.append(element_store.get(mo.group(1),
                        mo.group(1).join(['<<<','>>>'])))
         if mo.end() < len(text):
-            frags.extend(fill_from_store(text[mo.end():],element_store))
+            text = text[mo.end():]
+        else:
+            break
+        mo = place_holder_re.search(text)
     else:
-        frags = [text]
+        frags.append(text)
     return frags
 
 def fragmentize(text,wiki_elements, element_store,remove_escapes=True):
