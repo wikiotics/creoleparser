@@ -623,6 +623,33 @@ def test_interwiki_links():
 
 def test_sanitizing():
     check_markup('{{javascript:alert(document.cookie)}}','<img src="unsafe_uri_detected" alt="unsafe_uri_detected" />')
+
+def test_very_long_document():
+    lines = [str(x)+' blaa blaa' for x in range(2000)]
+    lines[50] = '{{{'
+    lines[500] = '}}}'
+    lines[1100] = '{{{'
+    lines[1400] = '}}}'
+    doc = '\n\n'.join(lines)
+    pre = False
+    expected_lines = []
+    for line in lines:
+        if line == '{{{':
+            expected_lines.append('<pre>\n')
+            pre = True
+        elif line == '}}}':
+            expected_lines.append('</pre>\n')
+            pre = False
+        elif pre:
+            expected_lines.append(line+'\n\n')
+        else:
+            expected_lines.append('<p>'+line+'</p>\n')
+    expected = ''.join(expected_lines)
+    assert text2html(doc) == expected
+    #print expected+':'
+    #print
+    #print text2html(doc)+':'
+  
     
 
 def _test():
@@ -637,6 +664,7 @@ def _test():
     test_marco_func()
     test_interwiki_links()
     test_sanitizing()
+    test_very_long_document()
 
 if __name__ == "__main__":
     _test()
