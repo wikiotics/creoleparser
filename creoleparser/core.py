@@ -16,6 +16,7 @@ escape_char = '~'
 esc_neg_look = '(?<!' + re.escape(escape_char) + ')'
 esc_to_remove = re.compile(''.join([r'(?<!',re.escape(escape_char),')',re.escape(escape_char),r'(?!([ \n]|$))']))
 place_holder_re = re.compile(r'<<<(-?\d+?)>>>')
+max_blank_lines = 250
 
 def fill_from_store(text,element_store):
     frags = []
@@ -116,8 +117,8 @@ class Parser(object):
         """Returns a Genshi Stream."""
         if element_store is None:
             element_store = {}
-        text = preprocess(text,self.dialect)
-        return bldr.tag(fragmentize(text,self.dialect.parse_order,element_store)).generate()
+        chunks = preprocess(text,self.dialect)
+        return bldr.tag(*[fragmentize(text,self.dialect.parse_order,element_store) for text in chunks]).generate()
 
     def render(self,text,element_store=None,**kwargs):
         """Returns final output string (e.g., xhtml)
@@ -147,11 +148,42 @@ def preprocess(text, dialect):
     """
     text = text.replace("\r\n", "\n")
     text = text.replace("\r", "\n")
-    text = ''.join([text.rstrip(),'\n']) 
-    #text = ''.join(encode_macros(text,[dialect.pre,dialect.no_wiki],
-    #                          [dialect.macro]))
-    return text
+    text = ''.join([text.rstrip(),'\n'])
+    blank_lines = list(dialect.blank_line.regexp.finditer(text))
+    if len(blank_lines) > max_blank_lines:
+        return chunk(text,blank_lines,[dialect.pre,dialect.bodied_block_macro],max_blank_lines)
 
+    return [text]
+
+
+def chunk(text, blank_lines, hard_elements, limit):
+    """Safely breaks large Creole documents into a list of smaller
+    ones (strings)
+    """
+    hard_spans = []
+    for e in hard_elements:
+        for mo in e.regexp.finditer(text):
+            hard_spans.append(mo.span())
+
+    hard_chars = []
+    for x,y in hard_spans:
+        hard_chars.extend(range(x,y))
+    hard_chars = list(set(hard_chars))
+
+    chunks = []
+    start = 0
+    for i in range(len(blank_lines)/limit):
+        for mo in blank_lines[limit/2 + i*limit:]:
+            if mo.start() not in hard_chars:
+                chunks.append(text[start:mo.start()])
+                start = mo.end()
+                break
+    chunks.append(text[start:])
+    
+    return chunks
+
+        
+    
 
 ##def encode_macros(text, elements_to_skip=None,
 ##               elements_to_process=None):

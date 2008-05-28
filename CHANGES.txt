@@ -1,6 +1,7 @@
 Version 0.5.0 (?)
 -----------------------------
 
+ * fixed recursion issue for long files (issue 2)
  * special sytax introduced for macros spanning block level markup 
  * macros returning Croele can contain other macros (issue 6)
  * macros refactored, pre-processing no longer used, more robust
