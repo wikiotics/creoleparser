@@ -185,7 +185,7 @@ class Macro(WikiElement):
 
     def _build(self,mo,element_store):
         if self.func:
-            value = self.func(mo.group(2),mo.group(4),None)
+            value = self.func(mo.group(2),mo.group(4),None,False)
         else:
             value = None
         if value is None:
@@ -218,7 +218,7 @@ class BodiedMacro(Macro):
 
     def _build(self,mo,element_store):
         if self.func:
-            value = self.func(mo.group(2),mo.group(4),mo.group(5))
+            value = self.func(mo.group(2),mo.group(4),mo.group(5),False)
         else:
             value = None
         if value is None:
@@ -291,7 +291,7 @@ class BlockMacro(WikiElement):
     def _build(self,mo,element_store):
         #print 'block_macro', mo.groups()
         if self.func:
-            value = self.func(mo.group(2),mo.group(4),None)
+            value = self.func(mo.group(2),mo.group(4),None,True)
         else:
             value = None
         if value is None:
@@ -328,7 +328,7 @@ class BodiedBlockMacro(BlockMacro):
     def _build(self,mo,element_store):
         #print 'block_bodied_macro', mo.groups()
         if self.func:
-            value = self.func(mo.group(2),mo.group(4),mo.group(5))
+            value = self.func(mo.group(2),mo.group(4),mo.group(5),True)
         else:
             value = None
         if value is None:
