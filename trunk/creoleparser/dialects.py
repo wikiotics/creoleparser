@@ -59,8 +59,9 @@ class Creole10(object):
           macro_func
             If supplied, this fuction will be called when macro markup is found. The
             function must accept the macro name as its first argument, the argument
-            string (including any delimter) as the second, and the macro body as it's
-            third (will be None for a macro without a body).
+            string (including any delimter) as the second, the macro body as its
+            third (will be None for a macro without a body), and a Boolean as the
+            fourth (True for Block type macros, False for normal macros).
             The function may return a string (which will be subject to further wiki
             processing) or a Genshi Stream object. If None is returned, the markup will
             be rendered unchanged.

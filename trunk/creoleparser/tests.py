@@ -443,7 +443,7 @@ As is [[Ohana:Home|This one]].</p>
 
 def test_marco_func():
 
-    def a_macro_func(macro_name, arg_string,body):
+    def a_macro_func(macro_name, arg_string,body,context):
         if macro_name == 'steve':
             return '**' + arg_string + '**'
         if macro_name == 'luca':
