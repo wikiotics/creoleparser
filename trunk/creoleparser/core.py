@@ -113,29 +113,55 @@ class Parser(object):
         self.strip_whitespace = strip_whitespace
         self.encoding=encoding
 
-    def generate(self,text,element_store=None):
-        """Returns a Genshi Stream."""
-        if element_store is None:
-            element_store = {}
-        chunks = preprocess(text,self.dialect)
-        return bldr.tag(*[fragmentize(text,self.dialect.parse_order,element_store) for text in chunks]).generate()
-
-    def render(self,text,element_store=None,**kwargs):
-        """Returns final output string (e.g., xhtml)
+    def generate(self,text,element_store=None,context='block'):
+        """Returns a Genshi Stream.
 
         :parameters:
+          text
+            The text to be parsed.
+          context
+            This is useful for marco development where (for example) supression
+            of paragraph tags is desired. Can be 'inline', 'block', or a list
+            of WikiElement objects (use with caution).
+          element_store
+            Internal dictionary that's passed around a lot ;)
           See Genshi documentation for additional keyword arguments.
         """
         if element_store is None:
             element_store = {}
-        return self.generate(text,element_store).render(method=self.method,strip_whitespace=self.strip_whitespace,
-                                          encoding=self.encoding,**kwargs)
+        if not isinstance(context,list):
+            if context == 'block':
+                top_level_elements = self.dialect.block_elements
+            elif context == 'inline':
+                top_level_elements = self.dialect.inline_elements
+        else:
+            top_level_elements = context
+        chunks = preprocess(text,self.dialect)
+        return bldr.tag(*[fragmentize(text,top_level_elements,element_store) for text in chunks]).generate()
 
-    def __call__(self,text,element_store=None):
-        """Wrapper for the render method. Returns final output string."""
+    def render(self,text,element_store=None,context='block',**kwargs):
+        """Returns final output string (e.g., xhtml)
+
+        :parameters:
+          See generate() (above) and Genshi documentation for additional
+          keyword arguments.
+        """
         if element_store is None:
             element_store = {}
-        return self.render(text,element_store)
+        return self.generate(text,element_store,context).render(method=self.method,strip_whitespace=self.strip_whitespace,
+                                          encoding=self.encoding,**kwargs)
+
+    def __call__(self,text,element_store=None,context='block'):
+        """Wrapper for the render method. Returns final output string.
+
+        :parameters:
+          See generate() (above) and Genshi documentation for additional
+          keyword arguments.
+        """
+
+        if element_store is None:
+            element_store = {}
+        return self.render(text,element_store,context)
 
 def preprocess(text, dialect):
     """This should generally be called before fragmentize().
@@ -168,7 +194,7 @@ def chunk(text, blank_lines, hard_elements, limit):
     hard_chars = []
     for x,y in hard_spans:
         hard_chars.extend(range(x,y))
-    hard_chars = list(set(hard_chars))
+    hard_chars = set(hard_chars)
 
     chunks = []
     start = 0

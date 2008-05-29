@@ -12,12 +12,12 @@ from __init__ import text2html, creole2html
 from dialects import Creole10
 from core import Parser
 
-def check_markup(m, s, p=text2html,paragraph=True):
+def check_markup(m, s, p=text2html,paragraph=True,context='block'):
     if paragraph:
         out = '<p>%s</p>\n' % s
     else:
         out = s 
-    gen = p.render(m)
+    gen = p.render(m,context=context)
     #print 'obtained:', repr(gen)
     #print 'expected:', repr(out)
     assert out == gen
@@ -646,13 +646,17 @@ def test_very_long_document():
             expected_lines.append('<p>'+line+'</p>\n')
     expected = ''.join(expected_lines)
     assert text2html(doc) == expected
-    #print expected+':'
-    #print
-    #print text2html(doc)+':'
-  
+    
+def test_context():
+    check_markup('steve //rad//','<p>steve <em>rad</em></p>\n',context='block',paragraph=False)
+    check_markup('steve //rad//','steve <em>rad</em>\n',context='inline',paragraph=False)
+    check_markup('steve //rad//','<p>steve <em>rad</em></p>\n',context=text2html.dialect.block_elements,paragraph=False)
+    check_markup('steve //rad//','steve <em>rad</em>\n',context=text2html.dialect.inline_elements,paragraph=False)
     
 
+
 def _test():
+    import time
     import doctest
     doctest.testmod()
     test_creole2html()
@@ -664,10 +668,16 @@ def _test():
     test_marco_func()
     test_interwiki_links()
     test_sanitizing()
+    #a = time.time()
     test_very_long_document()
+    #b = time.time()
+    #print b - a
+    test_context()
+
 
 if __name__ == "__main__":
     _test()
+
 
 
 
