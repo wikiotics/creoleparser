@@ -1,2 +1,3 @@
 = Comments Page =
-If you have questions or comments please add them here. I'll create a discussion group later if needed.
+
+*This page is no longer active. Please use [http://groups.google.com/group/creoleparser the discussion group] instead.*
