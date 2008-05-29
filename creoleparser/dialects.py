@@ -99,7 +99,7 @@ class Creole10(object):
         self.em.child_tags = []
         self.strong.child_tags = [self.em]
         link_child_tags = [self.strong, self.em]
-        header_children = [self.no_wiki, self.img, self.link, self.br, self.raw_link, self.strong, self.em]
+        inline_elements = [self.no_wiki, self.img, self.link, self.br, self.raw_link, self.strong, self.em]
         table_cell_children = [self.br, self.raw_link, self.strong, self.em]
 
         if use_additions:
@@ -110,9 +110,9 @@ class Creole10(object):
             self.em.child_tags.extend([self.tt, self.u, self.sup, self.sub])
             self.strong.child_tags.extend([self.tt, self.u, self.sup, self.sub])
             link_child_tags.extend([self.tt, self.u, self.sup, self.sub])
-            header_children[0] = (self.no_wiki,self.bodiedmacro,self.macro)
-            #header_children.insert(1,self.macro)
-            header_children.extend([self.tt, self.u, self.sup, self.sub])
+            inline_elements[0] = (self.no_wiki,self.bodiedmacro,self.macro)
+            #inline_elements.insert(1,self.macro)
+            inline_elements.extend([self.tt, self.u, self.sup, self.sub])
             table_cell_children.extend([self.tt, self.u, self.sup, self.sub])
         
         self.wiki_link.child_tags = link_child_tags
@@ -125,12 +125,12 @@ class Creole10(object):
         self.blank_line = BlankLine()
         self.lone_place_holder = LonePlaceHolder('',['<<<','>>>'],[])
 
-        self.h1 = Heading('h1','=',header_children)
-        self.h2 = Heading('h2','==',header_children)
-        self.h3 = Heading('h3','===',header_children)
-        self.h4 = Heading('h4','====',header_children)
-        self.h5 = Heading('h5','=====',header_children)
-        self.h6 = Heading('h6','======',header_children)
+        self.h1 = Heading('h1','=',inline_elements)
+        self.h2 = Heading('h2','==',inline_elements)
+        self.h3 = Heading('h3','===',inline_elements)
+        self.h4 = Heading('h4','====',inline_elements)
+        self.h5 = Heading('h5','=====',inline_elements)
+        self.h6 = Heading('h6','======',inline_elements)
 
         headings = [self.h1,self.h2,self.h3,self.h4,self.h5,self.h6]
 
@@ -142,7 +142,7 @@ class Creole10(object):
             self.tr = TableRow('tr','|',[self.no_wiki,self.img,self.link,self.th,self.td])
         self.table = Table('table','|',[self.tr])
 
-        self.p = Paragraph('p',header_children)
+        self.p = Paragraph('p',inline_elements)
 
         if use_additions:
             self.dd = DefinitionDef('dd',':',[table_cell_children])
@@ -154,16 +154,15 @@ class Creole10(object):
         self.ul = List('ul','*',[self.li],stop_tokens='#')
         self.nested_ol = NestedList('ol','#',[self.li])
         self.nested_ul = NestedList('ul','*',[self.li])
-        self.li.child_tags = [(self.nested_ol,self.nested_ul)] + header_children
-
+        self.li.child_tags = [(self.nested_ol,self.nested_ul)] + inline_elements
         self.pre = PreBlock('pre',['{{{','}}}'])
-
+        self.inline_elements = inline_elements
         if use_additions:
-            self.parse_order = [(self.bodied_block_macro,self.pre,self.block_macro),self.blank_line,self.table]+ headings\
+            self.block_elements = [(self.bodied_block_macro,self.pre,self.block_macro),self.blank_line,self.table]+ headings\
                    + [self.hr,self.dl,self.ul,self.ol,self.lone_place_holder,self.p]
 
         else:
-            self.parse_order = [self.pre,self.blank_line,self.table]+ headings\
+            self.block_elements = [self.pre,self.blank_line,self.table]+ headings\
                            + [self.hr,self.ul,self.ol,self.lone_place_holder,self.p]
         """These are the wiki elements that are searched at the top level of text to be
         processed. The order matters because elements later in the list need not have any
