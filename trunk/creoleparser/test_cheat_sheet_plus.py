@@ -33,7 +33,7 @@ def path_func(page_name):
     else:
         return page_name
     
-def macro_func(name,arg_string,body,context):
+def macro_func(name,arg_string,body,isblock):
     if name=='include':
         return include(arg_string)
     elif name=='include-source':
