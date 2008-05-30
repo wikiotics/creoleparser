@@ -537,6 +537,18 @@ four
 <p>two
 one</p>
 """,p=parser,paragraph=False)
+    check_markup("""\
+one
+<<footer>>
+
+<<luca foobar>>
+
+<<steve foo>>
+""","""\
+<p>one
+<span class="centered">This is a footer.</span></p>
+<strong> foobar</strong><p><strong> foo</strong></p>
+""",p=parser,paragraph=False)
 
     
 
@@ -677,7 +689,4 @@ def _test():
 
 if __name__ == "__main__":
     _test()
-
-
-
-
+    

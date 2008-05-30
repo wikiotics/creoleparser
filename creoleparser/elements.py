@@ -148,6 +148,7 @@ class InlineElement(WikiElement):
         return frags
 
 
+macro_name = r'([a-zA-Z]+([-.]?[a-zA-Z0-9]+)*)'
 
 class Macro(WikiElement):
     """Finds macros"""
@@ -177,7 +178,7 @@ class Macro(WikiElement):
         content = '(.*?)'
 
         
-        macro_name = r'([a-zA-Z]+([-.]?[a-zA-Z0-9]+)*)'
+        #macro_name = r'([a-zA-Z]+([-.]?[a-zA-Z0-9]+)*)'
         # allows any number of non-repeating hyphens or periods
         # underscore is not included because hyphen is
         return esc_neg_look + re.escape(self.token[0]) + r'(' + macro_name + \
@@ -209,7 +210,7 @@ class BodiedMacro(Macro):
 
     def re_string(self):
         content = r'([ \S]*?)'
-        macro_name = r'([a-zA-Z]+([-.]?[a-zA-Z0-9]+)*)'
+        #macro_name = r'([a-zA-Z]+([-.]?[a-zA-Z0-9]+)*)'
         body = '(.+?)'
         return esc_neg_look + re.escape(self.token[0]) + r'(' + macro_name + \
                content + ')'+ esc_neg_look + re.escape(self.token[1]) + \
@@ -279,11 +280,11 @@ class BlockMacro(WikiElement):
         arg_string = '((?!.*>>.*>>).*?)'
 
         
-        macro_name = r'([a-zA-Z]+([-.]?[a-zA-Z0-9]+)*)'
+        #macro_name = r'([a-zA-Z]+([-.]?[a-zA-Z0-9]+)*)'
         # allows any number of non-repeating hyphens or periods
         # underscore is not included because hyphen is
-        start = '^' + re.escape(self.token[0])
-        end = re.escape(self.token[1]) + r'\s*?\n'
+        start = r'(^\s*?\n|\A)' + re.escape(self.token[0])
+        end = re.escape(self.token[1]) + r'\s*?\n(\s*?\n|$)'
                 
         return start + '(' + macro_name + arg_string + ')' + end
 
@@ -291,11 +292,11 @@ class BlockMacro(WikiElement):
     def _build(self,mo,element_store):
         #print 'block_macro', mo.groups()
         if self.func:
-            value = self.func(mo.group(2),mo.group(4),None,True)
+            value = self.func(mo.group(3),mo.group(5),None,True)
         else:
             value = None
         if value is None:
-            return bldr.tag(self.token[0] + mo.group(1) + self.token[1])
+            return bldr.tag(self.token[0] + mo.group(2) + self.token[1])
         elif isinstance(value,basestring):
             return ''.join([value.rstrip(),'\n'])
         elif isinstance(value, (bldr.Element, Stream)):
@@ -317,7 +318,7 @@ class BodiedBlockMacro(BlockMacro):
     def re_string(self):
         arg_string = r'((?![^\n]*>>[^\n]*>>)[ \S]*?)'
         start = '^' + re.escape(self.token[0])
-        macro_name = r'([a-zA-Z]+([-.]?[a-zA-Z0-9]+)*)'
+        #macro_name = r'([a-zA-Z]+([-.]?[a-zA-Z0-9]+)*)'
         body = r'(.*?\n)'
         end = re.escape(self.token[0]) + \
                r'/\2' + re.escape(self.token[1]) + r'\s*?\n'
