@@ -35,6 +35,7 @@ def fill_from_store(text,element_store):
         frags.append(text)
     return frags
 
+
 def fragmentize(text,wiki_elements, element_store,remove_escapes=True):
 
     """Takes a string of wiki markup and outputs a list of genshi
@@ -44,7 +45,7 @@ def fragmentize(text,wiki_elements, element_store,remove_escapes=True):
     does almost all the parsing.
 
     When no WikiElement objects are supplied, escapes are removed from
-    ``text`` (except if called from ``no_wiki`` or ``pre``)  and it is
+    ``text`` (except if remove_escapes=True)  and it is
     returned as-is. This is the only way for recursion to stop.
 
     :parameters:
@@ -57,35 +58,34 @@ def fragmentize(text,wiki_elements, element_store,remove_escapes=True):
     
     """
 
+    while wiki_elements:
+        # If the first supplied wiki_element is actually a list of elements, \
+        # search for all of them and match the closest one only.
+        if isinstance(wiki_elements[0],(list,tuple)):
+            x = None
+            mo = None
+            for element in wiki_elements[0]:
+                m = element.regexp.search(text)
+                if m:
+                    if x is None:
+                        x,wiki_element,mo = m.start(),element,m
+                    elif m.start() < x:
+                        x,wiki_element,mo = m.start(),element,m
+        else:
+            wiki_element = wiki_elements[0]
+            mo = wiki_element.regexp.search(text)
+             
+        if mo:
+            frags = wiki_element._process(mo, text, wiki_elements, element_store)
+            break
+        else:
+            wiki_elements = wiki_elements[1:]
+
     # remove escape characters 
-    if not wiki_elements:
+    else: 
         if remove_escapes:
             text = esc_to_remove.sub('',text)
         frags = fill_from_store(text,element_store)
-        return frags
-
-    # If the first supplied wiki_element is actually a list of elements, \
-    # search for all of them and match the closest one only.
-    if isinstance(wiki_elements[0],(list,tuple)):
-        x = None
-        mo = None
-        for element in wiki_elements[0]:
-            m = element.regexp.search(text)
-            if m:
-                if x is None:
-                    x,wiki_element,mo = m.start(),element,m
-                elif m.start() < x:
-                    x,wiki_element,mo = m.start(),element,m
- 
-    else:
-        wiki_element = wiki_elements[0]
-        mo = wiki_element.regexp.search(text)
-         
-    frags = []
-    if mo:
-        frags = wiki_element._process(mo, text, wiki_elements, element_store)
-    else:
-        frags = fragmentize(text,wiki_elements[1:],element_store)
 
     return frags
 
@@ -163,6 +163,7 @@ class Parser(object):
             element_store = {}
         return self.render(text,element_store,context)
 
+
 def preprocess(text, dialect):
     """This should generally be called before fragmentize().
 
@@ -199,7 +200,7 @@ def chunk(text, blank_lines, hard_elements, limit):
     chunks = []
     start = 0
     for i in range(len(blank_lines)/limit):
-        for mo in blank_lines[limit/2 + i*limit:]:
+        for mo in blank_lines[limit/2 + i*limit:limit*3/2+i*limit:10]:
             if mo.start() not in hard_chars:
                 chunks.append(text[start:mo.start()])
                 start = mo.end()
@@ -208,44 +209,7 @@ def chunk(text, blank_lines, hard_elements, limit):
     
     return chunks
 
-        
-    
 
-##def encode_macros(text, elements_to_skip=None,
-##               elements_to_process=None):
-##    """This is used to flag macros that aren't in a nowiki block
-##    before further parsing. Only flagged macros will be processed
-##    later.
-##
-##    :parameters:
-##      text
-##        text to be processsed.
-##      elements_to_skip
-##        these wiki elements will not be processed.
-##      elements_to_process
-##        these wiki elements will have an escape added according to
-##        their ``encode`` method
-##    """
-##
-##    if not elements_to_skip:
-##        for element in elements_to_process:
-##            text = element.encode(text)
-##        return [text]
-##
-##    mo = elements_to_skip[0].regexp.search(text)
-##    parts = []
-##    if mo:
-##        if mo.start():
-##            parts.extend(encode_macros(text[:mo.start()],elements_to_skip[1:],
-##                                    elements_to_process))
-##        parts.append(mo.group(0))
-##        if mo.end() < len(text):
-##            parts.extend(encode_macros(text[mo.end():],elements_to_skip,
-##                                    elements_to_process))
-##    else:
-##        parts = encode_macros(text,elements_to_skip[1:],elements_to_process)
-##    return parts
-     
 
 def _test():
     import doctest
