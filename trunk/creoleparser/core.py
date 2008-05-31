@@ -125,26 +125,34 @@ class Parser(object):
             of WikiElement objects (use with caution).
           element_store
             Internal dictionary that's passed around a lot ;)
-          See Genshi documentation for additional keyword arguments.
+            
+        See Genshi documentation for additional keyword arguments.
+          
         """
         if element_store is None:
             element_store = {}
         if not isinstance(context,list):
             if context == 'block':
                 top_level_elements = self.dialect.block_elements
+                do_preprocess = True
             elif context == 'inline':
                 top_level_elements = self.dialect.inline_elements
+                do_preprocess = False
         else:
             top_level_elements = context
-        chunks = preprocess(text,self.dialect)
+            do_preprocess = False
+
+        if do_preprocess:
+            chunks = preprocess(text,self.dialect)
+        else:
+            chunks = [text]
+
         return bldr.tag(*[fragmentize(text,top_level_elements,element_store) for text in chunks]).generate()
 
     def render(self,text,element_store=None,context='block',**kwargs):
         """Returns final output string (e.g., xhtml)
 
-        :parameters:
-          See generate() (above) and Genshi documentation for additional
-          keyword arguments.
+        See generate() (above) and Genshi documentation for keyword arguments.
         """
         if element_store is None:
             element_store = {}
@@ -154,9 +162,7 @@ class Parser(object):
     def __call__(self,text,element_store=None,context='block'):
         """Wrapper for the render method. Returns final output string.
 
-        :parameters:
-          See generate() (above) and Genshi documentation for additional
-          keyword arguments.
+        See generate() (above) and Genshi documentation for keyword arguments.
         """
 
         if element_store is None:
