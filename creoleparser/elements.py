@@ -13,7 +13,7 @@ import genshi.builder as bldr
 from genshi.core import Stream
 from genshi.filters import HTMLSanitizer
 
-from core import escape_char, esc_neg_look, fragmentize #, element_store
+from core import escape_char, esc_neg_look, fragmentize 
 
 sanitizer = HTMLSanitizer()
 
@@ -149,9 +149,11 @@ class InlineElement(WikiElement):
 
 
 macro_name = r'([a-zA-Z]+([-.]?[a-zA-Z0-9]+)*)'
+"""allows any number of non-repeating hyphens or periods.
+Underscore is not included because hyphen is"""
 
 class Macro(WikiElement):
-    """Finds macros"""
+    r"""Finds and processes inline macro elements."""
 
     def __init__(self, tag, token, child_tags,func):
         super(Macro,self).__init__(tag,token , child_tags)
@@ -166,7 +168,7 @@ class Macro(WikiElement):
             text = ''.join([text[:mo.start()],processed,
                         text[mo.end():]])
         else:
-            store_id = str(id(processed)) # str(hash(processed))
+            store_id = str(id(processed))
             element_store[store_id] = processed
             text = ''.join([text[:mo.start()],'<<<',store_id,'>>>',
                         text[mo.end():]])
@@ -176,11 +178,6 @@ class Macro(WikiElement):
 
     def re_string(self):
         content = '(.*?)'
-
-        
-        #macro_name = r'([a-zA-Z]+([-.]?[a-zA-Z0-9]+)*)'
-        # allows any number of non-repeating hyphens or periods
-        # underscore is not included because hyphen is
         return esc_neg_look + re.escape(self.token[0]) + r'(' + macro_name + \
                content + ')' + esc_neg_look + re.escape(self.token[1])
 
@@ -200,7 +197,9 @@ class Macro(WikiElement):
         
 
 class BodiedMacro(Macro):
-    """Finds macros with bodies. Does not span across top level block markup
+    """Finds and processes macros with bodies.
+
+    Does not span across top level block markup
     (see BodiedBlockMacro's for that)."""
 
     def __init__(self, tag, token, child_tags,func):
@@ -234,7 +233,9 @@ class BodiedMacro(Macro):
             raise "macros can only return strings and genshi Streams"
 
 class BlockMacro(WikiElement):
-    """Finds a macro on a line alone without leading spaces. Resulting
+    """Finds a block macros.
+
+    Macro must be on a line alone without leading spaces. Resulting
     output with not be enclosed in paragraph marks or consumed by
     other markup (except pre blocks and BodiedBlockMacro's)
     """
@@ -306,9 +307,11 @@ class BlockMacro(WikiElement):
         
 
 class BodiedBlockMacro(BlockMacro):
-    """Finds macros with bodies where the opening and closing tokens are each on
-    a line alone without leading spaces. These macros can enclose other block
-    level markup including pre blocks and other BodiedBlockMacro's."""
+    """Finds and processes block macros with bodies.
+
+    The opening and closing tokens must be are each on a line alone without
+    leading spaces. These macros can enclose other block level markup
+    including pre blocks and other BodiedBlockMacro's."""
 
     def __init__(self, tag, token, child_tags,func):
         super(BodiedBlockMacro,self).__init__(tag,token , child_tags,func)

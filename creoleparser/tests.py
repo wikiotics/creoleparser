@@ -637,6 +637,7 @@ def test_sanitizing():
     check_markup('{{javascript:alert(document.cookie)}}','<img src="unsafe_uri_detected" alt="unsafe_uri_detected" />')
 
 def test_very_long_document():
+    import time
     lines = [str(x)+' blaa blaa' for x in range(2000)]
     lines[50] = '{{{'
     lines[500] = '}}}'
@@ -657,6 +658,10 @@ def test_very_long_document():
         else:
             expected_lines.append('<p>'+line+'</p>\n')
     expected = ''.join(expected_lines)
+    a = time.time()
+    rendered = text2html(doc)
+    b = time.time()
+    #print b - a
     assert text2html(doc) == expected
     
 def test_context():
@@ -668,7 +673,6 @@ def test_context():
 
 
 def _test():
-    import time
     import doctest
     doctest.testmod()
     test_creole2html()
@@ -680,10 +684,7 @@ def _test():
     test_marco_func()
     test_interwiki_links()
     test_sanitizing()
-    #a = time.time()
     test_very_long_document()
-    #b = time.time()
-    #print b - a
     test_context()
 
 

@@ -68,9 +68,22 @@ class Creole10(object):
             The macro name must start with a letter and can include letters, numbers,
             and non-repeating periods and hyphens.
             Examples:
-            1) <<macro-name arg_string>>the body<</macro-name>>
-            2) <<macro-name I have no body, just this argument string>>
-                      
+
+            These are regular macros::
+            
+              <<macro-name arg_string>>the body<</macro-name>>
+              <<macro-name2 I have no body, just this argument string>>
+
+            These are "block" macros. The won't be enclosed automatically in
+            paragraphs like those above::
+
+              <<note-blank-lines-before-and-after>>
+
+
+              <<macro-name-alone>>
+              nor does this onu
+              <</macro-name-alone>>
+                       
          """
         self.macro = Macro('',('<<','>>'),[],func=macro_func)
         self.bodiedmacro = BodiedMacro('',('<<','>>'),[],func=macro_func)
