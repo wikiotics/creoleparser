@@ -666,9 +666,9 @@ def test_very_long_document():
     
 def test_context():
     check_markup('steve //rad//','<p>steve <em>rad</em></p>\n',context='block',paragraph=False)
-    check_markup('steve //rad//','steve <em>rad</em>\n',context='inline',paragraph=False)
-    check_markup('steve //rad//','<p>steve <em>rad</em></p>\n',context=text2html.dialect.block_elements,paragraph=False)
-    check_markup('steve //rad//','steve <em>rad</em>\n',context=text2html.dialect.inline_elements,paragraph=False)
+    check_markup('steve //rad//','steve <em>rad</em>',context='inline',paragraph=False)
+    #check_markup('steve //rad//','<p>steve <em>rad</em></p>\n',context=text2html.dialect.block_elements,paragraph=False)
+    check_markup('steve //rad//','steve <em>rad</em>',context=text2html.dialect.inline_elements,paragraph=False)
     
 
 
