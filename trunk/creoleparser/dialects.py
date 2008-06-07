@@ -74,17 +74,18 @@ class Creole10(object):
               <<macro-name arg_string>>the body<</macro-name>>
               <<macro-name2 I have no body, just this argument string>>
 
-            These are "block" macros. The won't be enclosed automatically in
+            These are "block" macros. They won't be enclosed automatically in
             paragraphs like those above::
 
               <<note-blank-lines-before-and-after>>
 
 
               <<macro-name-alone>>
-              nor does this onu
+              nor does this one
               <</macro-name-alone>>
                        
          """
+        self.any = Any()
         self.macro = Macro('',('<<','>>'),[],func=macro_func)
         self.bodiedmacro = BodiedMacro('',('<<','>>'),[],func=macro_func)
         self.block_macro = BlockMacro('',('<<','>>'),[],func=macro_func)
@@ -101,7 +102,7 @@ class Creole10(object):
                                   space_char=wiki_links_space_char,class_func=wiki_links_class_func,
                                   path_func=wiki_links_path_func)
         self.img = Image('img',('{{','}}'),[],delimiter='|')
-        self.link = Link('',('[[',']]'),[self.url_link,self.interwiki_link,self.wiki_link])
+        self.link = Link('',('[[',']]'),[self.url_link,self.interwiki_link,self.wiki_link,self.any])
         self.strong = InlineElement('strong', '**',[])
         self.em = InlineElement('em', '//',[])
         if no_wiki_monospace:

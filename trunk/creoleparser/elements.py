@@ -11,9 +11,20 @@ import urlparse
 
 import genshi.builder as bldr
 from genshi.core import Stream
-from genshi.filters import HTMLSanitizer
 
 from core import escape_char, esc_neg_look, fragmentize 
+
+# use Genshi's HTMLSanitizer if possible (i.e., not on Google App Engine)
+try:
+    from genshi.filters import HTMLSanitizer
+except:
+    SAFE_SCHEMES = frozenset(['file', 'ftp', 'http', 'https', 'mailto', None])
+    class HTMLSanitizer(object):
+        def is_safe_uri(self,uri):
+            if ':' not in uri:
+                return True # This is a relative URI
+            chars = [char for char in uri.split(':', 1)[0] if char.isalnum()]
+            return ''.join(chars).lower() in SAFE_SCHEMES
 
 sanitizer = HTMLSanitizer()
 
@@ -539,9 +550,9 @@ class WikiLink(WikiElement):
 
     def re_string(self):
         optional_spaces = ' *'
-        page_name = r'(\S+?( +\S+?)*?)' #allows any number of single spaces
+        page_name = r'(\S+?( \S+?)*?)' #allows any number of single spaces
         alias = r'(' + re.escape(self.delimiter) + r' *(.*?))? *$'
-        return optional_spaces + page_name + optional_spaces + \
+        return '^' + optional_spaces + page_name + optional_spaces + \
                alias
 
     def page_name(self,mo):
@@ -871,10 +882,10 @@ class Link(InlineElement):
 
         link = fragmentize(mo.group(1),self.child_tags,element_store)
 
-        if link:
+        if link[0]:
             return bldr.tag(link)
         else:
-            return token[0] + mo.group(0) + token[-1]
+            return mo.group(0)
 
 class Image(InlineElement):
 
@@ -1047,6 +1058,22 @@ class LineBreak(InlineElement):
     def _build(self,mo,element_store):
         return bldr.tag.__getattr__(self.tag)()
 
+class Any(WikiElement):
+
+    """Matches non-empty string and doesn't add any output.
+    
+    Used to signal that no wiki elements were found."""
+
+    def __init__(self):
+        super(Any,self).__init__(tag=None,token='' , child_tags=[])
+        self.regexp = re.compile(self.re_string(),re.DOTALL)
+
+    def re_string(self):
+        return r'.+'
+     
+    def _build(self,mo,element_store):
+        return None
+    
 
 
 def _test():

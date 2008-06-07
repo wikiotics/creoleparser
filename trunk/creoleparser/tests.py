@@ -8,9 +8,17 @@
 
 import genshi.builder as bldr
 
-from __init__ import text2html, creole2html
 from dialects import Creole10
 from core import Parser
+
+creole2html = Parser(dialect=Creole10(wiki_links_base_url='http://www.wikicreole.org/wiki/',
+                             interwiki_links_base_urls={'Ohana':'http://wikiohana.net/cgi-bin/wiki.pl/'},
+                         use_additions=False,no_wiki_monospace=True))
+
+text2html = Parser(dialect=Creole10(wiki_links_base_url='http://www.wikicreole.org/wiki/',
+                             interwiki_links_base_urls={'Ohana':'http://wikiohana.net/cgi-bin/wiki.pl/'},
+                         use_additions=True,no_wiki_monospace=False))
+
 
 def check_markup(m, s, p=text2html,paragraph=True,context='block'):
     if paragraph:
@@ -670,7 +678,10 @@ def test_context():
     #check_markup('steve //rad//','<p>steve <em>rad</em></p>\n',context=text2html.dialect.block_elements,paragraph=False)
     check_markup('steve //rad//','steve <em>rad</em>',context=text2html.dialect.inline_elements,paragraph=False)
     
-
+def test_links():
+    check_markup('[[foobar]]','<a href="http://www.wikicreole.org/wiki/foobar">foobar</a>')
+    check_markup('[[foo bar]]','<a href="http://www.wikicreole.org/wiki/foo_bar">foo bar</a>')
+    check_markup('[[foo  bar]]','[[foo  bar]]')
 
 def _test():
     import doctest
@@ -686,6 +697,7 @@ def _test():
     test_sanitizing()
     test_very_long_document()
     test_context()
+    test_links()
 
 
 if __name__ == "__main__":
