@@ -1,8 +1,14 @@
+Version 0.?.? (? 2008)
+----------------------
+
+ * wiki links can no longer have adjacent spaces
+ * now works on Goggle App Engine
+
 Version 0.5.0 (May 31 2008)
------------------------------
+---------------------------
 
  * special syntax introduced for macros spanning block level markup 
- * macros returning Croele can contain other macros (issue 6)
+ * macros returning Creole can contain other macros (issue 6)
  * macros refactored, pre-processing no longer used, more robust
  * fixed bug with macros that output unicode strings (issue 4)
  * macro names can now include capitals and periods (issue 5)

@@ -40,17 +40,13 @@ from dialects import Creole10
 
 __docformat__ = 'restructuredtext en'
 
-creole2html = Parser(dialect=Creole10(wiki_links_base_url='http://www.wikicreole.org/wiki/',
-                             interwiki_links_base_urls={'Ohana':'http://wikiohana.net/cgi-bin/wiki.pl/'},
-                         use_additions=False,no_wiki_monospace=True))
+creole2html = Parser(dialect=Creole10(use_additions=False,no_wiki_monospace=True))
 """This is a pure Creole 1.0 parser created for convenience"""
 
 creole_to_xhtml = creole2html
 """Same as creole2html"""
 
-text2html = Parser(dialect=Creole10(wiki_links_base_url='http://www.wikicreole.org/wiki/',
-                             interwiki_links_base_urls={'Ohana':'http://wikiohana.net/cgi-bin/wiki.pl/'},
-                         use_additions=True,no_wiki_monospace=False))
+text2html = Parser(dialect=Creole10(use_additions=True,no_wiki_monospace=False))
 """This is a Creole 1.0 parser (+ additions) created for convenience"""
 
 def _test():
