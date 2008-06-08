@@ -8,6 +8,7 @@
 import urllib
 
 import genshi.builder as bldr
+from genshi.core import Markup
 
 from dialects import Creole10
 from core import Parser
@@ -451,8 +452,16 @@ As is [[Ohana:Home|This one]].</p>
 """
 
 def test_marco_func():
+    
+    def html2stream(text):
+        wrapped = Markup(text)         
+        fragment = bldr.tag(wrapped)
+        stream = fragment.generate()
+        return stream
 
     def a_macro_func(macro_name, arg_string,body,context):
+        if macro_name == 'html':
+            return html2stream(body)
         if macro_name == 'steve':
             return '**' + arg_string + '**'
         if macro_name == 'luca':
@@ -492,7 +501,9 @@ def test_marco_func():
         macro_func=a_macro_func)
 
     parser = Parser(dialect)
-
+    
+    check_markup('<<html>><q cite="http://example.org">foo</q><</html>>',
+                 '<q cite="http://example.org">foo</q>',p=parser)
     check_markup(u'<<mateo>>fooɤ<</mateo>>','<em>foo\xc9\xa4</em>',p=parser)
     check_markup(u'<<steve fooɤ>>','<strong> foo\xc9\xa4</strong>',p=parser)
     check_markup('<<Reverse>>foo<</Reverse>>','oof',p=parser)
