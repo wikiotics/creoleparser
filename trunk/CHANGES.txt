@@ -1,8 +1,10 @@
 Version 0.?.? (? 2008)
 ----------------------
-
+ 
+ * special characters in wiki links get quoted
+ * links refactored to support mailto:
  * wiki links can no longer have adjacent spaces
- * now works on Goggle App Engine
+ * creoleparser now works on Goggle App Engine
 
 Version 0.5.0 (May 31 2008)
 ---------------------------

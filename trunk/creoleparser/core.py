@@ -86,7 +86,7 @@ def fragmentize(text,wiki_elements, element_store,remove_escapes=True):
         if remove_escapes:
             text = esc_to_remove.sub('',text)
         frags = fill_from_store(text,element_store)
-
+        
     return frags
 
 

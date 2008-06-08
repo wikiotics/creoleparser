@@ -5,6 +5,7 @@
 # This module is part of Creoleparser and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 #
+import urllib
 
 import genshi.builder as bldr
 
@@ -32,13 +33,13 @@ def check_markup(m, s, p=text2html,paragraph=True,context='block'):
 
 def test_creole2html():
 
-##    print creole2html(r"""
-##Go to [[http://www.google.com]], it is [[http://www.google.com| <<luca Google>>]]\\
-##even [[This Page Here]] is <<steve the steve macro!>> nice like [[New Page|this]].\\
-##This is the <<sue sue macro!>> and this is the <<luca luca macro!>>.\\
-##Don't touch {{{<<steve this!>>}}}.\\
-##<<mateo>>A body!<</mateo>>\\
-##As is [[Ohana:Home|This one]].""")
+    #print creole2html(r"""
+#Go to [[http://www.google.com]], it is [[http://www.google.com| <<luca Google>>]]\\
+#even [[This Page Here]] is <<steve the steve macro!>> nice like [[New Page|this]].\\
+#This is the <<sue sue macro!>> and this is the <<luca luca macro!>>.\\
+#Don't touch {{{<<steve this!>>}}}.\\
+#<<mateo>>A body!<</mateo>>\\
+#As is [[Ohana:Home|This one]].""")
     
     assert creole2html(r"""
 Go to [[http://www.google.com]], it is [[http://www.google.com| <<luca Google>>]]\\
@@ -421,7 +422,7 @@ def test_wiki_links_class_func():
         if page_name == 'ThisPageHere':
             path = 'Special/ThisPageHere'
         else:
-            path = page_name
+            path = urllib.quote(page_name)
         return path
             
         
@@ -435,10 +436,10 @@ def test_wiki_links_class_func():
 
     parser = Parser(dialect)
 
-##    print parser(r"""
-##Go to [[http://www.google.com]], it is [[http://www.google.com| Google]]\\
-##even [[This Page Here]] is nice like [[New Page|this]].\\
-##As is [[Ohana:Home|This one]].""")
+    #print parser(r"""
+#Go to [[http://www.google.com]], it is [[http://www.google.com| Google]]\\
+#even [[This Page Here]] is nice like [[New Page|this]].\\
+#As is [[Ohana:Home|This one]].""")
 
     assert parser(r"""
 Go to [[http://www.google.com]], it is [[http://www.google.com| Google]]\\
@@ -630,19 +631,20 @@ def test_interwiki_links():
     def checklink(m, a, p=p):
         out = '<p>%s</p>\n' % a
         gen = str(p.generate(m))
-        #print gen
+        #print 'obtained:', repr(gen)
+        #print 'expected:', repr(out)
         assert out == gen
 
     checklink('[[moo:foo bar|Foo]]', '<a href="rab_oof">Foo</a>')
     checklink('[[goo:foo|Foo]]', '<a href="http://example.org/oof">Foo</a>')
     checklink('[[poo:foo|Foo]]', '<a href="http://example.org/foo">Foo</a>')
-    checklink('[[poo:foo bar|Foo]]', '<a href="http://example.org/foo+bar">Foo</a>')
+    checklink('[[poo:foo bar|Foo]]', '<a href="http://example.org/foo%2Bbar">Foo</a>')
     checklink('[[goo:foo bar|Foo]]', '<a href="http://example.org/rab+oof">Foo</a>')
     checklink('[[roo:foo bar|Foo]]', '[[roo:foo bar|Foo]]')
-    assert '[[noo:foo|Foo]]' == '[[noo:foo|Foo]]'
-
+    
 def test_sanitizing():
     check_markup('{{javascript:alert(document.cookie)}}','<img src="unsafe_uri_detected" alt="unsafe_uri_detected" />')
+    check_markup('[[javascript:alert(document.cookie)]]','[[javascript:alert(document.cookie)]]')
 
 def test_very_long_document():
     import time
@@ -682,6 +684,8 @@ def test_links():
     check_markup('[[foobar]]','<a href="http://www.wikicreole.org/wiki/foobar">foobar</a>')
     check_markup('[[foo bar]]','<a href="http://www.wikicreole.org/wiki/foo_bar">foo bar</a>')
     check_markup('[[foo  bar]]','[[foo  bar]]')
+    check_markup('[[mailto:someone@example.com]]',
+                 '<a href="mailto:someone@example.com">mailto:someone@example.com</a>')
 
 def _test():
     import doctest

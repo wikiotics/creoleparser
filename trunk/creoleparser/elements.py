@@ -8,6 +8,7 @@
 
 import re
 import urlparse
+import urllib
 
 import genshi.builder as bldr
 from genshi.core import Stream
@@ -111,7 +112,7 @@ class WikiElement(object):
         return frags
         
     def __repr__(self):
-        return "<WikiElement "+str(self.tag)+">"
+        return "<"+self.__class__.__name__ + " " + str(self.tag)+">"
 
 class InlineElement(WikiElement):
 
@@ -424,12 +425,14 @@ class URLLink(WikiElement):
         self.regexp = re.compile(self.re_string())
 
     def re_string(self):
-        protocol = r'^\s*((\w+?://|/)'
+        protocol = r'^\s*((\w+?:|/)' #r'^\s*((\w+?://|/)'
         rest_of_url = r'\S*?)\s*'
         alias = r'(' + re.escape(self.delimiter) + r' *(.*?))? *$'
         return protocol + rest_of_url + alias
 
     def _build(self,mo,element_store):
+        if not self.href(mo):
+            return None
         return bldr.tag.__getattr__(self.tag)(self.alias(mo,element_store),
                                               href=self.href(mo))
        
@@ -438,7 +441,7 @@ class URLLink(WikiElement):
         if sanitizer.is_safe_uri(mo.group(1)):
             return mo.group(1)
         else:
-            return "unsafe_uri_detected"
+            return None #"unsafe_uri_detected"
             
 
     def alias(self,mo,element_store):
@@ -486,9 +489,9 @@ class InterWikiLink(WikiElement):
         optional_spaces = ' *'
         page_name = r'(\S+?( \S+?)*)' #allows any number of single spaces
         alias = r'(' + re.escape(self.delimiter2) + r' *(.*?))? *$'
-        return wiki_id + optional_spaces + re.escape(self.delimiter1) + \
-               optional_spaces + page_name + optional_spaces + \
-               alias
+        return '^' + optional_spaces + wiki_id + optional_spaces + \
+               re.escape(self.delimiter1) + optional_spaces + page_name + \
+               optional_spaces + alias
 
     def page_name(self,mo):
         space_char = self.space_chars.get(mo.group(1),self.default_space_char)
@@ -504,6 +507,8 @@ class InterWikiLink(WikiElement):
             href = self.page_name(mo)
             if link_func:
                 href = link_func(href)
+            else:
+                href = urllib.quote(href)
             if base_url:
                 href = urlparse.urljoin(base_url, href)
             return href
@@ -562,7 +567,7 @@ class WikiLink(WikiElement):
         if self.path_func:
             the_path = self.path_func(self.page_name(mo))
         else:
-            the_path = self.page_name(mo)
+            the_path = urllib.quote(self.page_name(mo))
         return urlparse.urljoin(self.base_url, the_path)
 
     def _build(self,mo,element_store):
@@ -879,10 +884,18 @@ class Link(InlineElement):
         self.regexp = re.compile(self.re_string())
 
     def _build(self,mo,element_store):
+        
+        for tag in self.child_tags:
+            m = tag.regexp.search(mo.group(1))
+            if m:
+                link = tag._build(m,element_store)
+                #print repr(tag), repr(link),m.group(1)
+                if link:
+                    break
+        else:
+            link = None
 
-        link = fragmentize(mo.group(1),self.child_tags,element_store)
-
-        if link[0]:
+        if link:
             return bldr.tag(link)
         else:
             return mo.group(0)
@@ -1058,22 +1071,6 @@ class LineBreak(InlineElement):
     def _build(self,mo,element_store):
         return bldr.tag.__getattr__(self.tag)()
 
-class Any(WikiElement):
-
-    """Matches non-empty string and doesn't add any output.
-    
-    Used to signal that no wiki elements were found."""
-
-    def __init__(self):
-        super(Any,self).__init__(tag=None,token='' , child_tags=[])
-        self.regexp = re.compile(self.re_string(),re.DOTALL)
-
-    def re_string(self):
-        return r'.+'
-     
-    def _build(self,mo,element_store):
-        return None
-    
 
 
 def _test():
