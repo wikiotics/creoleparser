@@ -202,7 +202,7 @@ class Macro(WikiElement):
             return bldr.tag(self.token[0] + mo.group(1) + self.token[1])
         elif isinstance(value,basestring):
             return value
-        elif isinstance(value, (bldr.Element, Stream)):
+        elif isinstance(value, (bldr.Fragment,bldr.Element, Stream)):
             return [value]
         else:
             raise "Marcos can only return strings and Genshi Streams" 
@@ -239,7 +239,7 @@ class BodiedMacro(Macro):
                             + mo.group(1) + self.token[1])
         elif isinstance(value, basestring):
             return value
-        elif isinstance(value, (bldr.Element, Stream)):
+        elif isinstance(value, (bldr.Fragment,bldr.Element, Stream)):
             return [value]
         else:
             raise "macros can only return strings and genshi Streams"
@@ -312,7 +312,7 @@ class BlockMacro(WikiElement):
             return bldr.tag(self.token[0] + mo.group(2) + self.token[1])
         elif isinstance(value,basestring):
             return ''.join([value.rstrip(),'\n'])
-        elif isinstance(value, (bldr.Element, Stream)):
+        elif isinstance(value, (bldr.Fragment,bldr.Element, Stream)):
             return [value]
         else:
             raise "Marcos can only return strings and Genshi Streams" 
@@ -353,7 +353,7 @@ class BodiedBlockMacro(BlockMacro):
                             + mo.group(1) + self.token[1])
         elif isinstance(value, basestring):
             return value
-        elif isinstance(value, (bldr.Element, Stream)):
+        elif isinstance(value, (bldr.Fragment,bldr.Element, Stream)):
             return [value]
         else:
             raise "macros can only return strings and genshi Streams"
