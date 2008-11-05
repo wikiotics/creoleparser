@@ -728,55 +728,46 @@ def test_interwiki_links():
     checklink('[[goo:foo bar|Foo]]', '<a href="http://example.org/rab+oof">Foo</a>')
     checklink('[[roo:foo bar|Foo]]', '[[roo:foo bar|Foo]]')
 
+
 class TaintingTest(unittest.TestCase):
     """
     """
+    def test_cookies(self):
+        self.assertEquals(
+            text2html("{{javascript:alert(document.cookie)}}"),
+            wrap_result("""<img src="unsafe_uri_detected" alt="unsafe_uri_detected" />"""))
+        self.assertEquals(
+            text2html("[[javascript:alert(document.cookie)]]"),
+            wrap_result("[[javascript:alert(document.cookie)]]"))
 
-def test_sanitizing():
-    check_markup('{{javascript:alert(document.cookie)}}','<img src="unsafe_uri_detected" alt="unsafe_uri_detected" />')
-    check_markup('[[javascript:alert(document.cookie)]]','[[javascript:alert(document.cookie)]]')
 
 class LongDocumentTest(unittest.TestCase):
     """
     """
+    def test_very_long_document(self):
+        lines = [str(x)+' blaa blaa' for x in range(2000)]
+        lines[50] = '{{{'
+        lines[500] = '}}}'
+        lines[1100] = '{{{'
+        lines[1400] = '}}}'
+        doc = '\n\n'.join(lines)
+        pre = False
+        expected_lines = []
+        for line in lines:
+            if line == '{{{':
+                expected_lines.append('<pre>\n')
+                pre = True
+            elif line == '}}}':
+                expected_lines.append('</pre>\n')
+                pre = False
+            elif pre:
+                expected_lines.append(line+'\n\n')
+            else:
+                expected_lines.append('<p>'+line+'</p>\n')
+        expected = ''.join(expected_lines)
+        rendered = text2html(doc)
+        self.assertEquals(text2html(doc), expected)
 
-def test_very_long_document():
-    import time
-    lines = [str(x)+' blaa blaa' for x in range(2000)]
-    lines[50] = '{{{'
-    lines[500] = '}}}'
-    lines[1100] = '{{{'
-    lines[1400] = '}}}'
-    doc = '\n\n'.join(lines)
-    pre = False
-    expected_lines = []
-    for line in lines:
-        if line == '{{{':
-            expected_lines.append('<pre>\n')
-            pre = True
-        elif line == '}}}':
-            expected_lines.append('</pre>\n')
-            pre = False
-        elif pre:
-            expected_lines.append(line+'\n\n')
-        else:
-            expected_lines.append('<p>'+line+'</p>\n')
-    expected = ''.join(expected_lines)
-    a = time.time()
-    rendered = text2html(doc)
-    b = time.time()
-    #print b - a
-    assert text2html(doc) == expected
-
-def check_markup(m, s, p=text2html,paragraph=True,context='block'):
-    if paragraph:
-        out = '<p>%s</p>\n' % s
-    else:
-        out = s
-    gen = p.render(m,context=context)
-    #print 'obtained:', repr(gen)
-    #print 'expected:', repr(out)
-    assert out == gen
 
 class ContextTest(unittest.TestCase):
     """
