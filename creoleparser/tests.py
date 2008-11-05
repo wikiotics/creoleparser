@@ -16,13 +16,29 @@ from core import Parser
 
 import unittest
 
-creole2html = Parser(dialect=Creole10(wiki_links_base_url='http://www.wikicreole.org/wiki/',
-                             interwiki_links_base_urls={'Ohana':'http://wikiohana.net/cgi-bin/wiki.pl/'},
-                         use_additions=False,no_wiki_monospace=True))
 
-text2html = Parser(dialect=Creole10(wiki_links_base_url='http://www.wikicreole.org/wiki/',
-                             interwiki_links_base_urls={'Ohana':'http://wikiohana.net/cgi-bin/wiki.pl/'},
-                         use_additions=True,no_wiki_monospace=False))
+base_url = 'http://www.wikicreole.org/wiki/'
+inter_wiki_url = 'http://wikiohana.net/cgi-bin/wiki.pl/'
+
+
+creole2html = Parser(
+    dialect=Creole10(
+        wiki_links_base_url=base_url,
+        interwiki_links_base_urls={'Ohana': inter_wiki_url},
+        use_additions=False,
+        no_wiki_monospace=True
+        )
+    )
+
+
+text2html = Parser(
+    dialect=Creole10(
+        wiki_links_base_url=base_url,
+        interwiki_links_base_urls={'Ohana': inter_wiki_url},
+        use_additions=True,
+        no_wiki_monospace=False
+        )
+    )
 
 
 def check_markup(m, s, p=text2html,paragraph=True,context='block'):
@@ -34,6 +50,7 @@ def check_markup(m, s, p=text2html,paragraph=True,context='block'):
     #print 'obtained:', repr(gen)
     #print 'expected:', repr(out)
     assert out == gen
+
 
 class Creole2HTML(unittest.TestCase):
     """
@@ -47,21 +64,43 @@ class Creole2HTML(unittest.TestCase):
             creole2html("\n\na simple line\n\n"),
             "<p>a simple line</p>\n")
 
+    def test_line_breaks(self):
+        self.assertEquals(
+            creole2html(r"break\\this"),
+            """<p>break<br />this</p>\n""")
+
     def test_links(self):
-        self.assertEquals(creole2html(r"""
-Go to [[http://www.google.com]], it is [[http://www.google.com| <<luca Google>>]]\\
-even [[This Page Here]] is <<steve the steve macro!>> nice like [[New Page|this]].\\
+        self.assertEquals(
+            creole2html("[[http://www.google.com]]"),
+            """<p><a href="http://www.google.com">http://www.google.com</a></p>\n""")
+        self.assertEquals(
+            creole2html("[[http://www.google.com| <<luca Google>>]]"),
+            """<p><a href="http://www.google.com">&lt;&lt;luca Google&gt;&gt;</a></p>\n""")
+        self.assertEquals(
+            creole2html("[[This Page Here]] is <<steve the steve macro!>>"),
+            """<p><a href="http://www.wikicreole.org/wiki/This_Page_Here">This Page Here</a> is &lt;&lt;steve the steve macro!&gt;&gt;</p>\n""")
+        self.assertEquals(
+            creole2html("[[New Page|this]]"),
+            """<p><a href="http://www.wikicreole.org/wiki/New_Page">this</a></p>\n""")
+
+'''
+
+        self.assertEquals(
+            creole2html(""),
+            """<p></p>\n""")
+
+"""
 This is the <<sue sue macro!>> and this is the <<luca luca macro!>>.\\
 Don't touch {{{<<steve this!>>}}}.\\
 <<mateo>>A body!<</mateo>>\\
 As is [[Ohana:Home|This one]]."""),
-            """<p>Go to <a href="http://www.google.com">http://www.google.com</a>, it is <a href="http://www.google.com">&lt;&lt;luca Google&gt;&gt;</a><br />
-even <a href="http://www.wikicreole.org/wiki/This_Page_Here">This Page Here</a> is &lt;&lt;steve the steve macro!&gt;&gt; nice like <a href="http://www.wikicreole.org/wiki/New_Page">this</a>.<br />
+            """
 This is the &lt;&lt;sue sue macro!&gt;&gt; and this is the &lt;&lt;luca luca macro!&gt;&gt;.<br />
 Don't touch <tt>&lt;&lt;steve this!&gt;&gt;</tt>.<br />
 &lt;&lt;mateo&gt;&gt;A body!&lt;&lt;/mateo&gt;&gt;<br />
 As is <a href="http://wikiohana.net/cgi-bin/wiki.pl/Home">This one</a>.</p>
 """)
+'''
 
 def dummy():
 ##    print creole2html(r"""
