@@ -7,18 +7,29 @@
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 #
 import urllib
+import unittest
 
-import genshi.builder as bldr
+from genshi import builder
 from genshi.core import Markup
 
-from dialects import Creole10
 from core import Parser
-
-import unittest
+from dialects import Creole10
 
 
 base_url = 'http://www.wikicreole.org/wiki/'
 inter_wiki_url = 'http://wikiohana.net/cgi-bin/wiki.pl/'
+
+
+def class_name_function(page_name):
+    if page_name == 'NewPage':
+        return 'nonexistent'
+
+def path_name_function(page_name):
+    if page_name == 'ThisPageHere':
+        path = 'Special/ThisPageHere'
+    else:
+        path = urllib.quote(page_name)
+    return path
 
 
 creole2html = Parser(
@@ -40,6 +51,17 @@ text2html = Parser(
         )
     )
 
+noSpaces = Parser(
+    dialect=Creole10(
+        wiki_links_base_url=base_url,
+        wiki_links_space_char='',
+        use_additions=True,
+        no_wiki_monospace=False,
+        wiki_links_class_func=class_name_function,
+        wiki_links_path_func=path_name_function
+        )
+    )
+
 
 def check_markup(m, s, p=text2html,paragraph=True,context='block'):
     if paragraph:
@@ -54,82 +76,143 @@ def check_markup(m, s, p=text2html,paragraph=True,context='block'):
 def wrap_result(expected):
     return "<p>%s</p>\n" % expected
 
-class Creole2HTMLTest(unittest.TestCase):
+class BaseTest(object):
     """
 
     """
+
     def test_newlines(self):
         self.assertEquals(
-            creole2html("\na simple line"),
+            self.parse("\na simple line"),
             wrap_result("a simple line"))
         self.assertEquals(
-            creole2html("\n\na simple line\n\n"),
+            self.parse("\n\na simple line\n\n"),
             wrap_result("a simple line"))
 
     def test_line_breaks(self):
         self.assertEquals(
-            creole2html(r"break\\this"),
+            self.parse(r"break\\this"),
             wrap_result("break<br />this"))
 
     def test_links(self):
         self.assertEquals(
-            creole2html("[[http://www.google.com]]"),
+            self.parse("http://www.google.com"),
             wrap_result("""<a href="http://www.google.com">http://www.google.com</a>"""))
         self.assertEquals(
-            creole2html("[[http://www.google.com| <<luca Google>>]]"),
-            wrap_result("""<a href="http://www.google.com">&lt;&lt;luca Google&gt;&gt;</a>"""))
+            self.parse("~http://www.google.com"),
+            wrap_result("""http://www.google.com"""))
         self.assertEquals(
-            creole2html("[[This Page Here]] is <<steve the steve macro!>>"),
+            self.parse("[[http://www.google.com]]"),
+            wrap_result("""<a href="http://www.google.com">http://www.google.com</a>"""))
+        self.assertEquals(
+            self.parse("[[http://www.google.com| <<luca Google>>]]"),
+            wrap_result("""<a href="http://www.google.com">&lt;&lt;luca Google&gt;&gt;</a>"""))
+
+    def test_links_with_spaces(self):
+        self.assertEquals(
+            self.parse("[[This Page Here]] is <<steve the steve macro!>>"),
             wrap_result("""<a href="http://www.wikicreole.org/wiki/This_Page_Here">This Page Here</a> is &lt;&lt;steve the steve macro!&gt;&gt;"""))
         self.assertEquals(
-            creole2html("[[New Page|this]]"),
+            self.parse("[[New Page|this]]"),
             wrap_result("""<a href="http://www.wikicreole.org/wiki/New_Page">this</a>"""))
+        self.assertEquals(
+            self.parse("[[Ohana:Home|This one]]"),
+            wrap_result("""<a href="http://wikiohana.net/cgi-bin/wiki.pl/Home">This one</a>"""))
 
-'''
+    def test_macro_markers(self):
+        self.assertEquals(
+            self.parse("This is the <<sue sue macro!>>"),
+            wrap_result("""This is the &lt;&lt;sue sue macro!&gt;&gt;"""))
+
+
+class Creole2HTMLTest(unittest.TestCase, BaseTest):
+    """
+    """
+    def setUp(self):
+        self.parse = creole2html
+
+
+class Text2HTMLTest(unittest.TestCase, BaseTest):
+    """
+    """
+    '''
 
         self.assertEquals(
-            creole2html(""),
-            """<p></p>\n""")
+            text2html(""),
+            wrap_result(""""""))
 
-def test_links():
-    check_markup('[[foobar]]','<a href="http://www.wikicreole.org/wiki/foobar">foobar</a>')
-    check_markup('[[foo bar]]','<a href="http://www.wikicreole.org/wiki/foo_bar">foo bar</a>')
-    check_markup('[[foo  bar]]','[[foo  bar]]')
-    check_markup('[[mailto:someone@example.com]]',
-                 '<a href="mailto:someone@example.com">mailto:someone@example.com</a>')
+    '''
+    def setUp(self):
+        self.parse = text2html
 
-"""
-This is the <<sue sue macro!>> and this is the <<luca luca macro!>>.\\
-Don't touch {{{<<steve this!>>}}}.\\
-<<mateo>>A body!<</mateo>>\\
-As is [[Ohana:Home|This one]]."""),
-            """
-This is the &lt;&lt;sue sue macro!&gt;&gt; and this is the &lt;&lt;luca luca macro!&gt;&gt;.<br />
-Don't touch <tt>&lt;&lt;steve this!&gt;&gt;</tt>.<br />
-&lt;&lt;mateo&gt;&gt;A body!&lt;&lt;/mateo&gt;&gt;<br />
-As is <a href="http://wikiohana.net/cgi-bin/wiki.pl/Home">This one</a>.</p>
-""")
-'''
+    def test_links(self):
+        super(Text2HTMLTest, self).test_links()
+        self.assertEquals(
+            text2html("[[foobar]]"),
+            wrap_result("""<a href="http://www.wikicreole.org/wiki/foobar">foobar</a>"""))
+        self.assertEquals(
+            text2html("[[foo bar]]"),
+            wrap_result("""<a href="http://www.wikicreole.org/wiki/foo_bar">foo bar</a>"""))
+        self.assertEquals(
+            text2html("[[foo  bar]]"),
+            wrap_result("[[foo  bar]]"))
+        self.assertEquals(
+            text2html("[[mailto:someone@example.com]]"),
+            wrap_result("""<a href="mailto:someone@example.com">mailto:someone@example.com</a>"""))
 
-def dummy():
-##    print creole2html(r"""
-##<<mateo>>This is the some random text
-##over two lines<</mateo>><<mila>>A body!<</mila>>\\
-##As is [[Ohana:Home|This one]].""")
+    def test_bold(self):
+        pass
 
-    assert creole2html(r"""
-<<mateo>>This is the some random text
-over two lines<</mateo>><<mila>>A body!<</mila>>\\
-As is [[Ohana:Home|This one]].""") == """\
-<p>&lt;&lt;mateo&gt;&gt;This is the some random text
-over two lines&lt;&lt;/mateo&gt;&gt;&lt;&lt;mila&gt;&gt;A body!&lt;&lt;/mila&gt;&gt;<br />
-As is <a href="http://wikiohana.net/cgi-bin/wiki.pl/Home">This one</a>.</p>
-"""
+    def test_italics(self):
+        pass
 
-class Text2HTMLTest(unittest.TestCase):
-    """
-    """
+    def test_monotype(self):
+        pass
 
+    def test_table(self):
+        pass
+
+    def test_headings(self):
+        pass
+
+    def test_escape(self):
+        pass
+
+    def test_wiki_names(self):
+        pass
+
+    def test_preformat(self):
+        pass
+
+    def test_link_in_table(self):
+        pass
+
+    def test_link_in_heading(self):
+        pass
+
+    def test_unordered_lists(self):
+        pass
+
+    def test_ordered_lists(self):
+        pass
+
+    def test_definition_lists(self):
+        pass
+
+    def test_image(self):
+        pass
+
+    def test_image_in_link(self):
+        pass
+
+    def test_image_in_table(self):
+        pass
+
+    def super_and_sub_scripts(self):
+        pass
+
+    def test_tildes(self):
+        pass
 
 def test_text2html():
 
@@ -251,15 +334,6 @@ hello **[[http://www.google.com|Google]]**
 <p>hello <strong><a href="http://www.google.com">Google</a></strong></p>
 <h1><a href="http://www.yahoo.com">http://www.yahoo.com</a></h1>
 <h2>http://www.yahoo.com</h2>
-"""
-
-    assert text2html(r"""
-Go to [[http://www.google.com]], it is [[http://www.google.com| Google]]\\
-even [[This Page Here]] is nice like [[This Page|this]].\\
-As is [[Ohana:Home|This one]].""") == """\
-<p>Go to <a href="http://www.google.com">http://www.google.com</a>, it is <a href="http://www.google.com">Google</a><br />
-even <a href="http://www.wikicreole.org/wiki/This_Page_Here">This Page Here</a> is nice like <a href="http://www.wikicreole.org/wiki/This_Page">this</a>.<br />
-As is <a href="http://wikiohana.net/cgi-bin/wiki.pl/Home">This one</a>.</p>
 """
 
 ##    print text2html(r"""
@@ -476,47 +550,30 @@ This block of ##text <<<23>>> be <<<hi>>>monospace <<<>>>## now""") == """\
 <p>This block of <tt>text &lt;&lt;&lt;23&gt;&gt;&gt; be &lt;&lt;&lt;hi&gt;&gt;&gt;monospace &lt;&lt;&lt;&gt;&gt;&gt;</tt> now</p>
 """
 
-class NoSpaceDialectTest(unittest.TestCase):
+class NoSpaceDialectTest(unittest.TestCase, BaseTest):
     """
     """
+    def setUp(self):
+        self.parse = noSpaces
 
-def test_wiki_links_class_func():
+    def test_links_with_spaces(self):
+        self.assertEquals(
+            self.parse("[[This Page Name Has Spaces]]"),
+            wrap_result("""<a href="http://www.wikicreole.org/wiki/ThisPageNameHasSpaces">This Page Name Has Spaces</a>"""))
+        #self.assertEquals(
+        #    self.parse("[[Ohana:Home|This one]]"),
+        #    wrap_result("""<a href="http://wikiohana.net/cgi-bin/wiki.pl/Home">This one</a>"""))
 
-    def class_func(page_name):
-        if page_name == 'NewPage':
-            return 'nonexistent'
+    def test_special_link(self):
+        self.assertEquals(
+            self.parse("[[This Page Here]]"),
+            wrap_result("""<a href="http://www.wikicreole.org/wiki/Special/ThisPageHere">This Page Here</a>"""))
 
-    def path_func(page_name):
-        if page_name == 'ThisPageHere':
-            path = 'Special/ThisPageHere'
-        else:
-            path = urllib.quote(page_name)
-        return path
+    def test_new_page(self):
+        self.assertEquals(
+            self.parse("[[New Page|this]]"),
+            wrap_result("""<a class="nonexistent" href="http://www.wikicreole.org/wiki/NewPage">this</a>"""))
 
-
-    dialect = Creole10(
-        wiki_links_base_url='http://creoleparser.x10hosting.com/cgi-bin/creolepiki/',
-        wiki_links_space_char='',
-        use_additions=True,
-        no_wiki_monospace=False,
-        wiki_links_class_func=class_func,
-        wiki_links_path_func=path_func)
-
-    parser = Parser(dialect)
-
-    #print parser(r"""
-#Go to [[http://www.google.com]], it is [[http://www.google.com| Google]]\\
-#even [[This Page Here]] is nice like [[New Page|this]].\\
-#As is [[Ohana:Home|This one]].""")
-
-    assert parser(r"""
-Go to [[http://www.google.com]], it is [[http://www.google.com| Google]]\\
-even [[This Page Here]] is nice like [[New Page|this]].\\
-As is [[Ohana:Home|This one]].""") == """\
-<p>Go to <a href="http://www.google.com">http://www.google.com</a>, it is <a href="http://www.google.com">Google</a><br />
-even <a href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/Special/ThisPageHere">This Page Here</a> is nice like <a class="nonexistent" href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/NewPage">this</a>.<br />
-As is [[Ohana:Home|This one]].</p>
-"""
 
 class MacroTest(unittest.TestCase):
     """
@@ -526,7 +583,7 @@ def test_marco_func():
 
     def html2stream(text):
         wrapped = Markup(text)
-        fragment = bldr.tag(wrapped)
+        fragment = builder.tag(wrapped)
         stream = fragment.generate()
         return stream
 
@@ -536,9 +593,9 @@ def test_marco_func():
         if macro_name == 'steve':
             return '**' + arg_string + '**'
         if macro_name == 'luca':
-            return bldr.tag.strong(arg_string).generate()
+            return builder.tag.strong(arg_string).generate()
         if macro_name == 'mateo':
-            return bldr.tag.em(body).generate()
+            return builder.tag.em(body).generate()
         if macro_name == 'Reverse':
             return body[::-1]
         if macro_name == 'Reverse-it':
@@ -552,7 +609,7 @@ def test_marco_func():
         if macro_name == 'username':
             return 'Joe Blow'
         if macro_name == 'center':
-            return bldr.tag.span(body, class_='centered').generate()
+            return builder.tag.span(body, class_='centered').generate()
         if macro_name == 'footer':
             return '<<center>>This is a footer.<</center>>'
         if macro_name == 'footer2':
@@ -562,7 +619,7 @@ def test_marco_func():
             if arg_string.strip() == 'output=wiki':
                 return '\n'.join(l) + '\n'
             else:
-                return bldr.tag('\n'.join(l) + '\n').generate()
+                return builder.tag('\n'.join(l) + '\n').generate()
 
     dialect = Creole10(
         wiki_links_base_url='http://creoleparser.x10hosting.com/cgi-bin/creolepiki/',
@@ -693,40 +750,51 @@ class InterWikiLinksTest(unittest.TestCase):
     """
     """
 
-def test_interwiki_links():
 
-    def iw_func(name):
-        return name[::-1]
+    def setUp(self):
+        def inter_wiki_link_maker(name):
+            return name[::-1]
 
-    d = Creole10(
-        interwiki_links_funcs={
-            'moo':iw_func,
-            'goo':iw_func,
-        },
-        interwiki_links_base_urls={
+        functions = {
+            'moo':inter_wiki_link_maker,
+            'goo':inter_wiki_link_maker,
+            }
+        base_urls = {
             'goo': 'http://example.org',
             'poo': 'http://example.org',
-        },
-        interwiki_links_space_chars={
+            }
+        space_characters = {
             'goo': '+',
             'poo': '+',
-        },
-    )
-    p = Parser(d)
+            }
 
-    def checklink(m, a, p=p):
-        out = '<p>%s</p>\n' % a
-        gen = str(p.generate(m))
-        #print 'obtained:', repr(gen)
-        #print 'expected:', repr(out)
-        assert out == gen
+        dialect = Creole10(
+            interwiki_links_funcs=functions,
+            interwiki_links_base_urls=base_urls,
+            interwiki_links_space_chars=space_characters
+            )
 
-    checklink('[[moo:foo bar|Foo]]', '<a href="rab_oof">Foo</a>')
-    checklink('[[goo:foo|Foo]]', '<a href="http://example.org/oof">Foo</a>')
-    checklink('[[poo:foo|Foo]]', '<a href="http://example.org/foo">Foo</a>')
-    checklink('[[poo:foo bar|Foo]]', '<a href="http://example.org/foo%2Bbar">Foo</a>')
-    checklink('[[goo:foo bar|Foo]]', '<a href="http://example.org/rab+oof">Foo</a>')
-    checklink('[[roo:foo bar|Foo]]', '[[roo:foo bar|Foo]]')
+        self.parser = Parser(dialect)
+
+    def test_interwiki_links(self):
+        self.assertEquals(
+            str(self.parser.generate("[[moo:foo bar|Foo]]")),
+            wrap_result("""<a href="rab_oof">Foo</a>"""))
+        self.assertEquals(
+            str(self.parser.generate("[[goo:foo|Foo]]")),
+            wrap_result("""<a href="http://example.org/oof">Foo</a>"""))
+        self.assertEquals(
+            str(self.parser.generate("[[poo:foo|Foo]]")),
+            wrap_result("""<a href="http://example.org/foo">Foo</a>"""))
+        self.assertEquals(
+            str(self.parser.generate("[[poo:foo bar|Foo]]")),
+            wrap_result("""<a href="http://example.org/foo%2Bbar">Foo</a>"""))
+        self.assertEquals(
+            str(self.parser.generate("[[goo:foo bar|Foo]]")),
+            wrap_result("""<a href="http://example.org/rab+oof">Foo</a>"""))
+        self.assertEquals(
+            str(self.parser.generate("[[roo:foo bar|Foo]]")),
+            wrap_result("""[[roo:foo bar|Foo]]"""))
 
 
 class TaintingTest(unittest.TestCase):
