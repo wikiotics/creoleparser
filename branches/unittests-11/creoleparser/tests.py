@@ -29,7 +29,7 @@ def check_markup(m, s, p=text2html,paragraph=True,context='block'):
     if paragraph:
         out = '<p>%s</p>\n' % s
     else:
-        out = s 
+        out = s
     gen = p.render(m,context=context)
     #print 'obtained:', repr(gen)
     #print 'expected:', repr(out)
@@ -88,14 +88,14 @@ def test_text2html():
             '<p><span>no **wiki** in here</span> but <em>here</em> is fine</p>\n'
     assert text2html('steve **is strong //you know\n dude{{{not **weak**}}}\n') == \
             '<p>steve <strong>is strong <em>you know\n dude<span>not **weak**</span></em></strong></p>\n'
-    
+
     assert text2html(
 r"""   |= Item|= Size|= Price |
   | fish | **big**  |cheap   |
   | crab | small|expesive|
 
-  |= Item|= Size|= Price 
-  | fish | big  |//cheap//   
+  |= Item|= Size|= Price
+  | fish | big  |//cheap//
   | crab | small|**very\\expesive**
   """) == """\
 <table><tr><th>Item</th><th>Size</th><th>Price</th></tr>
@@ -130,7 +130,7 @@ r"""   |= Item|= Size|= Price |
 <h3>Also level 3</h3>
 <h3>Also level 3</h3>
 <h3><strong>is</strong> <em>parsed</em></h3>
-""" 
+"""
 
 ##    print text2html(r"""
 ##a lone escape ~ in the middle of a line
@@ -277,7 +277,7 @@ drivel here</li></ol></li>
 """
 
     assert text2html(r"""
-= Big Heading 
+= Big Heading
 ----
 \\
 |nice picture |{{campfire.jpg}}|\\
@@ -305,7 +305,7 @@ drivel here</li></ol></li>
 ##what about this?
 ##: something neat
 ##: two defintioins?""")
-    
+
     assert text2html(r"""
 hello
 ; This is a title:
@@ -402,7 +402,7 @@ def test_no_wiki_monospace_option():
 This block of {{{no_wiki **shouldn't** be monospace}}} now""") == """\
 <p>This block of <tt>no_wiki **shouldn't** be monospace</tt> now</p>
 """
-    
+
 def test_use_additions_option():
     dialect = Creole10(use_additions=True)
     parser = Parser(dialect)
@@ -432,8 +432,8 @@ def test_wiki_links_class_func():
         else:
             path = urllib.quote(page_name)
         return path
-            
-        
+
+
     dialect = Creole10(
         wiki_links_base_url='http://creoleparser.x10hosting.com/cgi-bin/creolepiki/',
         wiki_links_space_char='',
@@ -459,9 +459,9 @@ As is [[Ohana:Home|This one]].</p>
 """
 
 def test_marco_func():
-    
+
     def html2stream(text):
-        wrapped = Markup(text)         
+        wrapped = Markup(text)
         fragment = bldr.tag(wrapped)
         stream = fragment.generate()
         return stream
@@ -499,7 +499,7 @@ def test_marco_func():
                 return '\n'.join(l) + '\n'
             else:
                 return bldr.tag('\n'.join(l) + '\n').generate()
-        
+
     dialect = Creole10(
         wiki_links_base_url='http://creoleparser.x10hosting.com/cgi-bin/creolepiki/',
         wiki_links_space_char='',
@@ -508,7 +508,7 @@ def test_marco_func():
         macro_func=a_macro_func)
 
     parser = Parser(dialect)
-    
+
     check_markup('<<html>><q cite="http://example.org">foo</q><</html>>',
                  '<q cite="http://example.org">foo</q>',p=parser)
     check_markup(u'<<mateo>>fooɤ<</mateo>>','<em>foo\xc9\xa4</em>',p=parser)
@@ -577,7 +577,7 @@ one
 <strong> foobar</strong><p><strong> foo</strong></p>
 """,p=parser,paragraph=False)
 
-    
+
 
 ##    print parser(r"""
 ##Go to [[http://www.google.com]], it is [[http://www.google.com| <<luca Google>>]]\\
@@ -640,7 +640,7 @@ def test_interwiki_links():
             'poo': 'http://example.org',
         },
         interwiki_links_space_chars={
-            'goo': '+', 
+            'goo': '+',
             'poo': '+',
         },
     )
@@ -659,7 +659,7 @@ def test_interwiki_links():
     checklink('[[poo:foo bar|Foo]]', '<a href="http://example.org/foo%2Bbar">Foo</a>')
     checklink('[[goo:foo bar|Foo]]', '<a href="http://example.org/rab+oof">Foo</a>')
     checklink('[[roo:foo bar|Foo]]', '[[roo:foo bar|Foo]]')
-    
+
 def test_sanitizing():
     check_markup('{{javascript:alert(document.cookie)}}','<img src="unsafe_uri_detected" alt="unsafe_uri_detected" />')
     check_markup('[[javascript:alert(document.cookie)]]','[[javascript:alert(document.cookie)]]')
@@ -691,13 +691,13 @@ def test_very_long_document():
     b = time.time()
     #print b - a
     assert text2html(doc) == expected
-    
+
 def test_context():
     check_markup('steve //rad//','<p>steve <em>rad</em></p>\n',context='block',paragraph=False)
     check_markup('steve //rad//','steve <em>rad</em>',context='inline',paragraph=False)
     #check_markup('steve //rad//','<p>steve <em>rad</em></p>\n',context=text2html.dialect.block_elements,paragraph=False)
     check_markup('steve //rad//','steve <em>rad</em>',context=text2html.dialect.inline_elements,paragraph=False)
-    
+
 def test_links():
     check_markup('[[foobar]]','<a href="http://www.wikicreole.org/wiki/foobar">foobar</a>')
     check_markup('[[foo bar]]','<a href="http://www.wikicreole.org/wiki/foo_bar">foo bar</a>')
@@ -734,9 +734,9 @@ def run_suite(verbosity=1):
 
 if __name__ == "__main__":
     import sys
-    args = sys.argv 
+    args = sys.argv
     verbosity = 1
     if len(args) > 1:
         verbosity = args[1]
     run_suite(verbosity=verbosity)
-    
+
