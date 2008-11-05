@@ -768,31 +768,39 @@ def test_very_long_document():
     #print b - a
     assert text2html(doc) == expected
 
+def check_markup(m, s, p=text2html,paragraph=True,context='block'):
+    if paragraph:
+        out = '<p>%s</p>\n' % s
+    else:
+        out = s
+    gen = p.render(m,context=context)
+    #print 'obtained:', repr(gen)
+    #print 'expected:', repr(out)
+    assert out == gen
+
 class ContextTest(unittest.TestCase):
     """
     """
+    def setUp(self):
+        self.markup = "steve //rad//"
 
-def test_context():
-    check_markup('steve //rad//','<p>steve <em>rad</em></p>\n',context='block',paragraph=False)
-    check_markup('steve //rad//','steve <em>rad</em>',context='inline',paragraph=False)
-    #check_markup('steve //rad//','<p>steve <em>rad</em></p>\n',context=text2html.dialect.block_elements,paragraph=False)
-    check_markup('steve //rad//','steve <em>rad</em>',context=text2html.dialect.inline_elements,paragraph=False)
+    def test_block_context(self):
+        result = text2html.render(self.markup, context="block")
+        self.assertEqual(result, wrap_result("steve <em>rad</em>"))
 
-def _test():
-    import doctest
-    doctest.testmod()
-    test_creole2html()
-    test_text2html()
-    test_no_wiki_monospace_option()
-    test_use_additions_option()
-    test_place_holders()
-    test_wiki_links_class_func()
-    test_marco_func()
-    test_interwiki_links()
-    test_sanitizing()
-    test_very_long_document()
-    test_context()
-    test_links()
+    def test_inline_context(self):
+        result = text2html.render(self.markup, context="inline")
+        self.assertEqual(result, "steve <em>rad</em>")
+
+    def test_inline_elements_context(self):
+        context = text2html.dialect.inline_elements
+        result = text2html.render(self.markup, context=context)
+        self.assertEqual(result, "steve <em>rad</em>")
+
+    def test_block_elements_context(self):
+        context = text2html.dialect.block_elements
+        result = text2html.render(self.markup, context=context)
+        #self.assertEqual(result, wrap_result("steve <em>rad</em>"))
 
 
 def test_suite():
