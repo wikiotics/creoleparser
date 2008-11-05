@@ -51,43 +51,52 @@ def check_markup(m, s, p=text2html,paragraph=True,context='block'):
     #print 'expected:', repr(out)
     assert out == gen
 
+def wrap_result(expected):
+    return "<p>%s</p>\n" % expected
 
-class Creole2HTML(unittest.TestCase):
+class Creole2HTMLTest(unittest.TestCase):
     """
 
     """
     def test_newlines(self):
         self.assertEquals(
             creole2html("\na simple line"),
-            "<p>a simple line</p>\n")
+            wrap_result("a simple line"))
         self.assertEquals(
             creole2html("\n\na simple line\n\n"),
-            "<p>a simple line</p>\n")
+            wrap_result("a simple line"))
 
     def test_line_breaks(self):
         self.assertEquals(
             creole2html(r"break\\this"),
-            """<p>break<br />this</p>\n""")
+            wrap_result("break<br />this"))
 
     def test_links(self):
         self.assertEquals(
             creole2html("[[http://www.google.com]]"),
-            """<p><a href="http://www.google.com">http://www.google.com</a></p>\n""")
+            wrap_result("""<a href="http://www.google.com">http://www.google.com</a>"""))
         self.assertEquals(
             creole2html("[[http://www.google.com| <<luca Google>>]]"),
-            """<p><a href="http://www.google.com">&lt;&lt;luca Google&gt;&gt;</a></p>\n""")
+            wrap_result("""<a href="http://www.google.com">&lt;&lt;luca Google&gt;&gt;</a>"""))
         self.assertEquals(
             creole2html("[[This Page Here]] is <<steve the steve macro!>>"),
-            """<p><a href="http://www.wikicreole.org/wiki/This_Page_Here">This Page Here</a> is &lt;&lt;steve the steve macro!&gt;&gt;</p>\n""")
+            wrap_result("""<a href="http://www.wikicreole.org/wiki/This_Page_Here">This Page Here</a> is &lt;&lt;steve the steve macro!&gt;&gt;"""))
         self.assertEquals(
             creole2html("[[New Page|this]]"),
-            """<p><a href="http://www.wikicreole.org/wiki/New_Page">this</a></p>\n""")
+            wrap_result("""<a href="http://www.wikicreole.org/wiki/New_Page">this</a>"""))
 
 '''
 
         self.assertEquals(
             creole2html(""),
             """<p></p>\n""")
+
+def test_links():
+    check_markup('[[foobar]]','<a href="http://www.wikicreole.org/wiki/foobar">foobar</a>')
+    check_markup('[[foo bar]]','<a href="http://www.wikicreole.org/wiki/foo_bar">foo bar</a>')
+    check_markup('[[foo  bar]]','[[foo  bar]]')
+    check_markup('[[mailto:someone@example.com]]',
+                 '<a href="mailto:someone@example.com">mailto:someone@example.com</a>')
 
 """
 This is the <<sue sue macro!>> and this is the <<luca luca macro!>>.\\
@@ -116,6 +125,11 @@ As is [[Ohana:Home|This one]].""") == """\
 over two lines&lt;&lt;/mateo&gt;&gt;&lt;&lt;mila&gt;&gt;A body!&lt;&lt;/mila&gt;&gt;<br />
 As is <a href="http://wikiohana.net/cgi-bin/wiki.pl/Home">This one</a>.</p>
 """
+
+class Text2HTMLTest(unittest.TestCase):
+    """
+    """
+
 
 def test_text2html():
 
@@ -433,6 +447,9 @@ double tilde at the start of a ~word
 double tilde at the end of a paragraph ~</p>
 """
 
+class DialectOptionsTest(unittest.TestCase):
+    """
+    """
 
 def test_no_wiki_monospace_option():
     dialect = Creole10(no_wiki_monospace=True)
@@ -458,6 +475,10 @@ def test_place_holders():
 This block of ##text <<<23>>> be <<<hi>>>monospace <<<>>>## now""") == """\
 <p>This block of <tt>text &lt;&lt;&lt;23&gt;&gt;&gt; be &lt;&lt;&lt;hi&gt;&gt;&gt;monospace &lt;&lt;&lt;&gt;&gt;&gt;</tt> now</p>
 """
+
+class NoSpaceDialectTest(unittest.TestCase):
+    """
+    """
 
 def test_wiki_links_class_func():
 
@@ -496,6 +517,10 @@ As is [[Ohana:Home|This one]].""") == """\
 even <a href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/Special/ThisPageHere">This Page Here</a> is nice like <a class="nonexistent" href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/NewPage">this</a>.<br />
 As is [[Ohana:Home|This one]].</p>
 """
+
+class MacroTest(unittest.TestCase):
+    """
+    """
 
 def test_marco_func():
 
@@ -664,6 +689,10 @@ As is [[Ohana:Home|This one]].
 &lt;&lt;mila&gt;&gt;A body!&lt;&lt;/mila&gt;&gt;</p>
 """
 
+class InterWikiLinksTest(unittest.TestCase):
+    """
+    """
+
 def test_interwiki_links():
 
     def iw_func(name):
@@ -699,9 +728,17 @@ def test_interwiki_links():
     checklink('[[goo:foo bar|Foo]]', '<a href="http://example.org/rab+oof">Foo</a>')
     checklink('[[roo:foo bar|Foo]]', '[[roo:foo bar|Foo]]')
 
+class TaintingTest(unittest.TestCase):
+    """
+    """
+
 def test_sanitizing():
     check_markup('{{javascript:alert(document.cookie)}}','<img src="unsafe_uri_detected" alt="unsafe_uri_detected" />')
     check_markup('[[javascript:alert(document.cookie)]]','[[javascript:alert(document.cookie)]]')
+
+class LongDocumentTest(unittest.TestCase):
+    """
+    """
 
 def test_very_long_document():
     import time
@@ -731,18 +768,15 @@ def test_very_long_document():
     #print b - a
     assert text2html(doc) == expected
 
+class ContextTest(unittest.TestCase):
+    """
+    """
+
 def test_context():
     check_markup('steve //rad//','<p>steve <em>rad</em></p>\n',context='block',paragraph=False)
     check_markup('steve //rad//','steve <em>rad</em>',context='inline',paragraph=False)
     #check_markup('steve //rad//','<p>steve <em>rad</em></p>\n',context=text2html.dialect.block_elements,paragraph=False)
     check_markup('steve //rad//','steve <em>rad</em>',context=text2html.dialect.inline_elements,paragraph=False)
-
-def test_links():
-    check_markup('[[foobar]]','<a href="http://www.wikicreole.org/wiki/foobar">foobar</a>')
-    check_markup('[[foo bar]]','<a href="http://www.wikicreole.org/wiki/foo_bar">foo bar</a>')
-    check_markup('[[foo  bar]]','[[foo  bar]]')
-    check_markup('[[mailto:someone@example.com]]',
-                 '<a href="mailto:someone@example.com">mailto:someone@example.com</a>')
 
 def _test():
     import doctest
@@ -763,8 +797,17 @@ def _test():
 
 def test_suite():
     return unittest.TestSuite((
-        unittest.makeSuite(Creole2HTML),
+        unittest.makeSuite(Creole2HTMLTest),
+        unittest.makeSuite(Text2HTMLTest),
+        unittest.makeSuite(DialectOptionsTest),
+        unittest.makeSuite(NoSpaceDialectTest),
+        unittest.makeSuite(MacroTest),
+        unittest.makeSuite(InterWikiLinksTest),
+        unittest.makeSuite(TaintingTest),
+        unittest.makeSuite(LongDocumentTest),
+        unittest.makeSuite(ContextTest),
         ))
+
 
 def run_suite(verbosity=1):
     runner = unittest.TextTestRunner(verbosity=verbosity)
