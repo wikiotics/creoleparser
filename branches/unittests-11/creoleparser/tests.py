@@ -1,4 +1,5 @@
-﻿# tests.py
+# tests.py
+# -*- coding: utf-8 -*-
 #
 # Copyright (c) 2007 Stephen Day
 #
@@ -12,6 +13,8 @@ from genshi.core import Markup
 
 from dialects import Creole10
 from core import Parser
+
+import unittest
 
 creole2html = Parser(dialect=Creole10(wiki_links_base_url='http://www.wikicreole.org/wiki/',
                              interwiki_links_base_urls={'Ohana':'http://wikiohana.net/cgi-bin/wiki.pl/'},
@@ -32,31 +35,35 @@ def check_markup(m, s, p=text2html,paragraph=True,context='block'):
     #print 'expected:', repr(out)
     assert out == gen
 
-def test_creole2html():
+class Creole2HTML(unittest.TestCase):
+    """
 
-    #print creole2html(r"""
-#Go to [[http://www.google.com]], it is [[http://www.google.com| <<luca Google>>]]\\
-#even [[This Page Here]] is <<steve the steve macro!>> nice like [[New Page|this]].\\
-#This is the <<sue sue macro!>> and this is the <<luca luca macro!>>.\\
-#Don't touch {{{<<steve this!>>}}}.\\
-#<<mateo>>A body!<</mateo>>\\
-#As is [[Ohana:Home|This one]].""")
-    
-    assert creole2html(r"""
+    """
+    def test_newlines(self):
+        self.assertEquals(
+            creole2html("\na simple line"),
+            "<p>a simple line</p>\n")
+        self.assertEquals(
+            creole2html("\n\na simple line\n\n"),
+            "<p>a simple line</p>\n")
+
+    def test_links(self):
+        self.assertEquals(creole2html(r"""
 Go to [[http://www.google.com]], it is [[http://www.google.com| <<luca Google>>]]\\
 even [[This Page Here]] is <<steve the steve macro!>> nice like [[New Page|this]].\\
 This is the <<sue sue macro!>> and this is the <<luca luca macro!>>.\\
 Don't touch {{{<<steve this!>>}}}.\\
 <<mateo>>A body!<</mateo>>\\
-As is [[Ohana:Home|This one]].""") == """\
-<p>Go to <a href="http://www.google.com">http://www.google.com</a>, it is <a href="http://www.google.com">&lt;&lt;luca Google&gt;&gt;</a><br />
+As is [[Ohana:Home|This one]]."""),
+            """<p>Go to <a href="http://www.google.com">http://www.google.com</a>, it is <a href="http://www.google.com">&lt;&lt;luca Google&gt;&gt;</a><br />
 even <a href="http://www.wikicreole.org/wiki/This_Page_Here">This Page Here</a> is &lt;&lt;steve the steve macro!&gt;&gt; nice like <a href="http://www.wikicreole.org/wiki/New_Page">this</a>.<br />
 This is the &lt;&lt;sue sue macro!&gt;&gt; and this is the &lt;&lt;luca luca macro!&gt;&gt;.<br />
 Don't touch <tt>&lt;&lt;steve this!&gt;&gt;</tt>.<br />
 &lt;&lt;mateo&gt;&gt;A body!&lt;&lt;/mateo&gt;&gt;<br />
 As is <a href="http://wikiohana.net/cgi-bin/wiki.pl/Home">This one</a>.</p>
-"""
+""")
 
+def dummy():
 ##    print creole2html(r"""
 ##<<mateo>>This is the some random text
 ##over two lines<</mateo>><<mila>>A body!<</mila>>\\
@@ -715,6 +722,21 @@ def _test():
     test_links()
 
 
+def test_suite():
+    return unittest.TestSuite((
+        unittest.makeSuite(Creole2HTML),
+        ))
+
+def run_suite(verbosity=1):
+    runner = unittest.TextTestRunner(verbosity=verbosity)
+    runner.run(test_suite())
+
+
 if __name__ == "__main__":
-    _test()
+    import sys
+    args = sys.argv 
+    verbosity = 1
+    if len(args) > 1:
+        verbosity = args[1]
+    run_suite(verbosity=verbosity)
     
