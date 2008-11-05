@@ -24,6 +24,7 @@ def class_name_function(page_name):
     if page_name == 'NewPage':
         return 'nonexistent'
 
+
 def path_name_function(page_name):
     if page_name == 'ThisPageHere':
         path = 'Special/ThisPageHere'
@@ -73,8 +74,10 @@ def check_markup(m, s, p=text2html,paragraph=True,context='block'):
     #print 'expected:', repr(out)
     assert out == gen
 
+
 def wrap_result(expected):
     return "<p>%s</p>\n" % expected
+
 
 class BaseTest(object):
     """
@@ -135,36 +138,52 @@ class Creole2HTMLTest(unittest.TestCase, BaseTest):
 class Text2HTMLTest(unittest.TestCase, BaseTest):
     """
     """
-    '''
-
-        self.assertEquals(
-            text2html(""),
-            wrap_result(""""""))
-
-    '''
     def setUp(self):
         self.parse = text2html
 
     def test_links(self):
         super(Text2HTMLTest, self).test_links()
         self.assertEquals(
-            text2html("[[foobar]]"),
+            self.parse("[[foobar]]"),
             wrap_result("""<a href="http://www.wikicreole.org/wiki/foobar">foobar</a>"""))
         self.assertEquals(
-            text2html("[[foo bar]]"),
+            self.parse("[[foo bar]]"),
             wrap_result("""<a href="http://www.wikicreole.org/wiki/foo_bar">foo bar</a>"""))
         self.assertEquals(
-            text2html("[[foo  bar]]"),
+            self.parse("[[foo  bar]]"),
             wrap_result("[[foo  bar]]"))
         self.assertEquals(
-            text2html("[[mailto:someone@example.com]]"),
+            self.parse("[[mailto:someone@example.com]]"),
             wrap_result("""<a href="mailto:someone@example.com">mailto:someone@example.com</a>"""))
 
     def test_bold(self):
-        pass
+        self.assertEquals(
+            self.parse("the **bold** is bolded"),
+            wrap_result("""the <strong>bold</strong> is bolded"""))
+        self.assertEquals(
+            self.parse("**this is bold** {{{not **this**}}}"),
+            wrap_result("""<strong>this is bold</strong> <span>not **this**</span>"""))
+        self.assertEquals(
+            self.parse("**this is bold //this is bold and italic//**"),
+            wrap_result("""<strong>this is bold <em>this is bold and italic</em></strong>"""))
 
     def test_italics(self):
-        pass
+        self.assertEquals(
+            self.parse("the //italic// is italiced"),
+            wrap_result("""the <em>italic</em> is italiced"""))
+        self.assertEquals(
+            self.parse("//this is italic// {{{//not this//}}}"),
+        wrap_result("""<em>this is italic</em> <span>//not this//</span>"""))
+        self.assertEquals(
+            self.parse("//this is italic **this is italic and bold**//"),
+        wrap_result("""<em>this is italic <strong>this is italic and bold</strong></em>"""))
+
+    '''
+
+        self.assertEquals(
+            self.parse(""),
+            wrap_result(""""""))
+    '''
 
     def test_monotype(self):
         pass
@@ -215,15 +234,6 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
         pass
 
 def test_text2html():
-
-    assert text2html('**strong** soft\n') == '<p><strong>strong</strong> soft</p>\n'
-    assert text2html('//this**strong** soft//') == '<p><em>this<strong>strong</strong> soft</em></p>\n'
-    assert text2html('steve **is strong**\n{{{\nnot **weak**\n}}}\n') == \
-            '<p>steve <strong>is strong</strong></p>\n<pre>not **weak**\n</pre>\n'
-    assert text2html('{{{no **wiki** in here}}} but //here// is fine') == \
-            '<p><span>no **wiki** in here</span> but <em>here</em> is fine</p>\n'
-    assert text2html('steve **is strong //you know\n dude{{{not **weak**}}}\n') == \
-            '<p>steve <strong>is strong <em>you know\n dude<span>not **weak**</span></em></strong></p>\n'
 
     assert text2html(
 r"""   |= Item|= Size|= Price |
