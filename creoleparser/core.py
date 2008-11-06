@@ -102,7 +102,7 @@ class Parser(object):
             A Creole instance
           method
             This value is passed to genshies Steam.render(). Possible values
-            include ``xhtml``, ``html``, and ``xml``.
+            include ``xhtml``, ``html``, ``xml``, and ``text``.
           strip_whitespace
             This value is passed Genshies Steam.render().
           encoding
@@ -149,15 +149,21 @@ class Parser(object):
 
         return bldr.tag(*[fragmentize(text,top_level_elements,element_store) for text in chunks]).generate()
 
-    def render(self,text,element_store=None,context='block',**kwargs):
+    def render(self, text, element_store=None, context='block', **kwargs):
         """Returns final output string (e.g., xhtml)
 
         See generate() (above) and Genshi documentation for keyword arguments.
         """
         if element_store is None:
             element_store = {}
-        return self.generate(text,element_store,context).render(method=self.method,strip_whitespace=self.strip_whitespace,
-                                          encoding=self.encoding,**kwargs)
+        if self.method != "text":
+            kwargs['strip_whitespace'] = self.strip_whitespace
+        kwargs.update({
+            'method': self.method,
+            'encoding': self.encoding
+            })
+        stream = self.generate(text, element_store, context)
+        return stream.render(**kwargs)
 
     def __call__(self,text,element_store=None,context='block'):
         """Wrapper for the render method. Returns final output string.
