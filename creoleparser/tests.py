@@ -235,48 +235,35 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
             "<h3>This <strong>is</strong> <em>parsed</em></h3>\n")
 
     def test_escape(self):
+        self.assertEquals(
+            self.parse("a lone escape ~ in the middle of a line"),
+            wrap_result("a lone escape ~ in the middle of a line"))
+        self.assertEquals(
+            self.parse("or at the end ~"),
+            wrap_result("or at the end ~"))
+        self.assertEquals(
+            self.parse("a double ~~ in the middle"),
+            wrap_result("a double ~ in the middle"))
+        self.assertEquals(
+            self.parse("or at the end ~~"),
+            wrap_result("or at the end ~"))
+        self.assertEquals(
+            self.parse("preventing markup for ~**bold~** and ~//italics~//"),
+            wrap_result("preventing markup for **bold** and //italics//"))
+        self.assertEquals(
+            self.parse("preventing markup for ~= headings"),
+            wrap_result("preventing markup for = headings"))
+        self.assertEquals(
+            self.parse("|preventing markup|for a pipe ~| in a table|"),
+            "<table><tr><td>preventing markup</td><td>for a pipe | in a table</td></tr>\n</table>\n")
+
+    def test_preformat(self):
 
         '''
 
         self.assertEquals(
             self.parse(""),
             wrap_result(""""""))
-
-        '''
-        pass
-        '''
-            assert text2html(r"""
-        a lone escape ~ in the middle of a line
-        or at the end ~
-        a double ~~ in the middle
-        at end ~~
-        preventing ~** **bold** and ~// //italics//
-         ~= stopping headers!
-        | in table~| cells | too!
-        """) == """\
-        <p>a lone escape ~ in the middle of a line
-        or at the end ~
-        a double ~ in the middle
-        at end ~
-        preventing ** <strong>bold</strong> and // <em>italics</em>
-         = stopping headers!</p>
-        <table><tr><td>in table| cells</td><td>too!</td></tr>
-        </table>
-        """
-        '''
-    def test_wiki_names(self):
-        pass
-        '''
-        assert text2html("\
-    Names of pages have to LookLikeThis.\r\nIt's called a WikiName.\r\nIf you write\
-     a word that LookLikeThis.\r\n") == """\
-    <p>Names of pages have to LookLikeThis.
-    It's called a WikiName.
-    If you write a word that LookLikeThis.</p>
-    """
-        '''
-
-    def test_preformat(self):
         pass
         '''
             assert text2html(r"""
