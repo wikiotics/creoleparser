@@ -192,7 +192,7 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
   |= Item|= Size|= Price
   | fish | big  |//cheap//
   | crab | small|**very\\expesive**
-                """), 
+                """),
             """<table><tr><th>Item</th><th>Size</th><th>Price</th></tr>
 <tr><td>fish</td><td><strong>big</strong></td><td>cheap</td></tr>
 <tr><td>crab</td><td>small</td><td>expesive</td></tr>
@@ -265,33 +265,32 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
             wrap_result("<span>\n            ** some ** unformatted {{{ stuff </span> ~~\n            }}}"))
 
     def test_inline_unformatted(self):
-        pass
-        '''
-            assert text2html("""\
-        {{{** some ** unformatted {{{ stuff ~~ }}}}}}""") == """\
-        <p><span>** some ** unformatted {{{ stuff ~~ }}}</span></p>
-        """
-        '''
-    def test_link_in_table(self):
-        pass
-        '''
-            assert text2html("""\
-        |http://www.google.com| steve|
+        self.assertEquals(
+            self.parse("""
+            {{{** some ** unformatted {{{ stuff ~~ }}}}}}
+            """), 
+            wrap_result("            <span>** some ** unformatted {{{ stuff ~~ }}}</span>"))
 
-        hello **[[http://www.google.com|Google]]**
-        = http://www.yahoo.com
-        == ~http://www.yahoo.com
-        """) == """\
-        <table><tr><td><a href="http://www.google.com">http://www.google.com</a></td><td>steve</td></tr>
-        </table>
-        <p>hello <strong><a href="http://www.google.com">Google</a></strong></p>
-        <h1><a href="http://www.yahoo.com">http://www.yahoo.com</a></h1>
-        <h2>http://www.yahoo.com</h2>
-        """
-        '''
+    def test_link_in_table(self):
+        self.assertEquals(
+            self.parse("|http://www.google.com|Google|"),
+            """<table><tr><td><a href="http://www.google.com">http://www.google.com</a></td><td>Google</td></tr>\n</table>\n""")
+
+    def test_link_in_bold(self):
+        self.assertEquals(
+            self.parse("**[[http://www.google.com|Google]]**"),
+            wrap_result("""<strong><a href="http://www.google.com">Google</a></strong>"""))
 
     def test_link_in_heading(self):
-        pass
+        self.assertEquals(
+            self.parse("= [[http://www.google.com|Google]]"),
+            """<h1><a href="http://www.google.com">Google</a></h1>\n""")
+        self.assertEquals(
+            self.parse("== http://www.google.com"),
+            """<h2><a href="http://www.google.com">http://www.google.com</a></h2>\n""")
+        self.assertEquals(
+            self.parse("== ~http://www.google.com"),
+            "<h2>http://www.google.com</h2>\n")
 
     def test_unordered_lists(self):
         pass
@@ -341,7 +340,15 @@ drivel here</li></ol></li>
 """
         '''
     def test_ordered_lists(self):
+
+        '''
+
+        self.assertEquals(
+            self.parse(""),
+            wrap_result(""))
         pass
+
+        '''
 
     def test_definition_lists(self):
         pass
