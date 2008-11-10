@@ -258,25 +258,12 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
             "<table><tr><td>preventing markup</td><td>for a pipe | in a table</td></tr>\n</table>\n")
 
     def test_preformat(self):
-
-        '''
-
         self.assertEquals(
-            self.parse(""),
-            wrap_result(""""""))
-        pass
-        '''
-            assert text2html(r"""
-        {{{
-        ** some ** unformatted {{{ stuff }}} ~~~
-         }}}
-        }}}
-        """) == """\
-        <pre>** some ** unformatted {{{ stuff }}} ~~~
-        }}}
-        </pre>
-        """
-        '''
+            self.parse("""{{{
+            ** some ** unformatted {{{ stuff }}} ~~~
+            }}}"""),
+            wrap_result("<span>\n            ** some ** unformatted {{{ stuff </span> ~~\n            }}}"))
+
     def test_inline_unformatted(self):
         pass
         '''
