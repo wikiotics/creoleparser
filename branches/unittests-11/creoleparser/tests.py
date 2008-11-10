@@ -311,7 +311,6 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
             "<ul><li>this is list <strong>item one</strong>\n<ul><li><em>subitem 1</em></li>\n<li><em>subitem 2</em>\n<ul><li>A</li>\n<li>B</li></ul></li>\n<li><em>subitem 3</em></li></ul></li>\n<li><strong>item two</strong></li>\n<li><strong>item three</strong></li></ul>\n")
 
     def test_ordered_lists(self):
-
         self.assertEquals(
             self.parse("""
 # this is list **item one**
@@ -326,6 +325,20 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
             "<ol><li>this is list <strong>item one</strong>\n<ol><li><em>subitem 1</em></li>\n<li><em>subitem 2</em>\n<ol><li>A</li>\n<li>B\n<ul><li><em>subitem 3</em></li></ul></li></ol></li></ol></li>\n<li><strong>item two</strong></li>\n<li><strong>item three</strong></li></ol>\n")
 
     def test_definition_lists(self):
+        self.assertEquals(
+            self.parse("""
+; This is a title:
+: this is its entry
+; Another title : it's definition entry
+; This is ~: a another title:
+: this is its entry
+** and this emphasized!
+; Title
+: definition 1
+: defintioins 2"""),
+            "<dl><dt>This is a title:</dt>\n<dd>this is its entry</dd>\n<dt>Another title</dt>\n<dd>it's definition entry</dd>\n<dt>This is : a another title:</dt>\n<dd>this is its entry\n<strong> and this emphasized!</strong></dd>\n<dt>Title</dt>\n<dd>definition 1</dd>\n<dd>defintioins 2</dd>\n</dl>\n")
+
+    def test_image(self):
 
         '''
 
@@ -334,46 +347,6 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
             wrap_result(""))
 
         '''
-        pass
-
-        '''
-    assert text2html(r"""
-hello
-; This is a title:
-: Yes, sir!
-; This is~: a another title:
-: Yes, sir!
-** and this emphasized!
-; Another title : it's definition
-; Another title ~: it's definition **NOT**
-: here it is
-*this is a list!!
-; Wiki
-; Creole
-what about this?
-: something neat
-: two defintioins?""") == """\
-<p>hello</p>
-<dl><dt>This is a title:</dt>
-<dd>Yes, sir!</dd>
-<dt>This is: a another title:</dt>
-<dd>Yes, sir!
-<strong> and this emphasized!</strong></dd>
-<dt>Another title</dt>
-<dd>it's definition</dd>
-<dt>Another title : it's definition <strong>NOT</strong></dt>
-<dd>here it is</dd>
-</dl>
-<ul><li>this is a list!!</li></ul>
-<dl><dt>Wiki</dt>
-<dt>Creole</dt>
-<dd>what about this?</dd>
-<dd>something neat</dd>
-<dd>two defintioins?</dd>
-</dl>
-"""
-        '''
-    def test_image(self):
         pass
         '''
     assert text2html(r"""
