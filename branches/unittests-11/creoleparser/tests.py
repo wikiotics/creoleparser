@@ -268,7 +268,7 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
         self.assertEquals(
             self.parse("""
             {{{** some ** unformatted {{{ stuff ~~ }}}}}}
-            """), 
+            """),
             wrap_result("            <span>** some ** unformatted {{{ stuff ~~ }}}</span>"))
 
     def test_link_in_table(self):
@@ -292,65 +292,48 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
             self.parse("== ~http://www.google.com"),
             "<h2>http://www.google.com</h2>\n")
 
+    # XXX the next two list tests need to be verified -- I don't think they
+    # should be rendrered in the manner that they are, with new nested
+    # ul/ol tags
+
     def test_unordered_lists(self):
-        pass
-        '''
-    assert text2html(r"""
+        self.assertEquals(
+            self.parse("""
 * this is list **item one**
-** item one - //subitem 1//
-### one **http://www.google.com**
-### two [[Creole1.0]]
-### three\\covers\\many~\\lines
+** //subitem 1//
 ** //subitem 2//
-### what is this?
-### no idea?
-**** A
-**** B
-### And lots of
-drivel here
+*** A
+*** B
 ** //subitem 3//
-*** huh?
 * **item two
 * **item three**
-# new ordered list, item 1
-# item 2
-## sub item
-##sub item
-""") == """\
-<ul><li>this is list <strong>item one</strong>
-<ul><li>item one - <em>subitem 1</em>
-<ol><li>one <strong><a href="http://www.google.com">http://www.google.com</a></strong></li>
-<li>two <a href="http://www.wikicreole.org/wiki/Creole1.0">Creole1.0</a></li>
-<li>three<br />covers<br />many\\\\lines</li></ol></li>
-<li><em>subitem 2</em>
-<ol><li>what is this?</li>
-<li>no idea?
-<ul><li>A</li>
-<li>B</li></ul></li>
-<li>And lots of
-drivel here</li></ol></li>
-<li><em>subitem 3</em>
-<ul><li>huh?</li></ul></li></ul></li>
-<li><strong>item two</strong></li>
-<li><strong>item three</strong></li></ul>
-<ol><li>new ordered list, item 1</li>
-<li>item 2
-<ol><li>sub item</li>
-<li>sub item</li></ol></li></ol>
-"""
-        '''
+            """),
+            "<ul><li>this is list <strong>item one</strong>\n<ul><li><em>subitem 1</em></li>\n<li><em>subitem 2</em>\n<ul><li>A</li>\n<li>B</li></ul></li>\n<li><em>subitem 3</em></li></ul></li>\n<li><strong>item two</strong></li>\n<li><strong>item three</strong></li></ul>\n")
+
     def test_ordered_lists(self):
+
+        self.assertEquals(
+            self.parse("""
+# this is list **item one**
+## //subitem 1//
+## //subitem 2//
+### A
+### B
+** //subitem 3//
+# **item two
+# **item three**
+            """),
+            "<ol><li>this is list <strong>item one</strong>\n<ol><li><em>subitem 1</em></li>\n<li><em>subitem 2</em>\n<ol><li>A</li>\n<li>B\n<ul><li><em>subitem 3</em></li></ul></li></ol></li></ol></li>\n<li><strong>item two</strong></li>\n<li><strong>item three</strong></li></ol>\n")
+
+    def test_definition_lists(self):
 
         '''
 
         self.assertEquals(
             self.parse(""),
             wrap_result(""))
-        pass
 
         '''
-
-    def test_definition_lists(self):
         pass
 
         '''
