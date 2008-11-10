@@ -203,6 +203,38 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
 </table>\n""")
 
     def test_headings(self):
+        self.assertEquals(
+            self.parse("= Level 1 (largest)"),
+            "<h1>Level 1 (largest)</h1>\n")
+        self.assertEquals(
+            self.parse("== Level 2"),
+            "<h2>Level 2</h2>\n")
+        self.assertEquals(
+            self.parse("=== Level 3"),
+            "<h3>Level 3</h3>\n")
+        self.assertEquals(
+            self.parse("==== Level 4"),
+            "<h4>Level 4</h4>\n")
+        self.assertEquals(
+            self.parse("===== Level 5"),
+            "<h5>Level 5</h5>\n")
+        self.assertEquals(
+            self.parse("====== Level 6"),
+            "<h6>Level 6</h6>\n")
+        self.assertEquals(
+            self.parse("=== Also Level 3 ="),
+            "<h3>Also Level 3</h3>\n")
+        self.assertEquals(
+            self.parse("=== Also Level 3 =="),
+            "<h3>Also Level 3</h3>\n")
+        self.assertEquals(
+            self.parse("=== Also Level 3 ==="),
+            "<h3>Also Level 3</h3>\n")
+        self.assertEquals(
+            self.parse("=== This **is** //parsed// ==="),
+            "<h3>This <strong>is</strong> <em>parsed</em></h3>\n")
+
+    def test_escape(self):
 
         '''
 
@@ -211,36 +243,6 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
             wrap_result(""""""))
 
         '''
-
-        self.assertEquals(
-            self.parse("= Level 1 (largest)"),
-            "<h1>Level 1 (largest)</h1>\n")
-        '''
-            assert text2html(r"""
-        = Level 1 (largest) =
-        == Level 2 ==
-        === Level 3 ===
-        ==== Level 4 ====
-        ===== Level 5 =====
-        ====== Level 6 ======
-        === Also level 3
-        === Also level 3 =
-        === Also level 3 ==
-        === **is** //parsed// ===
-          """) == """\
-        <h1>Level 1 (largest)</h1>
-        <h2>Level 2</h2>
-        <h3>Level 3</h3>
-        <h4>Level 4</h4>
-        <h5>Level 5</h5>
-        <h6>Level 6</h6>
-        <h3>Also level 3</h3>
-        <h3>Also level 3</h3>
-        <h3>Also level 3</h3>
-        <h3><strong>is</strong> <em>parsed</em></h3>
-        """
-        '''
-    def test_escape(self):
         pass
         '''
             assert text2html(r"""
