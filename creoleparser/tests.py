@@ -339,6 +339,24 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
             "<dl><dt>This is a title:</dt>\n<dd>this is its entry</dd>\n<dt>Another title</dt>\n<dd>it's definition entry</dd>\n<dt>This is : a another title:</dt>\n<dd>this is its entry\n<strong> and this emphasized!</strong></dd>\n<dt>Title</dt>\n<dd>definition 1</dd>\n<dd>defintioins 2</dd>\n</dl>\n")
 
     def test_image(self):
+        self.assertEquals(
+            self.parse("{{campfire.jpg}}"),
+            wrap_result("""<img src="campfire.jpg" alt="campfire.jpg" />"""))
+
+    def test_image_in_link(self):
+        self.assertEquals(
+            self.parse("[[http://google.com | {{ campfire.jpg | Nice Pic }}]]"),
+            wrap_result("""<a href="http://google.com"><img src="campfire.jpg" alt="Nice Pic" /></a>"""))
+        self.assertEquals(
+            self.parse("[[http://google.com | {{ campfire.jpg }}]]"),
+            wrap_result("""<a href="http://google.com"><img src="campfire.jpg" alt="campfire.jpg" /></a>"""))
+
+    def test_image_in_table(self):
+        self.assertEquals(
+            self.parse("|nice picture |{{campfire.jpg}}|"),
+            """<table><tr><td>nice picture</td><td><img src="campfire.jpg" alt="campfire.jpg" /></td></tr>\n</table>\n""")
+
+    def super_and_sub_scripts(self):
 
         '''
 
@@ -347,30 +365,7 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
             wrap_result(""))
 
         '''
-        pass
-        '''
-    assert text2html(r"""
-= Big Heading
-----
-\\
-|nice picture |{{campfire.jpg}}|\\
-|same picture as a link| [[http://google.com | {{ campfire.jpg | campfire.jpg }} ]]|""") == """\
-<h1>Big Heading</h1>
-<hr />
-<p><br /></p>
-<table><tr><td>nice picture</td><td><img src="campfire.jpg" alt="campfire.jpg" /></td><td><br /></td></tr>
-<tr><td>same picture as a link</td><td><a href="http://google.com"><img src="campfire.jpg" alt="campfire.jpg" /></a></td></tr>
-</table>
-"""
-        '''
-    def test_image_in_link(self):
-        pass
 
-    def test_image_in_table(self):
-        pass
-
-    def super_and_sub_scripts(self):
-        pass
         '''
             assert text2html(r"""
         hello
