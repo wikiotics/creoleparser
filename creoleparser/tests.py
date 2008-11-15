@@ -356,72 +356,27 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
             self.parse("|nice picture |{{campfire.jpg}}|"),
             """<table><tr><td>nice picture</td><td><img src="campfire.jpg" alt="campfire.jpg" /></td></tr>\n</table>\n""")
 
-    def super_and_sub_scripts(self):
-
-        '''
-
+    def test_super_and_sub_scripts(self):
         self.assertEquals(
-            self.parse(""),
-            wrap_result(""))
+            self.parse("^^superscript^^"),
+            wrap_result("<sup>superscript</sup>"))
+        self.assertEquals(
+            self.parse(",,subscript,,"),
+            wrap_result("<sub>subscript</sub>"))
+        self.assertEquals(
+            self.parse("__underline__"),
+            wrap_result("<u>underline</u>"))
+        self.assertEquals(
+            self.parse("//^^superscript^^,,subscript,,**__underline__**//"),
+            wrap_result("<em><sup>superscript</sup><sub>subscript</sub><strong><u>underline</u></strong></em>"))
+        self.assertEquals(
+            self.parse("^^//superscript//\\hello^^\n,,sub**scr**ipt,,"),
+            wrap_result("<sup><em>superscript</em>\\hello</sup>\n<sub>sub<strong>scr</strong>ipt</sub>"))
+        self.assertEquals(
+            self.parse("__underline__"),
+            wrap_result("<u>underline</u>"))
 
-        '''
 
-        '''
-            assert text2html(r"""
-        hello
-        ^^superscript^^
-        ,,subscript,,
-        __underlined__
-
-        //^^superscript^^
-        ,,subscript,,
-        __underlined__//
-
-        ^^//superscript//\\hello^^
-        ,,sub**scr**ipt,,
-        ##__underlined__##
-
-        {{{^^//superscript//\\hello^^
-        ,,sub**scr**ipt,,}}}
-        ##__underlined__##""") == """\
-        <p>hello
-        <sup>superscript</sup>
-        <sub>subscript</sub>
-        <u>underlined</u></p>
-        <p><em><sup>superscript</sup>
-        <sub>subscript</sub>
-        <u>underlined</u></em></p>
-        <p><sup><em>superscript</em><br />hello</sup>
-        <sub>sub<strong>scr</strong>ipt</sub>
-        <tt><u>underlined</u></tt></p>
-        <p><span>^^//superscript//\\\\hello^^
-        ,,sub**scr**ipt,,</span>
-        <tt><u>underlined</u></tt></p>
-        """
-        '''
-    def test_tildes(self):
-        pass
-        '''
-            assert text2html(r"""
-        double tildes ~~ in the middle
-        double tildes at the end ~~
-        tilde in the middle ~ of a line
-        tilde at the end of a line ~
-        tilde at the end of a paragraph ~
-
-        tilde at the start of a ~word
-        double tilde at the start of a ~~word
-        double tilde at the end of a paragraph ~~""") == """\
-        <p>double tildes ~ in the middle
-        double tildes at the end ~
-        tilde in the middle ~ of a line
-        tilde at the end of a line ~
-        tilde at the end of a paragraph ~</p>
-        <p>tilde at the start of a word
-        double tilde at the start of a ~word
-        double tilde at the end of a paragraph ~</p>
-        """
-        '''
     # XXX I think these tests are currently not passing against trunk
 
     ##    print text2html(r"""
