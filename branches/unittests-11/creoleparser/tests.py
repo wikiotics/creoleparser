@@ -33,15 +33,6 @@ def path_name_function(page_name):
     return path
 
 
-creole2html = Parser(
-    dialect=Creole10(
-        wiki_links_base_url=base_url,
-        interwiki_links_base_urls={'Ohana': inter_wiki_url},
-        use_additions=False,
-        no_wiki_monospace=True
-        )
-    )
-
 
 text2html = Parser(
     dialect=Creole10(
@@ -49,17 +40,6 @@ text2html = Parser(
         interwiki_links_base_urls={'Ohana': inter_wiki_url},
         use_additions=True,
         no_wiki_monospace=False
-        )
-    )
-
-noSpaces = Parser(
-    dialect=Creole10(
-        wiki_links_base_url=base_url,
-        wiki_links_space_char='',
-        use_additions=True,
-        no_wiki_monospace=False,
-        wiki_links_class_func=class_name_function,
-        wiki_links_path_func=path_name_function
         )
     )
 
@@ -122,6 +102,14 @@ class Creole2HTMLTest(unittest.TestCase, BaseTest):
     """
     """
     def setUp(self):
+        creole2html = Parser(
+            dialect=Creole10(
+                wiki_links_base_url=base_url,
+                interwiki_links_base_urls={'Ohana': inter_wiki_url},
+                use_additions=False,
+                no_wiki_monospace=True
+                )
+            )
         self.parse = creole2html
 
 
@@ -440,6 +428,16 @@ class DialectOptionsTest(unittest.TestCase):
 class NoSpaceDialectTest(unittest.TestCase, BaseTest):
 
     def setUp(self):
+        noSpaces = Parser(
+            dialect=Creole10(
+                wiki_links_base_url=base_url,
+                wiki_links_space_char='',
+                use_additions=True,
+                no_wiki_monospace=False,
+                wiki_links_class_func=class_name_function,
+                wiki_links_path_func=path_name_function
+                )
+            )
         self.parse = noSpaces
 
     def test_links_with_spaces(self):
@@ -670,38 +668,41 @@ class InterWikiLinksTest(unittest.TestCase):
             interwiki_links_space_chars=space_characters
             )
 
-        self.parser = Parser(dialect)
+        self.parse = Parser(dialect)
 
     def test_interwiki_links(self):
         self.assertEquals(
-            str(self.parser.generate("[[moo:foo bar|Foo]]")),
+            str(self.parse("[[moo:foo bar|Foo]]")),
             wrap_result("""<a href="rab_oof">Foo</a>"""))
         self.assertEquals(
-            str(self.parser.generate("[[goo:foo|Foo]]")),
+            str(self.parse("[[goo:foo|Foo]]")),
             wrap_result("""<a href="http://example.org/oof">Foo</a>"""))
         self.assertEquals(
-            str(self.parser.generate("[[poo:foo|Foo]]")),
+            str(self.parse("[[poo:foo|Foo]]")),
             wrap_result("""<a href="http://example.org/foo">Foo</a>"""))
         self.assertEquals(
-            str(self.parser.generate("[[poo:foo bar|Foo]]")),
+            str(self.parse("[[poo:foo bar|Foo]]")),
             wrap_result("""<a href="http://example.org/foo%2Bbar">Foo</a>"""))
         self.assertEquals(
-            str(self.parser.generate("[[goo:foo bar|Foo]]")),
+            str(self.parse("[[goo:foo bar|Foo]]")),
             wrap_result("""<a href="http://example.org/rab+oof">Foo</a>"""))
         self.assertEquals(
-            str(self.parser.generate("[[roo:foo bar|Foo]]")),
+            str(self.parse("[[roo:foo bar|Foo]]")),
             wrap_result("""[[roo:foo bar|Foo]]"""))
 
 
 class TaintingTest(unittest.TestCase):
     """
     """
+    def setUp(self):
+        self.parse = text2html
+
     def test_cookies(self):
         self.assertEquals(
-            text2html("{{javascript:alert(document.cookie)}}"),
+            self.parse("{{javascript:alert(document.cookie)}}"),
             wrap_result("""<img src="unsafe_uri_detected" alt="unsafe_uri_detected" />"""))
         self.assertEquals(
-            text2html("[[javascript:alert(document.cookie)]]"),
+            self.parse("[[javascript:alert(document.cookie)]]"),
             wrap_result("[[javascript:alert(document.cookie)]]"))
 
 
