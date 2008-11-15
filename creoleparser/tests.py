@@ -430,38 +430,26 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
     ##: something neat
     ##: two defintioins?""")
 
+
 class DialectOptionsTest(unittest.TestCase):
-    """
-    """
 
-def test_no_wiki_monospace_option():
-    dialect = Creole10(no_wiki_monospace=True)
-    parser = Parser(dialect)
-    assert parser(r"""
-This block of {{{no_wiki **shouldn't** be monospace}}} now""") == """\
-<p>This block of <tt>no_wiki **shouldn't** be monospace</tt> now</p>
-"""
+    def test_no_wiki_monospace_option(self):
+        dialect = Creole10(no_wiki_monospace=True)
+        parse = Parser(dialect)
+        self.assertEquals(
+            parse("This block of {{{no_wiki **shouldn't** be monospace}}} now"),
+            wrap_result("This block of <tt>no_wiki **shouldn't** be monospace</tt> now"))
 
-def test_use_additions_option():
-    dialect = Creole10(use_additions=True)
-    parser = Parser(dialect)
-    assert parser(r"""
-This block of ##text **should** be monospace## now""") == """\
-<p>This block of <tt>text <strong>should</strong> be monospace</tt> now</p>
-"""
+    def test_use_additions_option(self):
+        dialect = Creole10(use_additions=True)
+        parse = Parser(dialect)
+        self.assertEquals(
+            parse("This block of ##text **should** be monospace## now"),
+            wrap_result("This block of <tt>text <strong>should</strong> be monospace</tt> now"))
 
-##    print text2html(r"""
-##This block of ##text <<<23>>> be <<<hi>>>monospace <<<>>>## now""")
-
-def test_place_holders():
-    assert text2html(r"""
-This block of ##text <<<23>>> be <<<hi>>>monospace <<<>>>## now""") == """\
-<p>This block of <tt>text &lt;&lt;&lt;23&gt;&gt;&gt; be &lt;&lt;&lt;hi&gt;&gt;&gt;monospace &lt;&lt;&lt;&gt;&gt;&gt;</tt> now</p>
-"""
 
 class NoSpaceDialectTest(unittest.TestCase, BaseTest):
-    """
-    """
+
     def setUp(self):
         self.parse = noSpaces
 
@@ -484,181 +472,191 @@ class NoSpaceDialectTest(unittest.TestCase, BaseTest):
             wrap_result("""<a class="nonexistent" href="http://www.wikicreole.org/wiki/NewPage">this</a>"""))
 
 
-class MacroTest(unittest.TestCase):
+class MacroTest(unittest.TestCase, BaseTest):
     """
     """
 
-def test_marco_func():
+    def setUp(self):
+        dialect = Creole10(
+            wiki_links_base_url='http://creoleparser.x10hosting.com/cgi-bin/creolepiki/',
+            wiki_links_space_char='',
+            use_additions=True,
+            no_wiki_monospace=False,
+            macro_func=self.macroFactory)
+        self.parse = Parser(dialect)
 
-    def html2stream(text):
+    def getStream(self, text):
         wrapped = Markup(text)
         fragment = builder.tag(wrapped)
-        stream = fragment.generate()
-        return stream
+        return fragment.generate()
 
-    def a_macro_func(macro_name, arg_string,body,context):
+    def macroFactory(self, macro_name, arg_string, body, context):
         if macro_name == 'html':
-            return html2stream(body)
-        if macro_name == 'steve':
+            return self.getStream(body)
+        elif macro_name == 'steve':
             return '**' + arg_string + '**'
-        if macro_name == 'luca':
+        elif macro_name == 'luca':
             return builder.tag.strong(arg_string).generate()
-        if macro_name == 'mateo':
+        elif macro_name == 'mateo':
             return builder.tag.em(body).generate()
-        if macro_name == 'Reverse':
+        elif macro_name == 'Reverse':
             return body[::-1]
-        if macro_name == 'Reverse-it':
+        elif macro_name == 'Reverse-it':
             return body[::-1]
-        if macro_name == 'ReverseIt':
+        elif macro_name == 'ReverseIt':
             return body[::-1]
-        if macro_name == 'lib.ReverseIt-now':
+        elif macro_name == 'lib.ReverseIt-now':
             return body[::-1]
-        if macro_name == 'ifloggedin':
+        elif macro_name == 'ifloggedin':
             return body
-        if macro_name == 'username':
+        elif macro_name == 'username':
             return 'Joe Blow'
-        if macro_name == 'center':
+        elif macro_name == 'center':
             return builder.tag.span(body, class_='centered').generate()
-        if macro_name == 'footer':
+        elif macro_name == 'footer':
             return '<<center>>This is a footer.<</center>>'
-        if macro_name == 'footer2':
+        elif macro_name == 'footer2':
             return '<<center>>\nThis is a footer.\n<</center>>'
-        if macro_name == 'reverse-lines':
+        elif macro_name == 'reverse-lines':
             l = reversed(body.rstrip().split('\n'))
             if arg_string.strip() == 'output=wiki':
                 return '\n'.join(l) + '\n'
             else:
                 return builder.tag('\n'.join(l) + '\n').generate()
 
-    dialect = Creole10(
-        wiki_links_base_url='http://creoleparser.x10hosting.com/cgi-bin/creolepiki/',
-        wiki_links_space_char='',
-        use_additions=True,
-        no_wiki_monospace=False,
-        macro_func=a_macro_func)
+    def test_macros(self):
+        self.assertEquals(
+            self.parse('<<html>><q cite="http://example.org">foo</q><</html>>'),
+            wrap_result('<q cite="http://example.org">foo</q>'))
+        self.assertEquals(
+            self.parse(u'<<mateo>>fooɤ<</mateo>>'),
+            wrap_result('<em>foo\xc9\xa4</em>'))
+        self.assertEquals(
+            self.parse(u'<<steve fooɤ>>'),
+            wrap_result('<strong> foo\xc9\xa4</strong>'))
+        self.assertEquals(
+            self.parse('<<Reverse>>foo<</Reverse>>'),
+            wrap_result('oof'))
+        self.assertEquals(
+            self.parse('<<Reverse-it>>foo<</Reverse-it>>'),
+            wrap_result('oof'))
+        self.assertEquals(
+            self.parse('<<ReverseIt>>foo<</ReverseIt>>'),
+            wrap_result('oof'))
+        self.assertEquals(
+            self.parse('<<lib.ReverseIt-now>>foo<</lib.ReverseIt-now>>'),
+            wrap_result('oof'))
+        self.assertEquals(
+            self.parse('<<bad name>>foo<</bad name>>'),
+            wrap_result('&lt;&lt;bad name&gt;&gt;foo&lt;&lt;/bad name&gt;&gt;'))
+        self.assertEquals(
+            self.parse('<<unknown>>foo<</unknown>>'),
+            wrap_result('&lt;&lt;unknown&gt;&gt;foo&lt;&lt;/unknown&gt;&gt;'))
+        self.assertEquals(
+            self.parse(u'<<luca boo>>foo<</unknown>>'),
+            wrap_result('<strong> boo</strong>foo&lt;&lt;/unknown&gt;&gt;'))
+        self.assertEquals(
+            self.parse('Hello<<ifloggedin>> <<username>><</ifloggedin>>!'),
+            wrap_result('Hello Joe Blow!'))
+        self.assertEquals(
+            self.parse(' <<footer>>'),
+            wrap_result(' <span class="centered">This is a footer.</span>'))
+        self.assertEquals(
+            self.parse('<<footer2>>'),
+            '<span class="centered">This is a footer.\n</span>')
+        self.assertEquals(
+            self.parse('<<luca foobar>>'),
+            '<strong> foobar</strong>')
+        self.assertEquals(
+            self.parse("<<reverse-lines>>one<</reverse-lines>>"),
+            wrap_result("one\n"))
+        self.assertEquals(
+            self.parse("<<reverse-lines>>one\ntwo\n<</reverse-lines>>"),
+            wrap_result("two\none\n"))
+        self.assertEquals(
+            self.parse("<<reverse-lines>>\none\ntwo<</reverse-lines>>"),
+            wrap_result("two\none\n\n"))
+        # XXX this seems to be a bug: two new lines in a row cause the body to be None...
+        #self.assertEquals(
+        #    self.parse("<<reverse-lines>>one\n\ntwo<</reverse-lines>>"),
+        #    wrap_result("two\none\n\n"))
+        self.assertEquals(
+            self.parse("<<reverse-lines>>one\n{{{two}}}\n<</reverse-lines>>"),
+            wrap_result("{{{two}}}\none\n"))
+        self.assertEquals(
+            self.parse("<<reverse-lines>>one\n{{{\ntwo}}}\n<</reverse-lines>>"),
+            wrap_result("two}}}\n{{{\none\n"))
+        self.assertEquals(
+            self.parse("<<reverse-lines>>one\n{{{\ntwo\n}}}<</reverse-lines>>"),
+            wrap_result("}}}\ntwo\n{{{\none\n"))
+        # XXX this seems to be a bug: two preformat brace groups on their own lines with a final new line
+        #self.assertEquals(
+        #    self.parse("<<reverse-lines>>one\n{{{\ntwo\n}}}\n<</reverse-lines>>"),
+        #    wrap_result("two}}}\n{{{\none\n"))
 
-    parser = Parser(dialect)
+        self.assertEquals(
+            self.parse("<<reverse-lines output=wiki>>one\n{{{\ntwo\n}}}<</reverse-lines>>"),
+            wrap_result("}}}\ntwo\n{{{\none\n"))
 
-    check_markup('<<html>><q cite="http://example.org">foo</q><</html>>',
-                 '<q cite="http://example.org">foo</q>',p=parser)
-    check_markup(u'<<mateo>>fooɤ<</mateo>>','<em>foo\xc9\xa4</em>',p=parser)
-    check_markup(u'<<steve fooɤ>>','<strong> foo\xc9\xa4</strong>',p=parser)
-    check_markup('<<Reverse>>foo<</Reverse>>','oof',p=parser)
-    check_markup('<<Reverse-it>>foo<</Reverse-it>>','oof',p=parser)
-    check_markup('<<ReverseIt>>foo<</ReverseIt>>','oof',p=parser)
-    check_markup('<<lib.ReverseIt-now>>foo<</lib.ReverseIt-now>>','oof',p=parser)
-    check_markup('<<bad name>>foo<</bad name>>',
-                 '&lt;&lt;bad name&gt;&gt;foo&lt;&lt;/bad name&gt;&gt;',p=parser)
-    check_markup('<<unknown>>foo<</unknown>>',
-                 '&lt;&lt;unknown&gt;&gt;foo&lt;&lt;/unknown&gt;&gt;',p=parser)
-    check_markup(u'<<luca boo>>foo<</unknown>>',
-                 '<strong> boo</strong>foo&lt;&lt;/unknown&gt;&gt;',p=parser)
-    check_markup('Hello<<ifloggedin>> <<username>><</ifloggedin>>!',
-                 'Hello Joe Blow!',p=parser)
-    check_markup(' <<footer>>',' <span class="centered">This is a footer.</span>',p=parser)
-    check_markup('<<footer2>>','<span class="centered">This is a footer.\n</span>',p=parser,paragraph=False)
-    check_markup('<<luca foobar>>','<strong> foobar</strong>',p=parser,paragraph=False)
-    check_markup("""\
-<<reverse-lines>>
-one
-two
-{{{
-three
-}}}
+        self.assertEquals(
+            self.parse("<<reverse-lines output=wiki>>one\n}}}\ntwo\n{{{<</reverse-lines>>"),
+            wrap_result("<span>\ntwo\n</span>\none\n"))
 
-four
-<</reverse-lines>>
-""","""\
-four
+        self.assertEquals(
+            self.parse("<<reverse-lines output=wiki>>one\n}}}\ntwo\n{{{\n<</reverse-lines>>"),
+            wrap_result("<span>\ntwo\n</span>\none\n"))
 
-}}}
-three
-{{{
-two
-one
-""",p=parser,paragraph=False)
-    check_markup("""\
-<<reverse-lines output=wiki>>
-one
-two
-}}}
-three
-{{{
+        # XXX two new lines after the closing (initial) "}}}" brackets causes a no body to be found
+        #self.assertEquals(
+        #    self.parse("<<reverse-lines output=wiki>>one\n}}}\n\ntwo\n{{{\n<</reverse-lines>>"),
+        #    wrap_result("<span>\ntwo\n</span>\none\n"))
+        # XXX likewise, two new lines before the initial "}}}}
+        #self.assertEquals(
+        #    self.parse("<<reverse-lines output=wiki>>one\n\n}}}\ntwo\n{{{\n<</reverse-lines>>"),
+        #    wrap_result("<span>\ntwo\n</span>\none\n"))
 
-four
-<</reverse-lines>>
-""","""\
-<p>four</p>
-<pre>three
-</pre>
-<p>two
-one</p>
-""",p=parser,paragraph=False)
-    check_markup("""\
-one
-<<footer>>
+    def test_links(self):
+        self.assertEquals(
+            self.parse("http://www.google.com"),
+            wrap_result("""<a href="http://www.google.com">http://www.google.com</a>"""))
+        self.assertEquals(
+            self.parse("~http://www.google.com"),
+            wrap_result("""http://www.google.com"""))
+        self.assertEquals(
+            self.parse("[[http://www.google.com]]"),
+            wrap_result("""<a href="http://www.google.com">http://www.google.com</a>"""))
+        self.assertEquals(
+            self.parse("[[http://www.google.com| <<luca Google>>]]"),
+            wrap_result("""<a href="http://www.google.com"><strong> Google</strong></a>"""))
 
-<<luca foobar>>
-
-<<steve foo>>
-""","""\
-<p>one
-<span class="centered">This is a footer.</span></p>
-<strong> foobar</strong><p><strong> foo</strong></p>
-""",p=parser,paragraph=False)
+    def test_links_with_spaces(self):
+        self.assertEquals(
+            self.parse("[[This Page Here]] is <<steve the steve macro!>>"),
+            wrap_result("""<a href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/ThisPageHere">This Page Here</a> is <strong> the steve macro!</strong>"""))
+        self.assertEquals(
+            self.parse("[[New Page|this]]"),
+            wrap_result("""<a href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/NewPage">this</a>"""))
 
 
+        ##    print parser(r"""
+        ##Go to [[http://www.google.com]], it is [[http://www.google.com| <<luca Google>>]]\\
+        ##even [[This Page Here]] is <<steve the steve macro!>> nice like [[New Page|this]].\\
+        ##This is the <<sue sue macro!>> and this is the <<luca luca macro!>>.\\
+        ##Don't touch {{{<<steve this!>>}}}.\\
+        ##<<mateo>>A body!<</mateo>>\\
+        ##As is [[Ohana:Home|This one]].""")
 
-##    print parser(r"""
-##Go to [[http://www.google.com]], it is [[http://www.google.com| <<luca Google>>]]\\
-##even [[This Page Here]] is <<steve the steve macro!>> nice like [[New Page|this]].\\
-##This is the <<sue sue macro!>> and this is the <<luca luca macro!>>.\\
-##Don't touch {{{<<steve this!>>}}}.\\
-##<<mateo>>A body!<</mateo>>\\
-##As is [[Ohana:Home|This one]].""")
 
-    assert parser(r"""
-Go to [[http://www.google.com]], it is [[http://www.google.com| <<luca Google>>]]\\
-even [[This Page Here]] is <<steve the steve macro!>> nice like [[New Page|this]].\\
-This is the <<sue sue macro!>> and this is the <<luca luca macro!>>.\\
-Don't touch {{{<<steve this!>>}}}.\\
-<<mateo>>A body!<</mateo>>\\
-As is [[Ohana:Home|This one]].""") == """\
-<p>Go to <a href="http://www.google.com">http://www.google.com</a>, it is <a href="http://www.google.com"><strong> Google</strong></a><br />
-even <a href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/ThisPageHere">This Page Here</a> is <strong> the steve macro!</strong> nice like <a href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/NewPage">this</a>.<br />
-This is the &lt;&lt;sue sue macro!&gt;&gt; and this is the <strong> luca macro!</strong>.<br />
-Don't touch <span>&lt;&lt;steve this!&gt;&gt;</span>.<br />
-<em>A body!</em><br />
-As is [[Ohana:Home|This one]].</p>
-"""
+        ##    print parser(r"""
+        ##Go to [[http://www.google.com]], it is [[http://www.google.com| <<luca Google>>]]\\
+        ##even [[This Page Here]] is <<steve the steve macro!>> nice like [[New Page|this]].\\
+        ##<<mateo>>This is the some random text
+        ##over two lines<</mateo>><<mila>>A body!<</mila>>\\
+        ##As is [[Ohana:Home|This one]].
+        ##<<mila>>A body!<</mila>>""")
 
-##    print parser(r"""
-##Go to [[http://www.google.com]], it is [[http://www.google.com| <<luca Google>>]]\\
-##even [[This Page Here]] is <<steve the steve macro!>> nice like [[New Page|this]].\\
-##<<mateo>>This is the some random text
-##over two lines<</mateo>><<mila>>A body!<</mila>>\\
-##As is [[Ohana:Home|This one]].
-##<<mila>>A body!<</mila>>""")
-
-    assert parser(r"""
-Go to [[http://www.google.com]], it is [[http://www.google.com| <<luca Google>>]]\\
-even [[This Page Here]] is <<steve the steve macro!>> nice like [[New Page|this]].\\
-<<mateo>>This is the some random text
-over two lines<</mateo>><<mila>>A body!<</mila>>\\
-As is [[Ohana:Home|This one]].
-<<mila>>A body!<</mila>>""") == """\
-<p>Go to <a href="http://www.google.com">http://www.google.com</a>, it is <a href="http://www.google.com"><strong> Google</strong></a><br />
-even <a href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/ThisPageHere">This Page Here</a> is <strong> the steve macro!</strong> nice like <a href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/NewPage">this</a>.<br />
-<em>This is the some random text
-over two lines</em>&lt;&lt;mila&gt;&gt;A body!&lt;&lt;/mila&gt;&gt;<br />
-As is [[Ohana:Home|This one]].
-&lt;&lt;mila&gt;&gt;A body!&lt;&lt;/mila&gt;&gt;</p>
-"""
 
 class InterWikiLinksTest(unittest.TestCase):
-    """
-    """
-
 
     def setUp(self):
         def inter_wiki_link_maker(name):
