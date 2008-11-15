@@ -64,17 +64,6 @@ noSpaces = Parser(
     )
 
 
-def check_markup(m, s, p=text2html,paragraph=True,context='block'):
-    if paragraph:
-        out = '<p>%s</p>\n' % s
-    else:
-        out = s
-    gen = p.render(m,context=context)
-    #print 'obtained:', repr(gen)
-    #print 'expected:', repr(out)
-    assert out == gen
-
-
 def wrap_result(expected):
     return "<p>%s</p>\n" % expected
 
