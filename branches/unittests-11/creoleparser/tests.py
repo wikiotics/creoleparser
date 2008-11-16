@@ -505,11 +505,12 @@ class MacroTest(unittest.TestCase, BaseTest):
         elif macro_name == 'footer2':
             return '<<center>>\nThis is a footer.\n<</center>>'
         elif macro_name == 'reverse-lines':
-            l = reversed(body.rstrip().split('\n'))
-            if arg_string.strip() == 'output=wiki':
-                return '\n'.join(l) + '\n'
-            else:
-                return builder.tag('\n'.join(l) + '\n').generate()
+            if body is not None:
+                l = reversed(body.rstrip().split('\n'))
+                if arg_string.strip() == 'output=wiki':
+                    return '\n'.join(l) + '\n'
+                else:
+                    return builder.tag('\n'.join(l) + '\n').generate()
 
     def test_macros(self):
         self.assertEquals(
@@ -563,10 +564,9 @@ class MacroTest(unittest.TestCase, BaseTest):
         self.assertEquals(
             self.parse("<<reverse-lines>>\none\ntwo<</reverse-lines>>"),
             wrap_result("two\none\n\n"))
-        # XXX this seems to be a bug: two new lines in a row cause the body to be None...
-        #self.assertEquals(
-        #    self.parse("<<reverse-lines>>one\n\ntwo<</reverse-lines>>"),
-        #    wrap_result("two\none\n\n"))
+        self.assertEquals(
+            self.parse("<<reverse-lines>>\none\n\ntwo\n<</reverse-lines>>"),
+            "two\n\none\n")
         self.assertEquals(
             self.parse("<<reverse-lines>>one\n{{{two}}}\n<</reverse-lines>>"),
             wrap_result("{{{two}}}\none\n"))
@@ -576,31 +576,24 @@ class MacroTest(unittest.TestCase, BaseTest):
         self.assertEquals(
             self.parse("<<reverse-lines>>one\n{{{\ntwo\n}}}<</reverse-lines>>"),
             wrap_result("}}}\ntwo\n{{{\none\n"))
-        # XXX this seems to be a bug: two preformat brace groups on their own lines with a final new line
-        #self.assertEquals(
-        #    self.parse("<<reverse-lines>>one\n{{{\ntwo\n}}}\n<</reverse-lines>>"),
-        #    wrap_result("two}}}\n{{{\none\n"))
-
+        self.assertEquals(
+            self.parse("<<reverse-lines>>\none\n{{{\ntwo\n}}}\n<</reverse-lines>>"),
+            "}}}\ntwo\n{{{\none\n")
         self.assertEquals(
             self.parse("<<reverse-lines output=wiki>>one\n{{{\ntwo\n}}}<</reverse-lines>>"),
             wrap_result("}}}\ntwo\n{{{\none\n"))
-
         self.assertEquals(
             self.parse("<<reverse-lines output=wiki>>one\n}}}\ntwo\n{{{<</reverse-lines>>"),
             wrap_result("<span>\ntwo\n</span>\none\n"))
-
         self.assertEquals(
             self.parse("<<reverse-lines output=wiki>>one\n}}}\ntwo\n{{{\n<</reverse-lines>>"),
             wrap_result("<span>\ntwo\n</span>\none\n"))
-
-        # XXX two new lines after the closing (initial) "}}}" brackets causes a no body to be found
-        #self.assertEquals(
-        #    self.parse("<<reverse-lines output=wiki>>one\n}}}\n\ntwo\n{{{\n<</reverse-lines>>"),
-        #    wrap_result("<span>\ntwo\n</span>\none\n"))
-        # XXX likewise, two new lines before the initial "}}}}
-        #self.assertEquals(
-        #    self.parse("<<reverse-lines output=wiki>>one\n\n}}}\ntwo\n{{{\n<</reverse-lines>>"),
-        #    wrap_result("<span>\ntwo\n</span>\none\n"))
+        self.assertEquals(
+            self.parse("<<reverse-lines output=wiki>>\none\n}}}\n\ntwo\n{{{\n<</reverse-lines>>"),
+            "<pre>two\n\n</pre>\n<p>one</p>\n")
+        self.assertEquals(
+            self.parse("<<reverse-lines output=wiki>>\none\n\n}}}\ntwo\n{{{\n<</reverse-lines>>"),
+            "<pre>two\n</pre>\n<p>one</p>\n")
 
     def test_links(self):
         self.assertEquals(
