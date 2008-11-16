@@ -237,9 +237,14 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
     def test_preformat(self):
         self.assertEquals(
             self.parse("""{{{
-            ** some ** unformatted {{{ stuff }}} ~~~
-            }}}"""),
-            wrap_result("<span>\n            ** some ** unformatted {{{ stuff </span> ~~\n            }}}"))
+** some ** unformatted {{{ stuff }}} ~~~
+ }}}
+}}}"""),
+            """\
+<pre>** some ** unformatted {{{ stuff }}} ~~~
+}}}
+</pre>
+""")
 
     def test_inline_unformatted(self):
         self.assertEquals(
@@ -269,10 +274,6 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
             self.parse("== ~http://www.google.com"),
             "<h2>http://www.google.com</h2>\n")
 
-    # XXX the next two list tests need to be verified -- I don't think they
-    # should be rendrered in the manner that they are, with new nested
-    # ul/ol tags
-
     def test_unordered_lists(self):
         self.assertEquals(
             self.parse("""
@@ -295,11 +296,23 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
 ## //subitem 2//
 ### A
 ### B
-** //subitem 3//
 # **item two
 # **item three**
             """),
-            "<ol><li>this is list <strong>item one</strong>\n<ol><li><em>subitem 1</em></li>\n<li><em>subitem 2</em>\n<ol><li>A</li>\n<li>B\n<ul><li><em>subitem 3</em></li></ul></li></ol></li></ol></li>\n<li><strong>item two</strong></li>\n<li><strong>item three</strong></li></ol>\n")
+            "<ol><li>this is list <strong>item one</strong>\n<ol><li><em>subitem 1</em></li>\n<li><em>subitem 2</em>\n<ol><li>A</li>\n<li>B</li></ol></li></ol></li>\n<li><strong>item two</strong></li>\n<li><strong>item three</strong></li></ol>\n")
+
+    def test_mixed_lists(self):
+        self.assertEquals(
+            self.parse("""
+# this is list **item one**
+** //unordered subitem 1//
+** //unordered subitem 2//
+# **item two
+** Unorder subitem 1
+** Unorder subitem 2
+# **item three**
+            """),
+            "<ol><li>this is list <strong>item one</strong>\n<ul><li><em>unordered subitem 1</em></li>\n<li><em>unordered subitem 2</em></li></ul></li>\n<li><strong>item two</strong>\n<ul><li>Unorder subitem 1</li>\n<li>Unorder subitem 2</li></ul></li>\n<li><strong>item three</strong></li></ol>\n")
 
     def test_definition_lists(self):
         self.assertEquals(
@@ -353,61 +366,6 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
             self.parse("__underline__"),
             wrap_result("<u>underline</u>"))
 
-
-    # XXX I think these tests are currently not passing against trunk
-
-    ##    print text2html(r"""
-    ##a lone escape ~ in the middle of a line
-    ##or at the end ~
-    ##a double ~~ in the middle
-    ##at end ~~
-    ##preventing ~** **bold** and ~// //italics//
-    ## ~= stopping headers!
-    ##| in table~| cells | too!
-    ##""")
-
-
-    ##    print text2html(r"""
-    ##* this is list **item one**
-    ##** item one - //subitem 1//
-    ##### one **http://www.google.com**
-    ##### two [[Creole1.0]]
-    ##### three\\covers\\many\\lines
-    ##** //subitem 2//
-    ##### what is this?
-    ##### no idea?
-    ##**** A
-    ##**** B
-    ##### And lots of
-    ##drivel here
-    ##** //subitem 3//
-    ##*** huh?
-    ##* **item two
-    ##* **item three**
-    ### new ordered list, item 1
-    ### item 2
-    #### sub item
-    ####sub item
-    ##""")
-
-    ##    print text2html(r"""
-    ##hello
-    ##; This is a title:
-    ##: Yes, sir!
-    ##; This is~: a another title:
-    ##: Yes, sir!
-    ##** and this emphasized!
-    ##; Another title : it's definition
-    ##; Another title ~: it's definition **NOT**
-    ##: here it is
-    ##*this is a list!!
-    ##; Wiki
-    ##; Creole
-    ##what about this?
-    ##: something neat
-    ##: two defintioins?""")
-
-
 class DialectOptionsTest(unittest.TestCase):
 
     def test_no_wiki_monospace_option(self):
@@ -444,9 +402,6 @@ class NoSpaceDialectTest(unittest.TestCase, BaseTest):
         self.assertEquals(
             self.parse("[[This Page Name Has Spaces]]"),
             wrap_result("""<a href="http://www.wikicreole.org/wiki/ThisPageNameHasSpaces">This Page Name Has Spaces</a>"""))
-        #self.assertEquals(
-        #    self.parse("[[Ohana:Home|This one]]"),
-        #    wrap_result("""<a href="http://wikiohana.net/cgi-bin/wiki.pl/Home">This one</a>"""))
 
     def test_special_link(self):
         self.assertEquals(
@@ -618,23 +573,6 @@ class MacroTest(unittest.TestCase, BaseTest):
             wrap_result("""<a href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/NewPage">this</a>"""))
 
 
-        ##    print parser(r"""
-        ##Go to [[http://www.google.com]], it is [[http://www.google.com| <<luca Google>>]]\\
-        ##even [[This Page Here]] is <<steve the steve macro!>> nice like [[New Page|this]].\\
-        ##This is the <<sue sue macro!>> and this is the <<luca luca macro!>>.\\
-        ##Don't touch {{{<<steve this!>>}}}.\\
-        ##<<mateo>>A body!<</mateo>>\\
-        ##As is [[Ohana:Home|This one]].""")
-
-
-        ##    print parser(r"""
-        ##Go to [[http://www.google.com]], it is [[http://www.google.com| <<luca Google>>]]\\
-        ##even [[This Page Here]] is <<steve the steve macro!>> nice like [[New Page|this]].\\
-        ##<<mateo>>This is the some random text
-        ##over two lines<</mateo>><<mila>>A body!<</mila>>\\
-        ##As is [[Ohana:Home|This one]].
-        ##<<mila>>A body!<</mila>>""")
-
 
 class InterWikiLinksTest(unittest.TestCase):
 
@@ -748,8 +686,8 @@ class ContextTest(unittest.TestCase):
 
     def test_block_elements_context(self):
         context = text2html.dialect.block_elements
-        result = text2html.render(self.markup, context=context)
-        #self.assertEqual(result, wrap_result("steve <em>rad</em>"))
+        result = text2html.render(self.markup+'\n', context=context)
+        self.assertEqual(result, wrap_result("steve <em>rad</em>"))
 
 
 def test_suite():
