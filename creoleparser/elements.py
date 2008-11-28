@@ -567,7 +567,7 @@ class WikiLink(WikiElement):
         if self.path_func:
             the_path = self.path_func(self.page_name(mo))
         else:
-            the_path = urllib.quote(self.page_name(mo))
+            the_path = urllib.quote(self.page_name(mo).encode('utf-8'))
         return urlparse.urljoin(self.base_url, the_path)
 
     def _build(self,mo,element_store):

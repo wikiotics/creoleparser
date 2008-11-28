@@ -29,7 +29,7 @@ def path_name_function(page_name):
     if page_name == 'ThisPageHere':
         path = 'Special/ThisPageHere'
     else:
-        path = urllib.quote(page_name)
+        path = urllib.quote(page_name.encode('utf-8'))
     return path
 
 
@@ -80,6 +80,9 @@ class BaseTest(object):
         self.assertEquals(
             self.parse("[[http://www.google.com| <<luca Google>>]]"),
             wrap_result("""<a href="http://www.google.com">&lt;&lt;luca Google&gt;&gt;</a>"""))
+        self.assertEquals(
+            self.parse(u"[[ɤ]]"),
+            wrap_result("""<a href="http://www.wikicreole.org/wiki/%C9%A4">ɤ</a>"""))
 
     def test_links_with_spaces(self):
         self.assertEquals(
