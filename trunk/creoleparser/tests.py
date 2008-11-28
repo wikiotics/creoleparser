@@ -72,6 +72,9 @@ class BaseTest(object):
             self.parse("http://www.google.com"),
             wrap_result("""<a href="http://www.google.com">http://www.google.com</a>"""))
         self.assertEquals(
+            self.parse(r"http://www.google.com\\foo"),
+            wrap_result("""<a href="http://www.google.com">http://www.google.com</a><br />foo"""))
+        self.assertEquals(
             self.parse("~http://www.google.com"),
             wrap_result("""http://www.google.com"""))
         self.assertEquals(
