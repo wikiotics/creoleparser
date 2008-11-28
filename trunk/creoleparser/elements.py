@@ -508,7 +508,7 @@ class InterWikiLink(WikiElement):
             if link_func:
                 href = link_func(href)
             else:
-                href = urllib.quote(href)
+                href = urllib.quote(href.encode('utf-8'))
             if base_url:
                 href = urlparse.urljoin(base_url, href)
             return href
