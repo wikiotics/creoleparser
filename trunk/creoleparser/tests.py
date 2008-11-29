@@ -337,20 +337,20 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
     def test_image(self):
         self.assertEquals(
             self.parse("{{campfire.jpg}}"),
-            wrap_result("""<img src="campfire.jpg" alt="campfire.jpg" />"""))
+            wrap_result("""<img src="campfire.jpg" alt="campfire.jpg" title="campfire.jpg" />"""))
 
     def test_image_in_link(self):
         self.assertEquals(
             self.parse("[[http://google.com | {{ campfire.jpg | Nice Pic }}]]"),
-            wrap_result("""<a href="http://google.com"><img src="campfire.jpg" alt="Nice Pic" /></a>"""))
+            wrap_result("""<a href="http://google.com"><img src="campfire.jpg" alt="Nice Pic" title="Nice Pic" /></a>"""))
         self.assertEquals(
             self.parse("[[http://google.com | {{ campfire.jpg }}]]"),
-            wrap_result("""<a href="http://google.com"><img src="campfire.jpg" alt="campfire.jpg" /></a>"""))
+            wrap_result("""<a href="http://google.com"><img src="campfire.jpg" alt="campfire.jpg" title="campfire.jpg" /></a>"""))
 
     def test_image_in_table(self):
         self.assertEquals(
             self.parse("|nice picture |{{campfire.jpg}}|"),
-            """<table><tr><td>nice picture</td><td><img src="campfire.jpg" alt="campfire.jpg" /></td></tr>\n</table>\n""")
+            """<table><tr><td>nice picture</td><td><img src="campfire.jpg" alt="campfire.jpg" title="campfire.jpg" /></td></tr>\n</table>\n""")
 
     def test_super_and_sub_scripts(self):
         self.assertEquals(
@@ -637,7 +637,7 @@ class TaintingTest(unittest.TestCase):
     def test_cookies(self):
         self.assertEquals(
             self.parse("{{javascript:alert(document.cookie)}}"),
-            wrap_result("""<img src="unsafe_uri_detected" alt="unsafe_uri_detected" />"""))
+            wrap_result("""<img src="unsafe_uri_detected" alt="unsafe_uri_detected" title="unsafe_uri_detected" />"""))
         self.assertEquals(
             self.parse("[[javascript:alert(document.cookie)]]"),
             wrap_result("[[javascript:alert(document.cookie)]]"))
