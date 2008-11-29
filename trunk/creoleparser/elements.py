@@ -638,10 +638,10 @@ class ListItem(WikiElement):
 
     >>> list_item = ListItem('li',[],'#*')
     >>> mo = list_item.regexp.search("*one\n**one.1\n**one.2\n*two\n")
-    >>> mo.group(2)
-    'one\n**one.1\n**one.2'
+    >>> mo.group(3)
+    'one\n**one.1\n**one.2\n'
     >>> mo.group(0)
-    '*one\n**one.1\n**one.2'
+    '*one\n**one.1\n**one.2\n'
     
     """
     
@@ -661,15 +661,19 @@ class ListItem(WikiElement):
 
     def re_string(self):
         whitespace = r'[ \t]*'
-        item_start = '([*#]+)'
-        rest_of_item = r'(.*?)\n?'
-        start_of_same_level_item = r'\1(?![*#])'
-        look_ahead = r'(?=(\n' + whitespace + start_of_same_level_item + '|$))'
+        #item_start = '(([*#])+)'
+        item_start = '((#)+|\*+)'
+        #rest_of_item = r'(.*?)\n?'
+        rest_of_item = r'(.*?\n)'
+        #start_of_same_level_item = r'\1(?!\2)'
+        start_of_same_level_item = r'\1(?!(?(2)#|\*))'
+        #look_ahead = r'(?=(\n' + whitespace + start_of_same_level_item + '|$))'
+        look_ahead = r'(?=(' + whitespace + start_of_same_level_item + '|$))'
         return whitespace + item_start + whitespace + \
                rest_of_item + look_ahead
 
     def _build(self,mo,element_store):
-        return bldr.tag.__getattr__(self.tag)(fragmentize(mo.group(2),
+        return bldr.tag.__getattr__(self.tag)(fragmentize(mo.group(3),
                                                           self.child_tags,
                                                           element_store))
 

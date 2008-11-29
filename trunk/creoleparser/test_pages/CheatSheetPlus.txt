@@ -20,6 +20,6 @@
 |{{{use a tilde to ~**escape}}}         |use a tilde to ~**escape    |<<source>>use a tilde to ~**escape<</source>>
 |##{{{<<source>>a //simple// macro<</source>>}}}##|<<source>>a //simple// macro<</source>>|<<pre>><pre><p>a <em>simple</em> macro</p></pre><</pre>>
 
-[[CheatSheetPlusRaw]]
+[[http://creoleparser.googlecode.com/svn/trunk/creoleparser/test_pages/CheatSheetPlus.txt|raw wiki text]]
 
 [[http://validator.w3.org/check?uri=referer|{{http://www.w3.org/Icons/valid-xhtml10-blue|Valid XHTML 1.0 Transitional}}]]
