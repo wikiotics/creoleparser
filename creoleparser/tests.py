@@ -291,8 +291,9 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
 ** //subitem 3//
 * **item two
 * **item three**
+*# item four
             """),
-            "<ul><li>this is list <strong>item one</strong>\n<ul><li><em>subitem 1</em></li>\n<li><em>subitem 2</em>\n<ul><li>A</li>\n<li>B</li></ul></li>\n<li><em>subitem 3</em></li></ul></li>\n<li><strong>item two</strong></li>\n<li><strong>item three</strong></li></ul>\n")
+            "<ul><li>this is list <strong>item one</strong>\n<ul><li><em>subitem 1</em>\n</li><li><em>subitem 2</em>\n<ul><li>A\n</li><li>B\n</li></ul></li><li><em>subitem 3</em>\n</li></ul></li><li><strong>item two</strong>\n</li><li><strong>item three</strong>\n</li><li># item four\n</li></ul>\n")
 
     def test_ordered_lists(self):
         self.assertEquals(
@@ -305,7 +306,7 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
 # **item two
 # **item three**
             """),
-            "<ol><li>this is list <strong>item one</strong>\n<ol><li><em>subitem 1</em></li>\n<li><em>subitem 2</em>\n<ol><li>A</li>\n<li>B</li></ol></li></ol></li>\n<li><strong>item two</strong></li>\n<li><strong>item three</strong></li></ol>\n")
+            "<ol><li>this is list <strong>item one</strong>\n<ol><li><em>subitem 1</em>\n</li><li><em>subitem 2</em>\n<ol><li>A\n</li><li>B\n</li></ol></li></ol></li><li><strong>item two</strong>\n</li><li><strong>item three</strong>\n</li></ol>\n")
 
     def test_mixed_lists(self):
         self.assertEquals(
@@ -318,7 +319,7 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
 ** Unorder subitem 2
 # **item three**
             """),
-            "<ol><li>this is list <strong>item one</strong>\n<ul><li><em>unordered subitem 1</em></li>\n<li><em>unordered subitem 2</em></li></ul></li>\n<li><strong>item two</strong>\n<ul><li>Unorder subitem 1</li>\n<li>Unorder subitem 2</li></ul></li>\n<li><strong>item three</strong></li></ol>\n")
+            "<ol><li>this is list <strong>item one</strong>\n<ul><li><em>unordered subitem 1</em>\n</li><li><em>unordered subitem 2</em>\n</li></ul></li><li><strong>item two</strong>\n<ul><li>Unorder subitem 1\n</li><li>Unorder subitem 2\n</li></ul></li><li><strong>item three</strong>\n</li></ol>\n")
 
     def test_definition_lists(self):
         self.assertEquals(
