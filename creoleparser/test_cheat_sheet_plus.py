@@ -88,6 +88,13 @@ if __name__ == '__main__':
     f = open(os.path.join('test_pages','template.html'),'r')
     template = f.read()
     f.close()
+
+    out = open('out.txt','w')
+    out.write(template % text2html(text))
+    out.close()
+    #print template % text2html('MixedList.html')
+
+    #print template % text2html(text)
     
     assert template % text2html(text) == rendered
 

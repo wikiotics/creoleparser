@@ -907,7 +907,7 @@ class Image(InlineElement):
     >>> img = Image('img',('{{','}}'),[], delimiter='|')
     >>> mo = img.regexp.search('{{ picture.jpg | An image of a house }}')
     >>> img._build(mo,{}).generate().render()
-    '<img src="picture.jpg" alt="An image of a house"/>'
+    '<img src="picture.jpg" alt="An image of a house" title="An image of a house"/>'
 
     """
 
@@ -930,7 +930,7 @@ class Image(InlineElement):
             alias = link
         else:
             alias = body[1].strip()
-        return bldr.tag.__getattr__(self.tag)(src=link ,alt=alias)
+        return bldr.tag.__getattr__(self.tag)(src=link ,alt=alias, title=alias)
 
 
 class NoWikiElement(InlineElement):
