@@ -1,0 +1,21 @@
+.. _contents:
+
+Creoleparser documentation contents
+===================================
+
+.. toctree::
+   :maxdepth: 2
+
+   introduction <index>
+   usage
+   syntax
+   changelog
+   modules/dialects
+   modules/core
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

@@ -1,0 +1,67 @@
+Creoleparser: a parser for Creole wiki markup
+*********************************************
+
+Creoleparser is a Python implementation of a parser for the `Creole <http://wikicreole.org/wiki/Creole1.0>`_ wiki markup language.
+
+Features
+========
+
+* Creoleparser is a complete and robust Creole 1.0 implementation, plus optional additions (see _syntax). 
+* Uses `Genshi <http://genshi.edgewall.org/>`_ - *the Python toolkit for generation of output for the web*
+
+  * guarantees well formed xml output by default
+  * can instantly switch between HTML 4.01 and XHTML 1.0 (or other formats)
+  * `many other useful features <http://genshi.edgewall.org/>`_
+  
+* Serious macro support. 
+
+Installation
+============
+
+You need `Python 2.4 <http://www.python.org/>`_ or higher.
+
+Option 1 - easy_install
+-----------------------
+
+If you have `setuptools <http://peak.telecommunity.com/DevCenter/setuptools>`_, install Creoleparser using easy_install::
+
+   easy_install Creoleparser
+  
+This will automatically download and install Genshi and Creoleparser to your site-packages directory.
+
+Option 2 - manual installation
+------------------------------
+
+1. download and install Genshi from that package's `site <http://genshi.edgewall.org/>`_.
+2. download Creoleparser from `pypi <http://pypi.python.org/pypi/Creoleparser>`_, unzip to a temporary folder, and run::
+   
+      setup.py install
+   
+This will install Creoleparser to your site-packages directory.
+
+Sandbox
+=======
+
+You can test out Creleparser or just experiment with Creole syntax in the `Sandbox <http://creoleparserwiki.appspot.com/pages/Sandbox>`_.
+
+
+Help and Development
+====================
+
+You can get help from the `Google Group <http://groups.google.com/group/creoleparser>`_. *Feedback is greatly appreciated!*
+
+Report bugs and make feature requests by `creating an issue <http://code.google.com/p/creoleparser/issues/entry>`_.
+
+If you'd like to help out, see `the project page on Googlecode <http://code.google.com/p/creoleparser/>`_.
+
+Projects using Creoleparser
+===========================
+
+* The Werkzeug demo app `Simple Wiki <http://werkzeug.pocoo.org/e/simplewiki/Main_Page>`_
+
+License
+=======
+Creoleparser is licensed under an MIT license. See the LICENSE.txt file in the distribution.
+
+
+

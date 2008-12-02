@@ -9,8 +9,55 @@
 from elements import *
 
 class Creole10(object):
+    """Class for new creole 1.0 dialect objects
 
-    """This class contains most of the logic and specification of the markup."""
+    Most attributes of new Creole objects are derived from the WikiElement
+    class. Please see the constructor of that class and other specific element
+    classes for details.
+
+    :parameters:
+      wiki_links_base_url
+        self explanitory
+      wiki_links_space_char
+        When wiki_links have spaces, this character replaces those spaces in
+        the url. 
+      interwiki_links_base_urls
+        Dictionary of urls for interwiki links.
+      interwiki_links_space_chars
+        Dictionary of characters that that will be used to replace spaces
+        that occur in interwiki_links. If no key is present for an interwiki
+        name, the wiki_links_space_char will be used.
+      interwiki_links_funcs
+        Dictionary of functions that will be called for interwiki link
+        names. Works like wiki_links_path_func
+      no_wiki_monospace
+        If ``True``, inline no_wiki will be rendered as <tt> not <span>
+      use_additions
+        If ``True``, markup beyond the Creole 1.0 spec will be allowed.
+        Including monospace (##).
+      wiki_links_class_func
+        If supplied, this fuction will be called when a wiki link is found and
+        the return value (should be a string) will be added as a class attribute
+        of the cooresponding link. The function must accept the page name (any
+        spaces will have been replaced THIS IS NEW IN 0.3.3) as it's only argument.
+        If no class attribute is to be added, return no value (or None).
+      wiki_links_path_func
+        If supplied, this fuction will be called when a wiki link is found and
+        the return value (should be a string) will be joined to the base_url
+        to form the url for href. The function must accept the page name (any
+        spaces will have been replaced) as it's only argument. Returning the
+        unaltered page name is equivalent to not supplying this function at all.
+      macro_func
+        If supplied, this fuction will be called when macro markup is found. The
+        function must accept the macro name as its first argument, the argument
+        string (including any delimter) as the second, the macro body as its
+        third (will be None for a macro without a body), and a Boolean as the
+        fourth (True for Block type macros, False for normal macros).
+        The function may return a string (which will be subject to further wiki
+        processing) or a Genshi Stream object. If None is returned, the markup will
+        be rendered unchanged.
+                   
+    """
 
     def __init__(self,wiki_links_base_url='',wiki_links_space_char='_',
                  interwiki_links_base_urls={},
@@ -18,74 +65,6 @@ class Creole10(object):
                  wiki_links_class_func=None, macro_func=None,
                  wiki_links_path_func=None, interwiki_links_funcs={},
                  interwiki_links_space_chars={},):
-        """Constructor for Creole10 oblects.
-
-        Most attributes of new Creole objects are derived from the WikiElement
-        class. Please see the constructor of that class and other specific element
-        classes for details.
-
-        :parameters:
-          wiki_links_base_url
-            self explanitory
-          wiki_links_space_char
-            When wiki_links have spaces, this character replaces those spaces in
-            the url. 
-          interwiki_links_base_urls
-            Dictionary of urls for interwiki links.
-          interwiki_links_space_chars
-            Dictionary of characters that that will be used to replace spaces
-            that occur in interwiki_links. If no key is present for an interwiki
-            name, the wiki_links_space_char will be used.
-          interwiki_links_funcs
-            Dictionary of functions that will be called for interwiki link
-            names. Works like wiki_links_path_func
-          no_wiki_monospace
-            If ``True``, inline no_wiki will be rendered as <tt> not <span>
-          use_additions
-            If ``True``, markup beyond the Creole 1.0 spec will be allowed.
-            Including monospace (##).
-          wiki_links_class_func
-            If supplied, this fuction will be called when a wiki link is found and
-            the return value (should be a string) will be added as a class attribute
-            of the cooresponding link. The function must accept the page name (any
-            spaces will have been replaced THIS IS NEW IN 0.3.3) as it's only argument.
-            If no class attribute is to be added, return no value (or None).
-          wiki_links_path_func
-            If supplied, this fuction will be called when a wiki link is found and
-            the return value (should be a string) will be joined to the base_url
-            to form the url for href. The function must accept the page name (any
-            spaces will have been replaced) as it's only argument. Returning the
-            unaltered page name is equivalent to not supplying this function at all.
-          macro_func
-            If supplied, this fuction will be called when macro markup is found. The
-            function must accept the macro name as its first argument, the argument
-            string (including any delimter) as the second, the macro body as its
-            third (will be None for a macro without a body), and a Boolean as the
-            fourth (True for Block type macros, False for normal macros).
-            The function may return a string (which will be subject to further wiki
-            processing) or a Genshi Stream object. If None is returned, the markup will
-            be rendered unchanged.
-            The macro name must start with a letter and can include letters, numbers,
-            and non-repeating periods and hyphens.
-            Examples:
-
-            These are regular macros::
-            
-              <<macro-name arg_string>>the body<</macro-name>>
-              <<macro-name2 I have no body, just this argument string>>
-
-            These are "block" macros. They won't be enclosed automatically in
-            paragraphs like those above::
-
-              <<note-blank-lines-before-and-after>>
-
-
-              <<macro-name-alone>>
-              nor does this one
-              <</macro-name-alone>>
-                       
-         """
-        #self.any = Any()
         self.macro = Macro('',('<<','>>'),[],func=macro_func)
         self.bodiedmacro = BodiedMacro('',('<<','>>'),[],func=macro_func)
         self.block_macro = BlockMacro('',('<<','>>'),[],func=macro_func)
