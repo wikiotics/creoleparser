@@ -91,23 +91,22 @@ def fragmentize(text,wiki_elements, element_store,remove_escapes=True):
 
 
 class Parser(object):
+    """Constructor for Parser objects
 
-    """Instantiates a parser with specified behaviour"""
+    :parameters:
+      dialect
+        A Creole instance
+      method
+        This value is passed to genshies Steam.render(). Possible values
+        include ``xhtml``, ``html``, ``xml``, and ``text``.
+      strip_whitespace
+        This value is passed Genshies Steam.render().
+      encoding
+        This value is passed Genshies Steam.render().
+        
+    """
     
     def __init__(self,dialect, method='xhtml', strip_whitespace=False, encoding='utf-8'):
-        """Constructor for Parser objects.
-
-        :parameters:
-          dialect
-            A Creole instance
-          method
-            This value is passed to genshies Steam.render(). Possible values
-            include ``xhtml``, ``html``, ``xml``, and ``text``.
-          strip_whitespace
-            This value is passed Genshies Steam.render().
-          encoding
-            This value is passed Genshies Steam.render().
-        """
         self.dialect = dialect
         self.method = method
         self.strip_whitespace = strip_whitespace
@@ -125,9 +124,6 @@ class Parser(object):
             of WikiElement objects (use with caution).
           element_store
             Internal dictionary that's passed around a lot ;)
-            
-        See Genshi documentation for additional keyword arguments.
-          
         """
         if element_store is None:
             element_store = {}
@@ -152,7 +148,9 @@ class Parser(object):
     def render(self, text, element_store=None, context='block', **kwargs):
         """Returns final output string (e.g., xhtml)
 
-        See generate() (above) and Genshi documentation for keyword arguments.
+        See generate() (above) and
+        `Genshi documentation <http://genshi.edgewall.org/wiki/Documentation/streams.html#serialization-options>`_
+        for additional keyword arguments.
         """
         if element_store is None:
             element_store = {}
@@ -165,15 +163,17 @@ class Parser(object):
         stream = self.generate(text, element_store, context)
         return stream.render(**kwargs)
 
-    def __call__(self,text,element_store=None,context='block'):
+    def __call__(self,text,element_store=None,context='block', **kwargs):
         """Wrapper for the render method. Returns final output string.
 
-        See generate() (above) and Genshi documentation for keyword arguments.
+        See generate() (above) and
+        `Genshi documentation <http://genshi.edgewall.org/wiki/Documentation/streams.html#serialization-options>`_
+        for additional keyword arguments.
         """
 
         if element_store is None:
             element_store = {}
-        return self.render(text,element_store,context)
+        return self.render(text,element_store,context, **kwargs)
 
 
 def preprocess(text, dialect):

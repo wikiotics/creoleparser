@@ -1,0 +1,12 @@
+:mod:`creoleparser.core`
+============================
+
+.. module:: creoleparser.core
+
+.. autoclass:: creoleparser.core.Parser
+
+   .. automethod:: generate
+
+   .. automethod:: render
+
+   .. automethod:: __call__

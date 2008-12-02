@@ -1,0 +1,6 @@
+:mod:`creoleparser.dialects`
+============================
+
+.. module:: creoleparser.dialects
+
+.. autoclass:: creoleparser.dialects.Creole10

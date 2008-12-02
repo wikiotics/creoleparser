@@ -1,4 +1,4 @@
-Version 0.?.? (? 2008)
+Version 0.5.1 (? 2008)
 ----------------------
  
  * special characters in wiki links get quoted
