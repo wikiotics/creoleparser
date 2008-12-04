@@ -1,0 +1,24 @@
+.. _parser:
+   
+Working with a Parser
+*********************
+
+
+.. autoclass:: creoleparser.core.Parser
+   :noindex:
+
+
+.. automethod:: creoleparser.core.Parser.generate
+   :noindex:
+
+.. automethod:: creoleparser.core.Parser.render
+   :noindex:
+
+.. automethod:: creoleparser.core.Parser.__call__
+
+
+
+
+
+
+

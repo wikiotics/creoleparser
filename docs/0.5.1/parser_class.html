@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Working with a Parser &mdash; creoleparser v0.5.1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    '',
+          VERSION:     '0.5.1',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="creoleparser v0.5.1 documentation" href="index.html" />
+    <link rel="next" title="Changelog" href="changelog.html" />
+    <link rel="prev" title="Customizing the Dialect" href="dialect_class.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="changelog.html" title="Changelog"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="dialect_class.html" title="Customizing the Dialect"
+             accesskey="P">previous</a> |</li>
+        <li><a href="contents.html">creoleparser v0.5.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  
+  <div class="section" id="working-with-a-parser">
+<span id="parser"></span><h1>Working with a Parser<a class="headerlink" href="#working-with-a-parser" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt>
+class <tt class="descclassname">creoleparser.core.</tt><tt class="descname">Parser</tt><big>(</big><em>dialect</em>, <em>method='xhtml'</em>, <em>strip_whitespace=False</em>, <em>encoding='utf-8'</em><big>)</big></dt>
+<dd><p>Constructor for Parser objects</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt>dialect</dt>
+<dd><p class="first last">A Creole instance</p>
+</dd>
+<dt>method</dt>
+<dd><p class="first last">This value is passed to genshies Steam.render(). Possible values
+include <tt class="docutils literal"><span class="pre">xhtml</span></tt>, <tt class="docutils literal"><span class="pre">html</span></tt>, <tt class="docutils literal"><span class="pre">xml</span></tt>, and <tt class="docutils literal"><span class="pre">text</span></tt>.</p>
+</dd>
+<dt>strip_whitespace</dt>
+<dd><p class="first last">This value is passed Genshies Steam.render().</p>
+</dd>
+<dt>encoding</dt>
+<dd><p class="first last">This value is passed Genshies Steam.render().</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descclassname">Parser.</tt><tt class="descname">generate</tt><big>(</big><em>text</em>, <em>element_store=None</em>, <em>context='block'</em><big>)</big></dt>
+<dd><p>Returns a Genshi Stream.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt>text</dt>
+<dd><p class="first last">The text to be parsed.</p>
+</dd>
+<dt>context</dt>
+<dd><p class="first last">This is useful for marco development where (for example) supression
+of paragraph tags is desired. Can be &#8216;inline&#8217;, &#8216;block&#8217;, or a list
+of WikiElement objects (use with caution).</p>
+</dd>
+<dt>element_store</dt>
+<dd><p class="first last">Internal dictionary that&#8217;s passed around a lot ;)</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descclassname">Parser.</tt><tt class="descname">render</tt><big>(</big><em>text</em>, <em>element_store=None</em>, <em>context='block'</em>, <em>**kwargs</em><big>)</big></dt>
+<dd><p>Returns final output string (e.g., xhtml)</p>
+<p>See generate() (above) and
+<a class="reference" href="http://genshi.edgewall.org/wiki/Documentation/streams.html#serialization-options">Genshi documentation</a>
+for additional keyword arguments.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creoleparser.core.Parser.__call__">
+<!--[creoleparser.core.Parser.__call__]--><tt class="descclassname">Parser.</tt><tt class="descname">__call__</tt><big>(</big><em>text</em>, <em>element_store=None</em>, <em>context='block'</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#creoleparser.core.Parser.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for the render method. Returns final output string.</p>
+<p>See generate() (above) and
+<a class="reference" href="http://genshi.edgewall.org/wiki/Documentation/streams.html#serialization-options">Genshi documentation</a>
+for additional keyword arguments.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="dialect_class.html" title="previous chapter">Customizing the Dialect</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="changelog.html" title="next chapter">Changelog</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/parser_class.txt">Show Source</a></li>
+            </ul>
+          <h3>Quick search</h3>
+            <form class="search" action="search.html" method="get">
+              <input type="text" name="q" size="18" /> <input type="submit" value="Go" />
+              <input type="hidden" name="check_keywords" value="yes" />
+              <input type="hidden" name="area" value="default" />
+            </form>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="changelog.html" title="Changelog"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="dialect_class.html" title="Customizing the Dialect"
+             accesskey="P">previous</a> |</li>
+        <li><a href="contents.html">creoleparser v0.5.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2008, Stephen Day.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.
+    </div>
+  </body>
+</html>
