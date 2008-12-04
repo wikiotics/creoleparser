@@ -1,3 +1,5 @@
+.. _syntax:
+
 Syntax
 ******
 
@@ -12,7 +14,7 @@ and optionally implements most `additions <http://wiki.wikicreole.org/Creole%201
 alternate link sytax and indented paragraphs). These pages should be
 refered to for full details on the syntax. 
 
-Below find extra features of creoleparser.
+Below find extra syntax features of creoleparser.
 
 Mixed Lists
 ===========

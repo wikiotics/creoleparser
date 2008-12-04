@@ -1,29 +1,27 @@
 Basic Usage
 ***********
 
-Example
-=======
+.. doctest::
   
->>> from creoleparser import text2html
+   >>> from creoleparser import text2html
 
-Simply call the text2html() function with one argument (the text to be parsed):
+   Simply call the text2html() function with one argument (the text to be parsed):
 
+   >>> print text2html("Some real **simple** mark-up"),
+   <p>Some real <strong>simple</strong> mark-up</p>
 
->>> print text2html("Some real **simple** mark-up"),
-<p>Some real <strong>simple</strong> mark-up</p>
+   To customize things a little, create your own dialect and parser:
 
-To customize things a little, create your own dialect and parser:
+   >>> from creoleparser.dialects import Creole10
+   >>> from creoleparser.core import Parser
 
->>> from creoleparser.dialects import Creole10
->>> from creoleparser.core import Parser
+   >>> my_dialect=Creole10(wiki_links_base_url='http://www.mysite.net/',
+   ... interwiki_links_base_urls=dict(wikicreole='http://wikicreole.org/wiki/'))
 
->>> my_dialect=Creole10(wiki_links_base_url='http://www.mysite.net/',
-... interwiki_links_base_urls=dict(wikicreole='http://wikicreole.org/wiki/'))
+   >>> my_parser = Parser(dialect=my_dialect)
 
->>> my_parser = Parser(dialect=my_dialect)
+   >>> print my_parser("[[Home]] and [[wikicreole:Home]]"),
+   <p><a href="http://www.mysite.net/Home">Home</a> and <a href="http://wikicreole.org/wiki/Home">wikicreole:Home</a></p>
 
->>> print my_parser("[[Home]] and [[wikicreole:Home]]"),
-<p><a href="http://www.mysite.net/Home">Home</a> and <a href="http://wikicreole.org/wiki/Home">wikicreole:Home</a></p>
-
-If you want pure Creole 1.0 (i.e., no additions), use creole2html() instead of text2html().
+   If you want pure Creole 1.0 (i.e., no additions), use creole2html() instead of text2html().
 

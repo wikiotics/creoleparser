@@ -7,15 +7,13 @@ Creoleparser documentation contents
    :maxdepth: 2
 
    introduction <index>
-   usage
    syntax
+   usage
+   dialect_class
+   parser_class
    changelog
-   modules/dialects
-   modules/core
+   modules
 
-Indices and tables
-==================
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+
+
