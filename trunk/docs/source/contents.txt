@@ -9,8 +9,7 @@ Creoleparser documentation contents
    introduction <index>
    syntax
    usage
-   dialect_class
-   parser_class
+   macros
    changelog
    modules
 
