@@ -8,10 +8,13 @@ class Page(object):
         self.name = page_name
 
     def get_raw_body(self):
-        f = open(os.path.join(self.root,self.name + '.txt'),'r')
-        s = f.read()
-        f.close()
-        return s
+        try:
+            f = open(os.path.join(self.root,self.name + '.txt'),'r')
+            s = f.read()
+            f.close()
+            return s
+        except IOError:
+            return None
 
     def exists(self):
         try:
@@ -20,7 +23,6 @@ class Page(object):
             return True
         except IOError:
             return False
-        
         
 
 def class_func(page_name):
@@ -33,39 +35,34 @@ def path_func(page_name):
     else:
         return page_name
     
-def macro_func(name,arg_string,body,isblock):
-    if name=='include':
-        return include(arg_string)
-    elif name=='include-source':
-        return include_source(arg_string)
-    elif name=='source':
-        return source(body)
-    elif name=='pre':
-        return pre(body)
-    elif name=='include-raw':
-        return include_raw(arg_string)
-    else:
-        return '**' + arg_string + '**'
-
-def include(page_name):
-    page = Page(page_name.strip())
+def include(arg_string,body,isblock):
+    page = Page(arg_string.strip())
     return text2html.generate(page.get_raw_body())
 
-def include_raw(page_name):
-    page = Page(page_name.strip())
+def include_raw(arg_string,body,isblock):
+    page = Page(arg_string.strip())
     return bldr.tag.pre(page.get_raw_body(),class_='plain')
 
-def include_source(page_name):
-    page = Page(page_name.strip())
+def include_source(arg_string,body,isblock):
+    page = Page(arg_string.strip())
     return bldr.tag.pre(text2html.render(page.get_raw_body()))
 
-def source(string):
-    if string is None:
-        return 'None'
-    return bldr.tag.pre(text2html.render(string))
+def source(arg_string,body,isblock):
+    return bldr.tag.pre(text2html.render(body))
 
-def pre(string):
-    return bldr.tag.pre(string)
+def pre(arg_string,body,isblock):
+    return bldr.tag.pre(body)
+
+macros = {'include':include,
+          'include-raw':include_raw,
+          'include-source':include_source,
+          'source':source,
+          'pre':pre
+          }
+
+def macro_dispatcher(macro_name,arg_string,body,isblock):
+    if macro_name in macros:
+        return macros[macro_name](arg_string,body,isblock)
     
 dialect = dialects.Creole10(
     wiki_links_base_url='http://creoleparser.srcom.org/cgi-bin/creolepiki/',
@@ -74,7 +71,7 @@ dialect = dialects.Creole10(
     no_wiki_monospace=False,
     wiki_links_class_func=class_func,
     wiki_links_path_func=path_func,
-    macro_func=macro_func)
+    macro_func=macro_dispatcher)
 
 text2html = core.Parser(dialect)
 
@@ -89,9 +86,9 @@ if __name__ == '__main__':
     template = f.read()
     f.close()
 
-    #out = open(os.path.join('test_pages','out.html'),'w')
-    #out.write(template % text2html(text))
-    #out.close()
+##    out = open(os.path.join('test_pages','out.html'),'w')
+##    out.write(template % text2html(text))
+##    out.close()
     
     assert template % text2html(text) == rendered
 

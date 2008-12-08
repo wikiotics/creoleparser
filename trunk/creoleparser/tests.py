@@ -81,27 +81,19 @@ class BaseTest(object):
             self.parse("[[http://www.google.com]]"),
             wrap_result("""<a href="http://www.google.com">http://www.google.com</a>"""))
         self.assertEquals(
-            self.parse("[[http://www.google.com| <<luca Google>>]]"),
-            wrap_result("""<a href="http://www.google.com">&lt;&lt;luca Google&gt;&gt;</a>"""))
-        self.assertEquals(
             self.parse(u"[[ɤ]]"),
             wrap_result("""<a href="http://www.wikicreole.org/wiki/%C9%A4">ɤ</a>"""))
 
     def test_links_with_spaces(self):
         self.assertEquals(
-            self.parse("[[This Page Here]] is <<steve the steve macro!>>"),
-            wrap_result("""<a href="http://www.wikicreole.org/wiki/This_Page_Here">This Page Here</a> is &lt;&lt;steve the steve macro!&gt;&gt;"""))
+            self.parse("[[This Page Here]]"),
+            wrap_result("""<a href="http://www.wikicreole.org/wiki/This_Page_Here">This Page Here</a>"""))
         self.assertEquals(
             self.parse("[[New Page|this]]"),
             wrap_result("""<a href="http://www.wikicreole.org/wiki/New_Page">this</a>"""))
         self.assertEquals(
             self.parse("[[Ohana:Home|This one]]"),
             wrap_result("""<a href="http://wikiohana.net/cgi-bin/wiki.pl/Home">This one</a>"""))
-
-    def test_macro_markers(self):
-        self.assertEquals(
-            self.parse("This is the <<sue sue macro!>>"),
-            wrap_result("""This is the &lt;&lt;sue sue macro!&gt;&gt;"""))
 
 
 class Creole2HTMLTest(unittest.TestCase, BaseTest):
@@ -117,7 +109,12 @@ class Creole2HTMLTest(unittest.TestCase, BaseTest):
                 )
             )
         self.parse = creole2html
-
+        
+    def test_links(self):
+        super(Creole2HTMLTest, self).test_links()
+        self.assertEquals(
+            self.parse("[[http://www.google.com| <<luca Google>>]]"),
+            wrap_result("""<a href="http://www.google.com">&lt;&lt;luca Google&gt;&gt;</a>"""))
 
 class Text2HTMLTest(unittest.TestCase, BaseTest):
     """
@@ -139,6 +136,9 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
         self.assertEquals(
             self.parse("[[mailto:someone@example.com]]"),
             wrap_result("""<a href="mailto:someone@example.com">mailto:someone@example.com</a>"""))
+        self.assertEquals(
+            self.parse("[[http://www.google.com| <<luca Google>>]]"),
+            wrap_result("""<a href="http://www.google.com"><code class="unknown_macro">&lt;&lt;luca Google&gt;&gt;</code></a>"""))
 
     def test_bold(self):
         self.assertEquals(
@@ -161,6 +161,26 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
         self.assertEquals(
             self.parse("//this is italic **this is italic and bold**//"),
         wrap_result("""<em>this is italic <strong>this is italic and bold</strong></em>"""))
+
+    def test_macro_markers(self):
+        self.assertEquals(
+            self.parse("This is the <<sue sue macro!>>"),
+            wrap_result("""This is the <code class="unknown_macro">&lt;&lt;sue sue macro!&gt;&gt;</code>"""))
+        self.assertEquals(
+            self.parse('<<bad name>>foo<</bad>>'),
+            wrap_result('<code class="unknown_macro">&lt;&lt;bad name&gt;&gt;foo&lt;&lt;/bad&gt;&gt;</code>'))
+        self.assertEquals(
+            self.parse('<<unknown>>foo<</unknown>>'),
+            wrap_result('<code class="unknown_macro">&lt;&lt;unknown&gt;&gt;foo&lt;&lt;/unknown&gt;&gt;</code>'))
+        self.assertEquals(
+            self.parse('<<unknown>>foo with\na line break<</unknown>>'),
+            wrap_result('<code class="unknown_macro">&lt;&lt;unknown&gt;&gt;foo with<br />a line break&lt;&lt;/unknown&gt;&gt;</code>'))
+        self.assertEquals(
+            self.parse('<<unknown>>\nfoo\n<</unknown>>'),
+            '<pre class="unknown_macro">&lt;&lt;unknown&gt;&gt;\nfoo\n&lt;&lt;/unknown&gt;&gt;</pre>')
+        self.assertEquals(
+            self.parse('start\n\n<<unknown>>\n\nend'),
+            wrap_result('start</p>\n<pre class="unknown_macro">&lt;&lt;unknown&gt;&gt;</pre><p>end'))
 
     def test_monotype(self):
         pass
@@ -496,12 +516,6 @@ class MacroTest(unittest.TestCase, BaseTest):
         self.assertEquals(
             self.parse('<<lib.ReverseIt-now>>foo<</lib.ReverseIt-now>>'),
             wrap_result('oof'))
-        self.assertEquals(
-            self.parse('<<bad name>>foo<</bad name>>'),
-            wrap_result('&lt;&lt;bad name&gt;&gt;foo&lt;&lt;/bad name&gt;&gt;'))
-        self.assertEquals(
-            self.parse('<<unknown>>foo<</unknown>>'),
-            wrap_result('&lt;&lt;unknown&gt;&gt;foo&lt;&lt;/unknown&gt;&gt;'))
         self.assertEquals(
             self.parse(u'<<luca boo>>foo<</unknown>>'),
             wrap_result('<strong> boo</strong>foo&lt;&lt;/unknown&gt;&gt;'))

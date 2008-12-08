@@ -199,7 +199,7 @@ class Macro(WikiElement):
         else:
             value = None
         if value is None:
-            return bldr.tag(self.token[0] + mo.group(1) + self.token[1])
+            return bldr.tag.code(self.token[0] + mo.group(1) + self.token[1],class_="unknown_macro")
         elif isinstance(value,basestring):
             return value
         elif isinstance(value, (bldr.Fragment,bldr.Element, Stream)):
@@ -234,9 +234,16 @@ class BodiedMacro(Macro):
         else:
             value = None
         if value is None:
-            return bldr.tag(self.token[0] + mo.group(1) + self.token[1]
-                            + mo.group(5) + self.token[0] + '/'
-                            + mo.group(1) + self.token[1])
+            content_lines = mo.group(5).splitlines()
+            if len(content_lines) > 1:
+                content_out = [content_lines[0]]
+                for line in content_lines[1:]:
+                    content_out.extend([bldr.tag.br(),line])
+            else:
+                content_out = content_lines
+            return bldr.tag.code(self.token[0] + mo.group(1) + self.token[1],
+                            content_out , self.token[0] + '/'
+                            + mo.group(2) + self.token[1],class_="unknown_macro")
         elif isinstance(value, basestring):
             return value
         elif isinstance(value, (bldr.Fragment,bldr.Element, Stream)):
@@ -309,7 +316,7 @@ class BlockMacro(WikiElement):
         else:
             value = None
         if value is None:
-            return bldr.tag(self.token[0] + mo.group(2) + self.token[1])
+            return bldr.tag.pre(self.token[0] + mo.group(2) + self.token[1],class_="unknown_macro")
         elif isinstance(value,basestring):
             return ''.join([value.rstrip(),'\n'])
         elif isinstance(value, (bldr.Fragment,bldr.Element, Stream)):
@@ -348,9 +355,9 @@ class BodiedBlockMacro(BlockMacro):
         else:
             value = None
         if value is None:
-            return bldr.tag(self.token[0] + mo.group(1) + self.token[1]
-                            + mo.group(5) + self.token[0] + '/'
-                            + mo.group(1) + self.token[1])
+            return bldr.tag.pre(self.token[0] + mo.group(1) + self.token[1]
+                            + '\n' + mo.group(5) + self.token[0] + '/'
+                            + mo.group(2) + self.token[1] ,class_="unknown_macro")
         elif isinstance(value, basestring):
             return value
         elif isinstance(value, (bldr.Fragment,bldr.Element, Stream)):
