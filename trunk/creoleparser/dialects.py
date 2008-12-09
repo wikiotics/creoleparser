@@ -9,15 +9,12 @@
 from elements import *
 
 class Creole10(object):
-    """Class for new creole 1.0 dialect objects
-
-    Most attributes of new Creole objects are derived from the WikiElement
-    class. Please see the constructor of that class and other specific element
-    classes for details.
+    """Constructor for Creole10 objects
 
     :parameters:
       wiki_links_base_url
-        self explanitory
+        The page name found in wiki links will be appended to this to form
+        the href.
       wiki_links_space_char
         When wiki_links have spaces, this character replaces those spaces in
         the url. 
@@ -31,16 +28,16 @@ class Creole10(object):
         Dictionary of functions that will be called for interwiki link
         names. Works like wiki_links_path_func
       no_wiki_monospace
-        If ``True``, inline no_wiki will be rendered as <tt> not <span>
+        If `True`, inline no_wiki will be rendered as <tt> not <span>
       use_additions
-        If ``True``, markup beyond the Creole 1.0 spec will be allowed.
-        Including monospace (##).
+        If `True`, markup beyond the Creole 1.0 spec will be allowed
+        (see http://purl.oclc.org/creoleparser/cheatsheet)
       wiki_links_class_func
         If supplied, this fuction will be called when a wiki link is found and
         the return value (should be a string) will be added as a class attribute
-        of the cooresponding link. The function must accept the page name (any
-        spaces will have been replaced THIS IS NEW IN 0.3.3) as it's only argument.
-        If no class attribute is to be added, return no value (or None).
+        of the corresponding link. The function must accept the page name (any
+        spaces will have been replaced) as it's only argument.
+        If no class attribute is to be added, return `None`.
       wiki_links_path_func
         If supplied, this fuction will be called when a wiki link is found and
         the return value (should be a string) will be joined to the base_url

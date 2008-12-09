@@ -1,7 +1,14 @@
-Version 0.5.1 (? 2008)
-----------------------
- 
- * special characters in wiki links get quoted
+Version 0.5.1 (Dec 8 2008)
+--------------------------
+
+ * converted docs to Sphinx
+ * improved rendering of unknown macros 
+ * added title attribute to images
+ * fixed bug with markup in raw links
+ * fixed bug with unicode characters in wiki links
+ * fixed bug preventing plain-text rendering
+ * tests.py was refactored to use unittest (thanks duncan.mcgreggor!)
+ * special characters in wiki links get quoted for urls
  * links refactored to support mailto:
  * wiki links can no longer have adjacent spaces
  * creoleparser now works on Goggle App Engine
