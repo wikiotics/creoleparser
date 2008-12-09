@@ -1,0 +1,38 @@
+Basic Usage
+***********
+
+The simplest way to use creoleparser is to call the builtin `text2html` function
+with one argument (the text to be parsed):
+
+.. doctest::
+  
+   >>> from creoleparser import text2html
+
+   >>> print text2html("Some real **simple** mark-up"),
+   <p>Some real <strong>simple</strong> mark-up</p>
+
+To customize things a little, create your own dialect and parser function:
+
+.. doctest::
+
+   >>> from creoleparser.dialects import Creole10
+   >>> from creoleparser.core import Parser
+
+   >>> my_dialect=Creole10(wiki_links_base_url='http://www.mysite.net/',
+   ... interwiki_links_base_urls=dict(wikicreole='http://wikicreole.org/wiki/'))
+
+   >>> my_parser = Parser(dialect=my_dialect)
+
+   >>> print my_parser("[[Home]] and [[wikicreole:Home]]"),
+   <p><a href="http://www.mysite.net/Home">Home</a> and <a href="http://wikicreole.org/wiki/Home">wikicreole:Home</a></p>
+
+The builtin `text2html` and `creole2html` functions were created as follows:
+
+.. code-block:: python
+
+   text2html = Parser(dialect=Creole10(use_additions=True,no_wiki_monospace=False))
+
+   creole2html = Parser(dialect=Creole10(use_additions=False,no_wiki_monospace=True))
+
+For more infomation, see :class:`creoleparser.core.Parser` and :class:`creoleparser.dialects.Creole10`.
+

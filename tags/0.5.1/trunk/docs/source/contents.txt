@@ -1,0 +1,18 @@
+.. _contents:
+
+Creoleparser documentation contents
+===================================
+
+.. toctree::
+   :maxdepth: 2
+
+   introduction <index>
+   syntax
+   usage
+   macros
+   changelog
+   modules
+
+
+
+

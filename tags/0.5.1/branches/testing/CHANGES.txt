@@ -1,0 +1,43 @@
+Version 0.3.1 (Nov ?? 2007)
+-------------------------
+ * super (^^) and subscript (,,), and underline (__) support added
+ * definition lists supported (;)
+ * removed store_id_seq in favor of id()
+ * made element_store thread.local()
+
+
+Version 0.3 (Nov 10 2007)
+-------------------------
+
+ * text2xhtml has no_wiki_monospace=True and use_additions=True
+ * creole_to_xhtml is now pure Creole 1.0 (use_additions=False)
+ * removed need for any pre_escaping, much more robust now
+ * big refactoring of inline wiki markup processing
+
+Version 0.2.1 (Nov 6 2007)
+--------------------------
+
+ * links can include mark-up
+ * creole_to_xhtml has no_wiki_monospace=True and use_additions=True
+ * fixed bug with bad links
+ * removed lone line break as an element (it wasn't valid xhtml)
+ * stopped inserting \n's after <br />'s
+ * wiki_links_space_char option added to dialects.Creole10
+ * added inline_no_wiki_monospace option to dialects.Creole10 
+ * refactored core.pre_escape()
+ * CHANGES.txt, LISCENCE.txt, and INSTALL.txt added to distribution
+ * added use_additions option to dialects.Creole10
+ * implemented monospace (##) (for use_additions option only) 
+
+
+Version 0.2 (Oct 26 2007)
+-------------------------
+
+ * module split into separate files to create the creoleparser package
+ * other refactoring
+
+
+Version 0.1, 0.1.1, 0.1.2 (Oct 2007)
+------------------------------------
+
+ * First public releases

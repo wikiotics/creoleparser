@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Syntax &mdash; creoleparser v0.5.1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    '',
+          VERSION:     '0.5.1',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="creoleparser v0.5.1 documentation" href="index.html" />
+    <link rel="next" title="Basic Usage" href="usage.html" />
+    <link rel="prev" title="Creoleparser: for parsing Creole wiki markup" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="usage.html" title="Basic Usage"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Creoleparser: for parsing Creole wiki markup"
+             accesskey="P">previous</a> |</li>
+        <li><a href="contents.html">creoleparser v0.5.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  
+  <div class="section" id="id1">
+<span id="syntax"></span><h1>Syntax<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>For a quick glance at what croeleparser implements, see the
+<a class="reference" href="http://purl.oclc.org/creoleparser/cheatsheet">creoleparser cheatsheet</a>.</p>
+<p>Creoleparser adhers very closely to the basic <a class="reference" href="http://wikicreole.org/wiki/Creole1.0">Creole 1.0 specification</a>
+and optionally implements most <a class="reference" href="http://wiki.wikicreole.org/Creole%201.0/additions">additions</a> (not including
+alternate link sytax and indented paragraphs). These pages should be
+refered to for full details on the syntax.</p>
+<p>Below find extra syntax features of creoleparser.</p>
+</div>
+<div class="section" id="mixed-lists">
+<h2>Mixed Lists<a class="headerlink" href="#mixed-lists" title="Permalink to this headline">¶</a></h2>
+<p>Creoleparser allows nesting of ordered lists within unordered lists (and visa versa) to any depth.
+Creole 1.0 does not specify or suggest a syntax for mixed list support. Creoleparser uses the same
+syntax as <a class="reference" href="http://www.atlassian.com/software/confluence/">Confluence</a>:</p>
+<div class="highlight-python"><pre># this is list item one
+** unordered subitem 1
+** unordered subitem 2
+# item two
+** unordered subitem 1
+** unordered subitem 2
+# item three</pre>
+</div>
+</div>
+<div class="section" id="macros">
+<h2>Macros<a class="headerlink" href="#macros" title="Permalink to this headline">¶</a></h2>
+<p>Creoleparser supports the same macro syntax as suggested by Creole, e.g.,:</p>
+<div class="highlight-python"><pre>&lt;&lt;CurrentTimePlugin format='yyyy.MM.dd'&gt;&gt;</pre>
+</div>
+<p>In addition to the above, creoleparser supports <em>macros with bodies</em>, e.g.,:</p>
+<div class="highlight-python"><pre>&lt;&lt;foo&gt;&gt;Some content to process&lt;&lt;/foo&gt;&gt;</pre>
+</div>
+<p>Normally, <em>bodied</em> macros will not span other block-level markup (like tables)
+or blank lines. This can be forced however, using the following syntax:</p>
+<div class="highlight-python"><pre>&lt;&lt;float side=right&gt;&gt;
+Some content to float.
+
+Including a second paragraph.
+&lt;&lt;/float&gt;&gt;</pre>
+</div>
+<p>Note that both parts of the macro markup are on a line by themselves
+and have no leading spaces, analogous to a Creole pre block:</p>
+<div class="highlight-python"><pre>{{{
+Some content to render in a &lt;pre&gt;.
+
+Including a second paragraph.
+}}}</pre>
+</div>
+<div class="section" id="macro-names">
+<h3>Macro Names<a class="headerlink" href="#macro-names" title="Permalink to this headline">¶</a></h3>
+<p>A macro name must start with a letter and can include letters, numbers,
+and non-repeating periods and hyphens.</p>
+</div>
+<div class="section" id="macro-arguments-and-delimiters">
+<h3>Macro Arguments and Delimiters<a class="headerlink" href="#macro-arguments-and-delimiters" title="Permalink to this headline">¶</a></h3>
+<p>Creoleparser does not specify or suggest the format of macro arguments. Internally,
+the entire string from the <cite>macro_name</cite> to the <tt class="docutils literal"><span class="pre">&gt;&gt;</span></tt> are passed as the <cite>arg_string</cite>.
+For this reason, an implementer should chose something other than legal macro name
+characters to delimit the arguments.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="contents.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference" href="">Syntax</a><ul>
+<li><a class="reference" href="#overview">Overview</a></li>
+<li><a class="reference" href="#mixed-lists">Mixed Lists</a></li>
+<li><a class="reference" href="#macros">Macros</a><ul>
+<li><a class="reference" href="#macro-names">Macro Names</a></li>
+<li><a class="reference" href="#macro-arguments-and-delimiters">Macro Arguments and Delimiters</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="index.html" title="previous chapter">Creoleparser: for parsing Creole wiki markup</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="usage.html" title="next chapter">Basic Usage</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/syntax.txt">Show Source</a></li>
+            </ul>
+          <h3>Quick search</h3>
+            <form class="search" action="search.html" method="get">
+              <input type="text" name="q" size="18" /> <input type="submit" value="Go" />
+              <input type="hidden" name="check_keywords" value="yes" />
+              <input type="hidden" name="area" value="default" />
+            </form>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="usage.html" title="Basic Usage"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Creoleparser: for parsing Creole wiki markup"
+             accesskey="P">previous</a> |</li>
+        <li><a href="contents.html">creoleparser v0.5.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2008, Stephen Day.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.
+    </div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-2934490-7");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+  </body>
+</html>
