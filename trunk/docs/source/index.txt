@@ -1,5 +1,5 @@
-Creoleparser: a parser for Creole wiki markup
-*********************************************
+Creoleparser: for parsing Creole wiki markup
+********************************************
 
 Creoleparser is a Python implementation of a parser for the `Creole <http://wikicreole.org/wiki/Creole1.0>`_ wiki markup language.
 
@@ -16,27 +16,7 @@ Features
 * Advanced macro support. 
 * Runs on Google App Engine!
 
-Installation
-============
-
-You need `Python 2.4 <http://www.python.org/>`_ or higher.
-
-*Option 1 - easy_install*
-   
-   If you have `setuptools <http://peak.telecommunity.com/DevCenter/setuptools>`_, install Creoleparser using easy_install::
-
-      easy_install Creoleparser
-  
-   This will automatically download and install Genshi and Creoleparser to your site-packages directory.
-
-*Option 2 - manual installation*
-   
-   1. download and install Genshi from that package's `site <http://genshi.edgewall.org/>`_.
-   2. download Creoleparser from `pypi <http://pypi.python.org/pypi/Creoleparser>`_, unzip to a temporary folder, and run::
-   
-         setup.py install
-   
-   This will install Creoleparser to your site-packages directory.
+.. include:: ../../INSTALL.txt
 
 Sandbox
 =======
