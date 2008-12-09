@@ -37,7 +37,6 @@ creoleparser.elements.Link class modules/elements.html
 creoleparser.elements.BlockMacro class modules/elements.html
 creoleparser.elements.InlineElement class modules/elements.html
 creoleparser.elements.NestedList class modules/elements.html
-creoleparser.core.Parser.__call__ method parser_class.html
 creoleparser.elements.ListItem class modules/elements.html
 creoleparser.elements.RawLink.href method modules/elements.html
 creoleparser.elements.List.re_string method modules/elements.html

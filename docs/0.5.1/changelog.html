@@ -20,7 +20,7 @@
     <link rel="search" title="Search" href="search.html" />
     <link rel="top" title="creoleparser v0.5.1 documentation" href="index.html" />
     <link rel="next" title="Generated API documentation" href="modules.html" />
-    <link rel="prev" title="Working with a Parser" href="parser_class.html" /> 
+    <link rel="prev" title="Implementing Macros" href="macros.html" /> 
   </head>
   <body>
     <div class="related">
@@ -36,7 +36,7 @@
           <a href="modules.html" title="Generated API documentation"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="parser_class.html" title="Working with a Parser"
+          <a href="macros.html" title="Implementing Macros"
              accesskey="P">previous</a> |</li>
         <li><a href="contents.html">creoleparser v0.5.1 documentation</a> &raquo;</li> 
       </ul>
@@ -49,11 +49,18 @@
   
   <div class="section" id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="version-0-5-1-2008">
-<h2>Version 0.5.1 (? 2008)<a class="headerlink" href="#version-0-5-1-2008" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="version-0-5-1-dec-8-2008">
+<h2>Version 0.5.1 (Dec 8 2008)<a class="headerlink" href="#version-0-5-1-dec-8-2008" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <ul class="simple">
-<li>special characters in wiki links get quoted</li>
+<li>converted docs to Sphinx</li>
+<li>improved rendering of unknown macros</li>
+<li>added title attribute to images</li>
+<li>fixed bug with markup in raw links</li>
+<li>fixed bug with unicode characters in wiki links</li>
+<li>fixed bug preventing plain-text rendering</li>
+<li>tests.py was refactored to use unittest (thanks duncan.mcgreggor!)</li>
+<li>special characters in wiki links get quoted for urls</li>
 <li>links refactored to support mailto:</li>
 <li>wiki links can no longer have adjacent spaces</li>
 <li>creoleparser now works on Goggle App Engine</li>
@@ -178,7 +185,7 @@ wiki links (e.g., if the page doesn&#8217;t exist).</li>
             <h3><a href="contents.html">Table Of Contents</a></h3>
             <ul>
 <li><a class="reference" href="">Changelog</a><ul>
-<li><a class="reference" href="#version-0-5-1-2008">Version 0.5.1 (? 2008)</a></li>
+<li><a class="reference" href="#version-0-5-1-dec-8-2008">Version 0.5.1 (Dec 8 2008)</a></li>
 <li><a class="reference" href="#version-0-5-0-may-31-2008">Version 0.5.0 (May 31 2008)</a></li>
 <li><a class="reference" href="#version-0-4-0-march-24-2008">Version 0.4.0 (March 24 2008)</a></li>
 <li><a class="reference" href="#version-0-3-3-dec-16-2007">Version 0.3.3 (Dec 16 2007)</a></li>
@@ -193,7 +200,7 @@ wiki links (e.g., if the page doesn&#8217;t exist).</li>
 </ul>
 
             <h4>Previous topic</h4>
-            <p class="topless"><a href="parser_class.html" title="previous chapter">Working with a Parser</a></p>
+            <p class="topless"><a href="macros.html" title="previous chapter">Implementing Macros</a></p>
             <h4>Next topic</h4>
             <p class="topless"><a href="modules.html" title="next chapter">Generated API documentation</a></p>
             <h3>This Page</h3>
@@ -223,7 +230,7 @@ wiki links (e.g., if the page doesn&#8217;t exist).</li>
           <a href="modules.html" title="Generated API documentation"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="parser_class.html" title="Working with a Parser"
+          <a href="macros.html" title="Implementing Macros"
              accesskey="P">previous</a> |</li>
         <li><a href="contents.html">creoleparser v0.5.1 documentation</a> &raquo;</li> 
       </ul>
@@ -232,5 +239,16 @@ wiki links (e.g., if the page doesn&#8217;t exist).</li>
       &copy; Copyright 2008, Stephen Day.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.
     </div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-2934490-7");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
   </body>
 </html>

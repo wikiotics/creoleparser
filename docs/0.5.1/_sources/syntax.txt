@@ -7,7 +7,7 @@ Overview
 ========
 
 For a quick glance at what croeleparser implements, see the
-`creoleparser cheatsheet <http://creoleparser.googlepages.com/CheatSheetPlus.html>`_.
+`creoleparser cheatsheet <http://purl.oclc.org/creoleparser/cheatsheet>`_.
 
 Creoleparser adhers very closely to the basic `Creole 1.0 specification <http://wikicreole.org/wiki/Creole1.0>`_
 and optionally implements most `additions <http://wiki.wikicreole.org/Creole%201.0/additions>`_ (not including
@@ -40,7 +40,7 @@ Creoleparser supports the same macro syntax as suggested by Creole, e.g.,::
 
 In addition to the above, creoleparser supports *macros with bodies*, e.g.,::
 
-   <<strike>>Some content marked as deleted<</strike>>
+   <<foo>>Some content to process<</foo>>
 
 Normally, *bodied* macros will not span other block-level markup (like tables)
 or blank lines. This can be forced however, using the following syntax::
@@ -60,5 +60,20 @@ and have no leading spaces, analogous to a Creole pre block::
    Including a second paragraph.   
    }}}
 
+Macro Names
+-----------
 A macro name must start with a letter and can include letters, numbers,
 and non-repeating periods and hyphens.
+
+Macro Arguments and Delimiters
+------------------------------
+
+Creoleparser does not specify or suggest the format of macro arguments. Internally,
+the entire string from the `macro_name` to the ``>>`` are passed as the `arg_string`.
+For this reason, an implementer should chose something other than legal macro name
+characters to delimit the arguments.
+
+
+
+
+

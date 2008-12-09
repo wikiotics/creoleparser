@@ -3,7 +3,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Creoleparser: a parser for Creole wiki markup &mdash; creoleparser v0.5.1 documentation</title>
+    <title>Creoleparser: for parsing Creole wiki markup &mdash; creoleparser v0.5.1 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -47,8 +47,8 @@
           <div class="body">
             
   
-  <div class="section" id="creoleparser-a-parser-for-creole-wiki-markup">
-<h1>Creoleparser: a parser for Creole wiki markup<a class="headerlink" href="#creoleparser-a-parser-for-creole-wiki-markup" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="creoleparser-for-parsing-creole-wiki-markup">
+<h1>Creoleparser: for parsing Creole wiki markup<a class="headerlink" href="#creoleparser-for-parsing-creole-wiki-markup" title="Permalink to this headline">¶</a></h1>
 <p>Creoleparser is a Python implementation of a parser for the <a class="reference" href="http://wikicreole.org/wiki/Creole1.0">Creole</a> wiki markup language.</p>
 <div class="section" id="features">
 <h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
@@ -56,7 +56,7 @@
 <li>Creoleparser is a complete and robust Creole 1.0 implementation, plus optional additions (see <a class="reference" href="syntax.html#syntax"><em>Syntax</em></a>).</li>
 <li>Uses <a class="reference" href="http://genshi.edgewall.org/">Genshi</a> - <em>the Python toolkit for generation of output for the web</em><ul>
 <li>guarantees well formed xml output by default</li>
-<li>can instantly switch between HTML 4.01 and XHTML 1.0 (or other formats) (see <a class="reference" href="parser_class.html#parser"><em>Working with a Parser</em></a>)</li>
+<li>can instantly switch between HTML 4.01 and XHTML 1.0 (or other formats) (see <a title="creoleparser.core.Parser" class="reference" href="modules/core.html#creoleparser.core.Parser"><tt class="xref docutils literal"><span class="pre">Parser</span></tt></a>)</li>
 <li><a class="reference" href="http://genshi.edgewall.org/">many other useful features</a></li>
 </ul>
 </li>
@@ -67,25 +67,25 @@
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>You need <a class="reference" href="http://www.python.org/">Python 2.4</a> or higher.</p>
-<div class="section" id="option-1-easy-install">
-<h3>Option 1 - easy_install<a class="headerlink" href="#option-1-easy-install" title="Permalink to this headline">¶</a></h3>
+<p><em>Option 1 - easy_install</em></p>
+<blockquote>
 <p>If you have <a class="reference" href="http://peak.telecommunity.com/DevCenter/setuptools">setuptools</a>, install Creoleparser using easy_install:</p>
 <div class="highlight-python"><pre>easy_install Creoleparser</pre>
 </div>
 <p>This will automatically download and install Genshi and Creoleparser to your site-packages directory.</p>
-</div>
-<div class="section" id="option-2-manual-installation">
-<h3>Option 2 - manual installation<a class="headerlink" href="#option-2-manual-installation" title="Permalink to this headline">¶</a></h3>
+</blockquote>
+<p><em>Option 2 - manual installation</em></p>
+<blockquote>
 <ol class="arabic">
 <li><p class="first">download and install Genshi from that package&#8217;s <a class="reference" href="http://genshi.edgewall.org/">site</a>.</p>
 </li>
-<li><p class="first">download Creoleparser from <a class="reference" href="http://pypi.python.org/pypi/Creoleparser">pypi</a>, unzip to a temporary folder, and run:</p>
+<li><p class="first">download Creoleparser from the <a class="reference" href="http://pypi.python.org/pypi/Creoleparser">Python Package Index</a>, unzip to a temporary folder, and run:</p>
 <div class="highlight-python"><pre>setup.py install</pre>
 </div>
 </li>
 </ol>
 <p>This will install Creoleparser to your site-packages directory.</p>
-</div>
+</blockquote>
 </div>
 <div class="section" id="sandbox">
 <h2>Sandbox<a class="headerlink" href="#sandbox" title="Permalink to this headline">¶</a></h2>
@@ -102,6 +102,7 @@
 <ul class="simple">
 <li>The Werkzeug demo app <a class="reference" href="http://werkzeug.pocoo.org/e/simplewiki/Main_Page">Simple Wiki</a></li>
 </ul>
+<p><em>To be added here, please post to the</em> <a class="reference" href="http://groups.google.com/group/creoleparser">Google Group</a></p>
 </div>
 <div class="section" id="license">
 <h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
@@ -117,13 +118,9 @@
         <div class="sphinxsidebarwrapper">
             <h3><a href="contents.html">Table Of Contents</a></h3>
             <ul>
-<li><a class="reference" href="">Creoleparser: a parser for Creole wiki markup</a><ul>
+<li><a class="reference" href="">Creoleparser: for parsing Creole wiki markup</a><ul>
 <li><a class="reference" href="#features">Features</a></li>
-<li><a class="reference" href="#installation">Installation</a><ul>
-<li><a class="reference" href="#option-1-easy-install">Option 1 - easy_install</a></li>
-<li><a class="reference" href="#option-2-manual-installation">Option 2 - manual installation</a></li>
-</ul>
-</li>
+<li><a class="reference" href="#installation">Installation</a></li>
 <li><a class="reference" href="#sandbox">Sandbox</a></li>
 <li><a class="reference" href="#help-and-development">Help and Development</a></li>
 <li><a class="reference" href="#projects-using-creoleparser">Projects using Creoleparser</a></li>
@@ -172,5 +169,16 @@
       &copy; Copyright 2008, Stephen Day.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.
     </div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-2934490-7");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
   </body>
 </html>

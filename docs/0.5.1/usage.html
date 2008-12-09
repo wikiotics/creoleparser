@@ -19,7 +19,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="top" title="creoleparser v0.5.1 documentation" href="index.html" />
-    <link rel="next" title="Customizing the Dialect" href="dialect_class.html" />
+    <link rel="next" title="Implementing Macros" href="macros.html" />
     <link rel="prev" title="Syntax" href="syntax.html" /> 
   </head>
   <body>
@@ -33,7 +33,7 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="dialect_class.html" title="Customizing the Dialect"
+          <a href="macros.html" title="Implementing Macros"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="syntax.html" title="Syntax"
@@ -49,16 +49,16 @@
   
   <div class="section" id="basic-usage">
 <h1>Basic Usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h1>
+<p>The simplest way to use creoleparser is to call the builtin <cite>text2html</cite> function
+with one argument (the text to be parsed):</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">from</span> <span class="nn">creoleparser</span> <span class="k">import</span> <span class="n">text2html</span>
-
-<span class="go">Simply call the text2html() function with one argument (the text to be parsed):</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">text2html</span><span class="p">(</span><span class="s">&quot;Some real **simple** mark-up&quot;</span><span class="p">),</span>
 <span class="go">&lt;p&gt;Some real &lt;strong&gt;simple&lt;/strong&gt; mark-up&lt;/p&gt;</span>
-
-<span class="go">To customize things a little, create your own dialect and parser:</span>
-
-<span class="gp">&gt;&gt;&gt; </span><span class="k">from</span> <span class="nn">creoleparser.dialects</span> <span class="k">import</span> <span class="n">Creole10</span>
+</pre></div>
+</div>
+<p>To customize things a little, create your own dialect and parser function:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">from</span> <span class="nn">creoleparser.dialects</span> <span class="k">import</span> <span class="n">Creole10</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">from</span> <span class="nn">creoleparser.core</span> <span class="k">import</span> <span class="n">Parser</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">my_dialect</span><span class="o">=</span><span class="n">Creole10</span><span class="p">(</span><span class="n">wiki_links_base_url</span><span class="o">=</span><span class="s">&#39;http://www.mysite.net/&#39;</span><span class="p">,</span>
@@ -68,10 +68,15 @@
 
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">my_parser</span><span class="p">(</span><span class="s">&quot;[[Home]] and [[wikicreole:Home]]&quot;</span><span class="p">),</span>
 <span class="go">&lt;p&gt;&lt;a href=&quot;http://www.mysite.net/Home&quot;&gt;Home&lt;/a&gt; and &lt;a href=&quot;http://wikicreole.org/wiki/Home&quot;&gt;wikicreole:Home&lt;/a&gt;&lt;/p&gt;</span>
-
-<span class="go">If you want pure Creole 1.0 (i.e., no additions), use creole2html() instead of text2html().</span>
 </pre></div>
 </div>
+<p>The builtin <cite>text2html</cite> and <cite>creole2html</cite> functions were created as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">text2html</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">dialect</span><span class="o">=</span><span class="n">Creole10</span><span class="p">(</span><span class="n">use_additions</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">no_wiki_monospace</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span>
+
+<span class="n">creole2html</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">dialect</span><span class="o">=</span><span class="n">Creole10</span><span class="p">(</span><span class="n">use_additions</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span><span class="n">no_wiki_monospace</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>For more infomation, see <a title="creoleparser.core.Parser" class="reference" href="modules/core.html#creoleparser.core.Parser"><tt class="xref docutils literal"><span class="pre">creoleparser.core.Parser</span></tt></a> and <a title="creoleparser.dialects.Creole10" class="reference" href="modules/dialects.html#creoleparser.dialects.Creole10"><tt class="xref docutils literal"><span class="pre">creoleparser.dialects.Creole10</span></tt></a>.</p>
 </div>
 
 
@@ -83,7 +88,7 @@
             <h4>Previous topic</h4>
             <p class="topless"><a href="syntax.html" title="previous chapter">Syntax</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="dialect_class.html" title="next chapter">Customizing the Dialect</a></p>
+            <p class="topless"><a href="macros.html" title="next chapter">Implementing Macros</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="_sources/usage.txt">Show Source</a></li>
@@ -108,7 +113,7 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="dialect_class.html" title="Customizing the Dialect"
+          <a href="macros.html" title="Implementing Macros"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="syntax.html" title="Syntax"
@@ -120,5 +125,16 @@
       &copy; Copyright 2008, Stephen Day.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.
     </div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-2934490-7");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
   </body>
 </html>

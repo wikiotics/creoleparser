@@ -20,7 +20,7 @@
     <link rel="search" title="Search" href="search.html" />
     <link rel="top" title="creoleparser v0.5.1 documentation" href="index.html" />
     <link rel="next" title="Basic Usage" href="usage.html" />
-    <link rel="prev" title="Creoleparser: a parser for Creole wiki markup" href="index.html" /> 
+    <link rel="prev" title="Creoleparser: for parsing Creole wiki markup" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -36,7 +36,7 @@
           <a href="usage.html" title="Basic Usage"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Creoleparser: a parser for Creole wiki markup"
+          <a href="index.html" title="Creoleparser: for parsing Creole wiki markup"
              accesskey="P">previous</a> |</li>
         <li><a href="contents.html">creoleparser v0.5.1 documentation</a> &raquo;</li> 
       </ul>
@@ -52,7 +52,7 @@
 <div class="section" id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p>For a quick glance at what croeleparser implements, see the
-<a class="reference" href="http://creoleparser.googlepages.com/CheatSheetPlus.html">creoleparser cheatsheet</a>.</p>
+<a class="reference" href="http://purl.oclc.org/creoleparser/cheatsheet">creoleparser cheatsheet</a>.</p>
 <p>Creoleparser adhers very closely to the basic <a class="reference" href="http://wikicreole.org/wiki/Creole1.0">Creole 1.0 specification</a>
 and optionally implements most <a class="reference" href="http://wiki.wikicreole.org/Creole%201.0/additions">additions</a> (not including
 alternate link sytax and indented paragraphs). These pages should be
@@ -79,7 +79,7 @@ syntax as <a class="reference" href="http://www.atlassian.com/software/confluenc
 <div class="highlight-python"><pre>&lt;&lt;CurrentTimePlugin format='yyyy.MM.dd'&gt;&gt;</pre>
 </div>
 <p>In addition to the above, creoleparser supports <em>macros with bodies</em>, e.g.,:</p>
-<div class="highlight-python"><pre>&lt;&lt;strike&gt;&gt;Some content marked as deleted&lt;&lt;/strike&gt;&gt;</pre>
+<div class="highlight-python"><pre>&lt;&lt;foo&gt;&gt;Some content to process&lt;&lt;/foo&gt;&gt;</pre>
 </div>
 <p>Normally, <em>bodied</em> macros will not span other block-level markup (like tables)
 or blank lines. This can be forced however, using the following syntax:</p>
@@ -97,8 +97,18 @@ Some content to render in a &lt;pre&gt;.
 Including a second paragraph.
 }}}</pre>
 </div>
+<div class="section" id="macro-names">
+<h3>Macro Names<a class="headerlink" href="#macro-names" title="Permalink to this headline">¶</a></h3>
 <p>A macro name must start with a letter and can include letters, numbers,
 and non-repeating periods and hyphens.</p>
+</div>
+<div class="section" id="macro-arguments-and-delimiters">
+<h3>Macro Arguments and Delimiters<a class="headerlink" href="#macro-arguments-and-delimiters" title="Permalink to this headline">¶</a></h3>
+<p>Creoleparser does not specify or suggest the format of macro arguments. Internally,
+the entire string from the <cite>macro_name</cite> to the <tt class="docutils literal"><span class="pre">&gt;&gt;</span></tt> are passed as the <cite>arg_string</cite>.
+For this reason, an implementer should chose something other than legal macro name
+characters to delimit the arguments.</p>
+</div>
 </div>
 </div>
 
@@ -113,13 +123,17 @@ and non-repeating periods and hyphens.</p>
 <li><a class="reference" href="">Syntax</a><ul>
 <li><a class="reference" href="#overview">Overview</a></li>
 <li><a class="reference" href="#mixed-lists">Mixed Lists</a></li>
-<li><a class="reference" href="#macros">Macros</a></li>
+<li><a class="reference" href="#macros">Macros</a><ul>
+<li><a class="reference" href="#macro-names">Macro Names</a></li>
+<li><a class="reference" href="#macro-arguments-and-delimiters">Macro Arguments and Delimiters</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
 
             <h4>Previous topic</h4>
-            <p class="topless"><a href="index.html" title="previous chapter">Creoleparser: a parser for Creole wiki markup</a></p>
+            <p class="topless"><a href="index.html" title="previous chapter">Creoleparser: for parsing Creole wiki markup</a></p>
             <h4>Next topic</h4>
             <p class="topless"><a href="usage.html" title="next chapter">Basic Usage</a></p>
             <h3>This Page</h3>
@@ -149,7 +163,7 @@ and non-repeating periods and hyphens.</p>
           <a href="usage.html" title="Basic Usage"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Creoleparser: a parser for Creole wiki markup"
+          <a href="index.html" title="Creoleparser: for parsing Creole wiki markup"
              accesskey="P">previous</a> |</li>
         <li><a href="contents.html">creoleparser v0.5.1 documentation</a> &raquo;</li> 
       </ul>
@@ -158,5 +172,16 @@ and non-repeating periods and hyphens.</p>
       &copy; Copyright 2008, Stephen Day.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.
     </div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-2934490-7");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
   </body>
 </html>
