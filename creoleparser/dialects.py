@@ -79,32 +79,27 @@ class Creole10(object):
                                   path_func=wiki_links_path_func)
         self.img = Image('img',('{{','}}'),[],delimiter='|')
         self.link = Link('',('[[',']]'),[self.url_link,self.interwiki_link,self.wiki_link])
-        self.strong = InlineElement('strong', '**',[])
-        self.em = InlineElement('em', '//',[])
+
+        simple_token_dict = {'**':'strong','//':'em'}
+        if use_additions:
+            simple_token_dict.update({',,':'sub','^^':'sup','__':'u','##':'tt'})
+            
+        self.simple_elements = SimpleElement('','',[],simple_token_dict)
+        self.simple_elements.child_tags = [self.simple_elements]
+        
         if no_wiki_monospace:
             no_wiki_tag = 'tt'
         else:
             no_wiki_tag = 'span'
         self.no_wiki = NoWikiElement(no_wiki_tag,['{{{','}}}'],[])
         
-        self.em.child_tags = []
-        self.strong.child_tags = [self.em]
-        link_child_tags = [self.strong, self.em]
-        inline_elements = [self.no_wiki, self.img, self.link, self.br, self.raw_link, self.strong, self.em]
-        table_cell_children = [self.br, self.raw_link, self.strong, self.em]
+        link_child_tags = [self.simple_elements]
+        inline_elements = [self.no_wiki, self.img, self.link, self.br, self.raw_link, self.simple_elements]
+        table_cell_children = [self.br, self.raw_link, self.simple_elements]
 
         if use_additions:
-            self.sub = InlineElement('sub', ',,',[])
-            self.sup = InlineElement('sup', '^^',[self.sub])
-            self.u = InlineElement('u', '__',[self.sup, self.sub])
-            self.tt = InlineElement('tt', '##',[self.u, self.sup, self.sub])
-            self.em.child_tags.extend([self.tt, self.u, self.sup, self.sub])
-            self.strong.child_tags.extend([self.tt, self.u, self.sup, self.sub])
-            link_child_tags.extend([self.tt, self.u, self.sup, self.sub])
             inline_elements[0] = (self.no_wiki,self.bodiedmacro,self.macro)
-            #inline_elements.insert(1,self.macro)
-            inline_elements.extend([self.tt, self.u, self.sup, self.sub])
-            table_cell_children.extend([self.tt, self.u, self.sup, self.sub])
+
         
         self.wiki_link.child_tags = link_child_tags
         self.url_link.child_tags = link_child_tags

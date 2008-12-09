@@ -114,6 +114,49 @@ class WikiElement(object):
     def __repr__(self):
         return "<"+self.__class__.__name__ + " " + str(self.tag)+">"
 
+class SimpleElement(WikiElement):
+
+    r"""For finding generic inline elements like ``strong`` and ``em``.
+
+    >>> em = SimpleElement('','',[],{'//':'em'})
+    >>> mo1 = em.regexp.search('a //word// in a line')
+    >>> mo2 = em.regexp.search('a //word in a line\n or two\n')
+    >>> mo1.group(0),mo1.group(2)
+    ('//word//', 'word')
+    >>> mo2.group(0),mo2.group(2)
+    ('//word in a line\n or two', 'word in a line\n or two')
+
+       
+    """
+
+    def __init__(self, tag, token, child_tags=[],token_dict={}):
+        super(SimpleElement,self).__init__(tag,token , child_tags)
+        self.token_dict = token_dict
+        self.tokens = token_dict.keys()
+        self.regexp = re.compile(self.re_string(),re.DOTALL)
+
+    def re_string(self):
+        if isinstance(self.token,basestring):
+            tokens = '(' + '|'.join([re.escape(token) for token in self.tokens]) + ')'
+            content = '(.+?)'
+            end = '(' + esc_neg_look + r'\1|$)'
+            return esc_neg_look + tokens + content + end
+
+    def _process(self, mo, text, wiki_elements, element_store):
+        """Returns genshi Fragments (Elements and text)"""
+        processed = self._build(mo,element_store)
+        store_id = str(id(processed)) 
+        element_store[store_id] = processed
+        text = ''.join([text[:mo.start()],'<<<',store_id,'>>>',
+                        text[mo.end():]])
+        frags = fragmentize(text,wiki_elements,element_store)
+        return frags
+
+    def _build(self,mo,element_store):
+        return bldr.tag.__getattr__(self.token_dict[mo.group(1)])(fragmentize(mo.group(2),
+                                                          self.child_tags,
+                                                          element_store))
+
 class InlineElement(WikiElement):
 
     r"""For finding generic inline elements like ``strong`` and ``em``.
