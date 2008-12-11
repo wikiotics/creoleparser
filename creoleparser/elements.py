@@ -432,7 +432,8 @@ class RawLink(InlineElement):
         protocol = '((https?|ftp)://'
         rest_of_url = r'\S+?)'
         #allow one punctuation character or '**' or '//'. Don't include a placeholder.
-        look_ahead = r'(?=(([,.?!:;"\']|\*\*|//)?(\s|$))|<<<)' 
+        #look_ahead = r'(?=(([,.?!:;"\']|\*\*|//)?(\s|$))|<<<)'
+        look_ahead = r'(?=([>)}\]]?[,.?!:;"\']?(([^a-zA-Z0-9])\6)?(\s|$))|<<<)'
         return escape + protocol + rest_of_url + look_ahead
 
     def _build(self,mo,element_store):
