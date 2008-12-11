@@ -67,7 +67,7 @@ class BaseTest(object):
             self.parse(r"break\\this"),
             wrap_result("break<br />this"))
 
-    def test_links(self):
+    def test_raw_links(self):
         self.assertEquals(
             self.parse("http://www.google.com"),
             wrap_result("""<a href="http://www.google.com">http://www.google.com</a>"""))
@@ -77,6 +77,20 @@ class BaseTest(object):
         self.assertEquals(
             self.parse("~http://www.google.com"),
             wrap_result("""http://www.google.com"""))
+        self.assertEquals(
+            self.parse(r"<http://www.google.com>."),
+            wrap_result("""&lt;<a href="http://www.google.com">http://www.google.com</a>&gt;."""))
+        self.assertEquals(
+            self.parse(r"(http://www.google.com) foo"),
+            wrap_result("""(<a href="http://www.google.com">http://www.google.com</a>) foo"""))
+        self.assertEquals(
+            self.parse(r"http://www.google.com/#"),
+            wrap_result("""<a href="http://www.google.com/#">http://www.google.com/#</a>"""))
+        self.assertEquals(
+            self.parse(r"//http://www.google.com//"),
+            wrap_result("""<em><a href="http://www.google.com">http://www.google.com</a></em>"""))
+
+    def test_links(self):
         self.assertEquals(
             self.parse("[[http://www.google.com]]"),
             wrap_result("""<a href="http://www.google.com">http://www.google.com</a>"""))
