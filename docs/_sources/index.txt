@@ -16,7 +16,7 @@ Features
 * Advanced macro support. 
 * Runs on Google App Engine!
 
-.. include:: ../../INSTALL.txt
+.. include:: ../../trunk/INSTALL.txt
 
 Sandbox
 =======

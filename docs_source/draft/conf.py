@@ -16,7 +16,12 @@ import sys, os
 # If your extensions are in another directory, add it here. If the directory
 # is relative to the documentation root, use os.path.abspath to make it
 # absolute, like shown here.
-sys.path.append(os.path.abspath('../../'))
+# Creoleparser note: this should point to the current tagged
+# released version if building live site docs and trunk docstrings
+# no longer apply to the released version.
+#sys.path.append(os.path.abspath('../../tags/0.X.X/'))
+sys.path.append(os.path.abspath('../../trunk/'))
+
 
 # General configuration
 # ---------------------
