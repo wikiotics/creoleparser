@@ -1,3 +1,8 @@
+Version 0.6 (???)
+-----------------
+
+ * improved rawlink detection regex
+
 Version 0.5.1 (Dec 8 2008)
 --------------------------
 

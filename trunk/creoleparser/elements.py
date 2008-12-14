@@ -841,18 +841,38 @@ class Heading(BlockElement):
 
     """
   
-    def __init__(self, tag, token, child_tags):
+    def __init__(self, tag, token, child_tags, tags):
         super(Heading,self).__init__(tag,token , child_tags)
+        self.tags = tags
         self.regexp = re.compile(self.re_string(),re.MULTILINE)
 
     def re_string(self):
         whitespace = r'[ \t]*'
-        neg_look_ahead = '(?!' + re.escape(self.token[0]) + ')'
+        #neg_look_ahead = '(?!' + re.escape(self.token[0]) + ')'
+        tokens = '(' + re.escape(self.token) + '{1,' + str(len(self.tags)) +'})'
         content = '(.*?)'
-        trailing_markup = '(' + re.escape(self.token[0]) + r'+[ \t]*)?\n'
-        return '^' + whitespace + re.escape(self.token) + neg_look_ahead + \
+        trailing_markup = '(' + re.escape(self.token) + r'+[ \t]*)?\n'
+        return '^' + whitespace + tokens + \
                whitespace + content + whitespace + trailing_markup
 
+    def _build(self,mo,element_store):
+        heading_tag = self.tags[len(mo.group(1))-1]
+        return bldr.tag.__getattr__(heading_tag)(fragmentize(mo.group(2),
+                                                          self.child_tags,
+                                                          element_store))
+
+##    def re_string(self):
+##        whitespace = r'[ \t]*'
+##        neg_look_ahead = '(?!' + re.escape(self.token[0]) + ')'
+##        content = '(.*?)'
+##        trailing_markup = '(' + re.escape(self.token[0]) + r'+[ \t]*)?\n'
+##        return '^' + whitespace + re.escape(self.token) + neg_look_ahead + \
+##               whitespace + content + whitespace + trailing_markup
+##
+##    def _build(self,mo,element_store):
+##        return bldr.tag.__getattr__(self.tag)(fragmentize(mo.group(1),
+##                                                          self.child_tags,
+##                                                          element_store))
 
 class Table(BlockElement):
 

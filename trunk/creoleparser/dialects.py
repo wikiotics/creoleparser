@@ -100,25 +100,16 @@ class Creole10(object):
         if use_additions:
             inline_elements[0] = (self.no_wiki,self.bodiedmacro,self.macro)
 
-        
         self.wiki_link.child_tags = link_child_tags
         self.url_link.child_tags = link_child_tags
         self.interwiki_link.child_tags = link_child_tags
-
             
         self.hr = LoneElement('hr','----',[])
         #self.lone_br = LoneElement('br',r'\\',[])
         self.blank_line = BlankLine()
         self.lone_place_holder = LonePlaceHolder('',['<<<','>>>'],[])
 
-        self.h1 = Heading('h1','=',inline_elements)
-        self.h2 = Heading('h2','==',inline_elements)
-        self.h3 = Heading('h3','===',inline_elements)
-        self.h4 = Heading('h4','====',inline_elements)
-        self.h5 = Heading('h5','=====',inline_elements)
-        self.h6 = Heading('h6','======',inline_elements)
-
-        headings = [self.h1,self.h2,self.h3,self.h4,self.h5,self.h6]
+        self.headings = Heading('','=',inline_elements,tags=['h1','h2','h3','h4','h5','h6'])
 
         self.td = TableCell('td','|',table_cell_children)
         self.th = TableCell('th','|=',table_cell_children)
@@ -144,12 +135,13 @@ class Creole10(object):
         self.pre = PreBlock('pre',['{{{','}}}'])
         self.inline_elements = inline_elements
         if use_additions:
-            self.block_elements = [(self.bodied_block_macro,self.pre,self.block_macro),self.blank_line,self.table]+ headings\
-                   + [self.hr,self.dl,self.ul,self.ol,self.lone_place_holder,self.p]
+            self.block_elements = [(self.bodied_block_macro,self.pre,self.block_macro),
+                                   self.blank_line,self.table,self.headings,self.hr,
+                                   self.dl,self.ul,self.ol,self.lone_place_holder,self.p]
 
         else:
-            self.block_elements = [self.pre,self.blank_line,self.table]+ headings\
-                           + [self.hr,self.ul,self.ol,self.lone_place_holder,self.p]
+            self.block_elements = [self.pre,self.blank_line,self.table,self.headings,
+                           self.hr,self.ul,self.ol,self.lone_place_holder,self.p]
         """These are the wiki elements that are searched at the top level of text to be
         processed. The order matters because elements later in the list need not have any
         knowledge of those before (as those were parsed out already). This makes the

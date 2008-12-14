@@ -20,7 +20,7 @@ Maintenance of Documentation for Current Release
 Corrections, improvements, and additions to the current live documentation
 should be done in the `release` folder. These docs are configured to use
 the relevant tagged source code folder (verify in `conf.py`).
-To build these docs run the following from the `docs_source` folder::
+To build these docs, run the following from the `docs_source` folder::
 
    sphinx-build release ../docs
 
@@ -28,6 +28,12 @@ This will update the versioned live documentation. Please make sure that
 the source files (in `release`) are in sync with the built files (in `docs`)
 before checking in. Note that the project's documentation is served
 directly from subversion, so the check-in will be instantly published.
+
+Notes
+=====
+
+* The trunk versions of CHANGES.txt and INSTALL.txt are used by both `release`
+  and `draft`.
 
 
 
