@@ -248,6 +248,10 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
             self.parse("=== Also Level 3 ==="),
             "<h3>Also Level 3</h3>\n")
         self.assertEquals(
+            self.parse("= Also Level = 1 ="),
+            "<h1>Also Level = 1</h1>\n")
+        
+        self.assertEquals(
             self.parse("=== This **is** //parsed// ==="),
             "<h3>This <strong>is</strong> <em>parsed</em></h3>\n")
 
