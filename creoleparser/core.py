@@ -156,10 +156,8 @@ class Parser(object):
             element_store = {}
         if self.method != "text":
             kwargs['strip_whitespace'] = self.strip_whitespace
-        kwargs.update({
-            'method': self.method,
-            'encoding': self.encoding
-            })
+        kwargs.setdefault('method',self.method)
+        kwargs.setdefault('encoding',self.encoding)
         stream = self.generate(text, element_store, context)
         return stream.render(**kwargs)
 
