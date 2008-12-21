@@ -376,7 +376,7 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
     def test_image(self):
         self.assertEquals(
             self.parse("{{campfire.jpg}}"),
-            wrap_result("""<img src="campfire.jpg" alt="campfire.jpg" title="campfire.jpg" />"""))
+            """<p><img src="campfire.jpg" alt="campfire.jpg" title="campfire.jpg" /></p>\n""")
 
     def test_image_in_link(self):
         self.assertEquals(
@@ -472,6 +472,11 @@ class MacroTest(unittest.TestCase, BaseTest):
             macro_func=self.macroFactory)
         self.parse = Parser(dialect)
 
+    def getFragment(self, text):
+        wrapped = Markup(text)
+        fragment = builder.tag(wrapped)
+        return fragment
+
     def getStream(self, text):
         wrapped = Markup(text)
         fragment = builder.tag(wrapped)
@@ -479,13 +484,21 @@ class MacroTest(unittest.TestCase, BaseTest):
 
     def macroFactory(self, macro_name, arg_string, body, context):
         if macro_name == 'html':
+            return self.getFragment(body)
+        elif macro_name == 'html2':
+            return Markup(body)
+        elif macro_name == 'htmlblock':
             return self.getStream(body)
+        elif macro_name == 'pre':
+            return builder.tag.pre('**' + body + '**')
         elif macro_name == 'steve':
             return '**' + arg_string + '**'
         elif macro_name == 'luca':
-            return builder.tag.strong(arg_string).generate()
+            return builder.tag.strong(arg_string)
         elif macro_name == 'mateo':
-            return builder.tag.em(body).generate()
+            return builder.tag.em(body)
+        elif macro_name == 'ReverseFrag':
+            return builder.tag(body[::-1])
         elif macro_name == 'Reverse':
             return body[::-1]
         elif macro_name == 'Reverse-it':
@@ -499,7 +512,7 @@ class MacroTest(unittest.TestCase, BaseTest):
         elif macro_name == 'username':
             return 'Joe Blow'
         elif macro_name == 'center':
-            return builder.tag.span(body, class_='centered').generate()
+            return builder.tag.span(body, class_='centered')
         elif macro_name == 'footer':
             return '<<center>>This is a footer.<</center>>'
         elif macro_name == 'footer2':
@@ -510,18 +523,36 @@ class MacroTest(unittest.TestCase, BaseTest):
                 if arg_string.strip() == 'output=wiki':
                     return '\n'.join(l) + '\n'
                 else:
-                    return builder.tag('\n'.join(l) + '\n').generate()
+                    return builder.tag('\n'.join(l) + '\n')
 
     def test_macros(self):
         self.assertEquals(
             self.parse('<<html>><q cite="http://example.org">foo</q><</html>>'),
             wrap_result('<q cite="http://example.org">foo</q>'))
         self.assertEquals(
+            self.parse('<<html2>><b>hello</b><</html2>>'),
+            wrap_result('<b>hello</b>'))
+        self.assertEquals(
+            self.parse('<<htmlblock>><q cite="http://example.org">foo</q><</htmlblock>>'),
+                '<q cite="http://example.org">foo</q>\n')
+        self.assertEquals(
+            self.parse('<<pre>>//no wiki//<</pre>>'),
+            '<pre>**//no wiki//**</pre>\n')
+        self.assertEquals(
+            self.parse('<<pre>>one<</pre>>\n<<pre>>two<</pre>>'),
+            '<pre>**one**</pre>\n<pre>**two**</pre>\n')
+        self.assertEquals(
             self.parse(u'<<mateo>>fooɤ<</mateo>>'),
             wrap_result('<em>foo\xc9\xa4</em>'))
         self.assertEquals(
             self.parse(u'<<steve fooɤ>>'),
             wrap_result('<strong> foo\xc9\xa4</strong>'))
+        self.assertEquals(
+            self.parse('<<ReverseFrag>>**foo**<</ReverseFrag>>'),
+            wrap_result('**oof**'))
+        self.assertEquals(        
+            self.parse('<<Reverse>>**foo**<</Reverse>>'),
+            wrap_result('<strong>oof</strong>'))
         self.assertEquals(
             self.parse('<<Reverse>>foo<</Reverse>>'),
             wrap_result('oof'))
@@ -670,7 +701,7 @@ class TaintingTest(unittest.TestCase):
     def test_cookies(self):
         self.assertEquals(
             self.parse("{{javascript:alert(document.cookie)}}"),
-            wrap_result("""<img src="unsafe_uri_detected" alt="unsafe_uri_detected" title="unsafe_uri_detected" />"""))
+            """<p><img src="unsafe_uri_detected" alt="unsafe_uri_detected" title="unsafe_uri_detected" /></p>\n""")
         self.assertEquals(
             self.parse("[[javascript:alert(document.cookie)]]"),
             wrap_result("[[javascript:alert(document.cookie)]]"))

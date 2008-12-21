@@ -11,9 +11,15 @@ import urlparse
 import urllib
 
 import genshi.builder as bldr
-from genshi.core import Stream
+from genshi.core import Stream, Markup
 
 from core import escape_char, esc_neg_look, fragmentize 
+
+BLOCK_TAGS = ['h1','h2','h3','h4','h5','h6',
+              'ul','ol','dl',
+              'pre','hr','blockquote','address',
+              'p','div','form','fieldset','table',
+              'noscript','ins','del','script']
 
 # use Genshi's HTMLSanitizer if possible (i.e., not on Google App Engine)
 try:
@@ -101,7 +107,9 @@ class WikiElement(object):
             frags.extend(fragmentize(text[:mo.start()],wiki_elements[1:],
                                      element_store))
         # append the found wiki element to the result list
-        frags.append(self._build(mo,element_store))
+        built = self._build(mo,element_store)
+        if built is not None:
+            frags.append(built)
         # make the source output easier to read
         if self.append_newline:
             frags.append('\n')
@@ -114,48 +122,6 @@ class WikiElement(object):
     def __repr__(self):
         return "<"+self.__class__.__name__ + " " + str(self.tag)+">"
 
-class SimpleElement(WikiElement):
-
-    r"""For finding generic inline elements like ``strong`` and ``em``.
-
-    >>> em = SimpleElement('','',[],{'//':'em'})
-    >>> mo1 = em.regexp.search('a //word// in a line')
-    >>> mo2 = em.regexp.search('a //word in a line\n or two\n')
-    >>> mo1.group(0),mo1.group(2)
-    ('//word//', 'word')
-    >>> mo2.group(0),mo2.group(2)
-    ('//word in a line\n or two', 'word in a line\n or two')
-
-       
-    """
-
-    def __init__(self, tag, token, child_tags=[],token_dict={}):
-        super(SimpleElement,self).__init__(tag,token , child_tags)
-        self.token_dict = token_dict
-        self.tokens = token_dict.keys()
-        self.regexp = re.compile(self.re_string(),re.DOTALL)
-
-    def re_string(self):
-        if isinstance(self.token,basestring):
-            tokens = '(' + '|'.join([re.escape(token) for token in self.tokens]) + ')'
-            content = '(.+?)'
-            end = '(' + esc_neg_look + r'\1|$)'
-            return esc_neg_look + tokens + content + end
-
-    def _process(self, mo, text, wiki_elements, element_store):
-        """Returns genshi Fragments (Elements and text)"""
-        processed = self._build(mo,element_store)
-        store_id = str(id(processed)) 
-        element_store[store_id] = processed
-        text = ''.join([text[:mo.start()],'<<<',store_id,'>>>',
-                        text[mo.end():]])
-        frags = fragmentize(text,wiki_elements,element_store)
-        return frags
-
-    def _build(self,mo,element_store):
-        return bldr.tag.__getattr__(self.token_dict[mo.group(1)])(fragmentize(mo.group(2),
-                                                          self.child_tags,
-                                                          element_store))
 
 class InlineElement(WikiElement):
 
@@ -202,6 +168,37 @@ class InlineElement(WikiElement):
         frags = fragmentize(text,wiki_elements,element_store)
         return frags
 
+class SimpleElement(InlineElement):
+
+    r"""For finding generic inline elements like ``strong`` and ``em``.
+
+    >>> em = SimpleElement('','',[],{'//':'em'})
+    >>> mo1 = em.regexp.search('a //word// in a line')
+    >>> mo2 = em.regexp.search('a //word in a line\n or two\n')
+    >>> mo1.group(0),mo1.group(2)
+    ('//word//', 'word')
+    >>> mo2.group(0),mo2.group(2)
+    ('//word in a line\n or two', 'word in a line\n or two')
+       
+    """
+
+    def __init__(self, tag, token, child_tags=[],token_dict={}):
+        self.token_dict = token_dict
+        self.tokens = token_dict.keys()
+        super(SimpleElement,self).__init__(tag,token , child_tags)
+
+    def re_string(self):
+        if isinstance(self.token,basestring):
+            tokens = '(' + '|'.join([re.escape(token) for token in self.tokens]) + ')'
+            content = '(.+?)'
+            end = '(' + esc_neg_look + r'\1|$)'
+            return esc_neg_look + tokens + content + end
+
+    def _build(self,mo,element_store):
+        return bldr.tag.__getattr__(self.token_dict[mo.group(1)])(fragmentize(mo.group(2),
+                                                          self.child_tags,
+                                                          element_store))
+
 
 macro_name = r'([a-zA-Z]+([-.]?[a-zA-Z0-9]+)*)'
 """allows any number of non-repeating hyphens or periods.
@@ -219,7 +216,7 @@ class Macro(WikiElement):
     def _process(self, mo, text, wiki_elements,element_store):
         """Returns genshi Fragments (Elements and text)"""
         processed = self._build(mo,element_store)
-        if isinstance(processed, basestring):
+        if isinstance(processed, basestring) and not isinstance(processed,Markup):
             text = ''.join([text[:mo.start()],processed,
                         text[mo.end():]])
         else:
@@ -243,12 +240,10 @@ class Macro(WikiElement):
             value = None
         if value is None:
             return bldr.tag.code(self.token[0] + mo.group(1) + self.token[1],class_="unknown_macro")
-        elif isinstance(value,basestring):
+        elif isinstance(value, (basestring,bldr.Fragment,bldr.Element, Stream)):
             return value
-        elif isinstance(value, (bldr.Fragment,bldr.Element, Stream)):
-            return [value]
         else:
-            raise "Marcos can only return strings and Genshi Streams" 
+            raise "macros can only return strings and genshi objects" 
         
 
 class BodiedMacro(Macro):
@@ -287,12 +282,10 @@ class BodiedMacro(Macro):
             return bldr.tag.code(self.token[0] + mo.group(1) + self.token[1],
                             content_out , self.token[0] + '/'
                             + mo.group(2) + self.token[1],class_="unknown_macro")
-        elif isinstance(value, basestring):
+        elif isinstance(value, (basestring,bldr.Fragment,bldr.Element, Stream)):
             return value
-        elif isinstance(value, (bldr.Fragment,bldr.Element, Stream)):
-            return [value]
         else:
-            raise "macros can only return strings and genshi Streams"
+            raise "macros can only return strings and genshi objects"
 
 class BlockMacro(WikiElement):
     """Finds a block macros.
@@ -363,9 +356,9 @@ class BlockMacro(WikiElement):
         elif isinstance(value,basestring):
             return ''.join([value.rstrip(),'\n'])
         elif isinstance(value, (bldr.Fragment,bldr.Element, Stream)):
-            return [value]
+            return value
         else:
-            raise "Marcos can only return strings and Genshi Streams" 
+            raise "macros can only return strings and genshi objects" 
         
 
 class BodiedBlockMacro(BlockMacro):
@@ -401,12 +394,11 @@ class BodiedBlockMacro(BlockMacro):
             return bldr.tag.pre(self.token[0] + mo.group(1) + self.token[1]
                             + '\n' + mo.group(5) + self.token[0] + '/'
                             + mo.group(2) + self.token[1] ,class_="unknown_macro")
-        elif isinstance(value, basestring):
+        elif isinstance(value, (basestring,bldr.Fragment,
+                                bldr.Element, Stream)):
             return value
-        elif isinstance(value, (bldr.Fragment,bldr.Element, Stream)):
-            return [value]
         else:
-            raise "macros can only return strings and genshi Streams"
+            raise "macros can only return strings and genshi objects"
         
     
 class RawLink(InlineElement):
@@ -813,11 +805,14 @@ class DefinitionDef(BlockElement):
 
 
 class Paragraph(BlockElement):
+    """"This should be the last outer level wiki element to be searched.
 
-    """"This should be the last outer level wiki element to be "searched".
-
-    Anything that is left over will be placed in paragraphs.
-
+    Anything that is left over will be placed in a paragraphs unless it looks
+    like block content according to xhtml1 strict. Block content is defined
+    here as valid children of the <body> element (see BLOCK_TAGS). Only genshi
+    Element objects will be evaluated (see BLOCK_TAGS). Fragments and stings
+    are treated as inline while Streams are block content.
+    
     """
 
     def __init__(self, tag, child_tags):
@@ -827,14 +822,31 @@ class Paragraph(BlockElement):
     def re_string(self):
         return r'^(.*)\n'
 
+    def _build(self,mo,element_store):
+        content = fragmentize(mo.group(1), self.child_tags, element_store)
+        content_is_block = True
+        # Don't wrap the content in self.tag if it 
+        # is valid block content (according to xhtml1 strict).
+        for element in content:
+            if not (element == '\n'
+                    or (isinstance(element, bldr.Element)
+                                   and element.tag in BLOCK_TAGS)
+                    or isinstance(element,Stream)):
+                content_is_block = False
+                break
+        if content_is_block:   
+            return bldr.tag(content)
+        else:
+            return bldr.tag.__getattr__(self.tag)(content)
+
 
 class Heading(BlockElement):
 
     r"""Finds heading wiki elements.
 
-    >>> h1 = Heading('h1','=',[])
+    >>> h1 = Heading('','=',[],['h1','h2'])
     >>> mo = h1.regexp.search('before\n = An important thing = \n after')
-    >>> mo.group(1)
+    >>> mo.group(2)
     'An important thing'
     >>> mo.group(0)
     ' = An important thing = \n'
