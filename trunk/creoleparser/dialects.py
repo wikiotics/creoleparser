@@ -51,7 +51,8 @@ class Creole10(object):
         third (will be None for a macro without a body), and a Boolean as the
         fourth (True for Block type macros, False for normal macros).
         The function may return a string (which will be subject to further wiki
-        processing) or a Genshi Stream object. If None is returned, the markup will
+        processing) or a Genshi object (Stream, Markup, builder.Fragment, or
+        builder.Element). If None is returned, the markup will
         be rendered unchanged.
                    
     """
