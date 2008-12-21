@@ -1,6 +1,9 @@
 Version 0.6 (???)
 -----------------
 
+ * macros can now return Markup objects directly (Stream, Fragment,
+   Element, and string (preferably unicode) objects were always okay)
+ * made creoleparser smarter about adding <p> tags
  * improved rawlink detection regex
 
 Version 0.5.1 (Dec 8 2008)
