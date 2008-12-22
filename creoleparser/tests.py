@@ -485,6 +485,10 @@ class MacroTest(unittest.TestCase, BaseTest):
     def macroFactory(self, macro_name, arg_string, body, context):
         if macro_name == 'html':
             return self.getFragment(body)
+        elif macro_name == 'span':
+            return builder.tag.span(self.parse.generate(body,context='inline'),id_=arg_string.strip())
+        elif macro_name == 'div':
+            return builder.tag.div(self.parse.generate(body),id_=arg_string.strip())
         elif macro_name == 'html2':
             return Markup(body)
         elif macro_name == 'htmlblock':
@@ -541,6 +545,9 @@ class MacroTest(unittest.TestCase, BaseTest):
         self.assertEquals(
             self.parse('<<pre>>one<</pre>>\n<<pre>>two<</pre>>'),
             '<pre>**one**</pre>\n<pre>**two**</pre>\n')
+        self.assertEquals(
+            self.parse('<<pre>>one<<pre>>\n<</pre>>two<</pre>>'),
+            '<pre>**one&lt;&lt;pre&gt;&gt;\n&lt;&lt;/pre&gt;&gt;two**</pre>\n')
         self.assertEquals(
             self.parse(u'<<mateo>>fooɤ<</mateo>>'),
             wrap_result('<em>foo\xc9\xa4</em>'))
@@ -620,6 +627,38 @@ class MacroTest(unittest.TestCase, BaseTest):
             self.parse("<<reverse-lines output=wiki>>\none\n\n}}}\ntwo\n{{{\n<</reverse-lines>>"),
             "<pre>two\n</pre>\n<p>one</p>\n")
 
+    def test_nesting_macros(self):
+        self.assertEquals(
+            self.parse('<<span one>>part 1<</span>><<span two>>part 2<</span>>'),
+            wrap_result('<span id="one">part 1</span><span id="two">part 2</span>'))
+        self.assertEquals(
+            self.parse('<<span>>part 1a<<span two>>part 2<</span>>part 1b<</span>>'),
+            wrap_result('<span id="">part 1a<span id="two">part 2</span>part 1b</span>'))
+        self.assertEquals(
+            self.parse('<<span>>part 1a<<span>>part 2<</span>>part 1b<</span>>'),
+            wrap_result('<span id="">part 1a<span id="">part 2</span>part 1b</span>'))
+        self.assertEquals(
+            self.parse('<<span one>>part 1a<<span two>>part 2<</span>>part 1b<</span>>'),
+            wrap_result('<span id="one">part 1a<span id="two">part 2</span>part 1b</span>'))
+        self.assertEquals(
+            self.parse("""
+<<div one>>
+part 1a
+<<div two>>
+part 2
+<</div>>
+part 1b
+<</div>>"""),'<div id="one"><p>part 1a</p>\n<div id="two"><p>part 2</p>\n</div><p>part 1b</p>\n</div>')
+        self.assertEquals(
+            self.parse("""
+<<div one>>
+part 1
+<</div>>
+<<div one>>
+part 2
+<</div>>"""),'<div id="one"><p>part 1</p>\n</div><div id="one"><p>part 2</p>\n</div>')
+
+        
     def test_links(self):
         self.assertEquals(
             self.parse("http://www.google.com"),
