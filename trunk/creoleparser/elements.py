@@ -200,7 +200,7 @@ class SimpleElement(InlineElement):
                                                           element_store))
 
 
-macro_name = r'([a-zA-Z]+([-.]?[a-zA-Z0-9]+)*)'
+macro_name = r'(?P<name>[a-zA-Z]+([-.]?[a-zA-Z0-9]+)*)'
 """allows any number of non-repeating hyphens or periods.
 Underscore is not included because hyphen is"""
 
@@ -216,13 +216,18 @@ class Macro(WikiElement):
     def _process(self, mo, text, wiki_elements,element_store):
         """Returns genshi Fragments (Elements and text)"""
         processed = self._build(mo,element_store)
+        if isinstance(processed, list):
+            tail = processed[1]
+            processed = processed[0]
+        else:
+            tail = ''
         if isinstance(processed, basestring) and not isinstance(processed,Markup):
-            text = ''.join([text[:mo.start()],processed,
+            text = ''.join([text[:mo.start()],processed,tail,
                         text[mo.end():]])
         else:
             store_id = str(id(processed))
             element_store[store_id] = processed
-            text = ''.join([text[:mo.start()],'<<<',store_id,'>>>',
+            text = ''.join([text[:mo.start()],'<<<',store_id,'>>>',tail,
                         text[mo.end():]])
         frags = fragmentize(text,wiki_elements,element_store)
         return frags
@@ -258,32 +263,53 @@ class BodiedMacro(Macro):
         self.regexp = re.compile(self.re_string(),re.DOTALL)
 
     def re_string(self):
-        content = r'([ \S]*?)'
+        content = r'(?P<arg_string>[ \S]*?)'
         #macro_name = r'([a-zA-Z]+([-.]?[a-zA-Z0-9]+)*)'
-        body = '(.+?)'
-        return esc_neg_look + re.escape(self.token[0]) + r'(' + macro_name + \
-               content + ')'+ esc_neg_look + re.escape(self.token[1]) + \
+        body = '(?P<body>.+)'
+        return esc_neg_look + re.escape(self.token[0]) + macro_name + \
+               content + esc_neg_look + re.escape(self.token[1]) + \
                body + esc_neg_look + re.escape(self.token[0]) + \
-               r'/\2' + re.escape(self.token[1])
+               r'/(?P=name)' + re.escape(self.token[1])
 
     def _build(self,mo,element_store):
+        start = ''.join([esc_neg_look, re.escape(self.token[0]), re.escape(mo.group('name')),
+                         r'(?P<arg_string>[ \S]*?)', re.escape(self.token[1])])
+        end = ''.join([esc_neg_look, re.escape(self.token[0]), '/', re.escape(mo.group('name')),
+                       re.escape(self.token[1])])
+        count = 0
+        for mo2 in re.finditer(start + '|' + end, mo.group('body')):
+            if re.match(end,mo2.group(0)):
+                count = count + 1
+            else:
+                count = count - 1
+            if count > 0:
+                body = mo.group('body')[:mo2.start()]
+                tail = ''.join([mo.group('body')[mo2.end():], self.token[0],
+                                '/', mo.group('name'), self.token[1]])
+                break
+        else:
+            body = mo.group('body')
+            tail = ''
+                
+                
+        
         if self.func:
-            value = self.func(mo.group(2),mo.group(4),mo.group(5),False)
+            value = self.func(mo.group('name'),mo.group('arg_string'),body,False)
         else:
             value = None
         if value is None:
-            content_lines = mo.group(5).splitlines()
+            content_lines = body.splitlines()
             if len(content_lines) > 1:
                 content_out = [content_lines[0]]
                 for line in content_lines[1:]:
                     content_out.extend([bldr.tag.br(),line])
             else:
                 content_out = content_lines
-            return bldr.tag.code(self.token[0] + mo.group(1) + self.token[1],
+            return [bldr.tag.code(self.token[0] + mo.group('name') + mo.group('arg_string')+ self.token[1],
                             content_out , self.token[0] + '/'
-                            + mo.group(2) + self.token[1],class_="unknown_macro")
+                            + mo.group('name') + self.token[1],class_="unknown_macro"),tail]
         elif isinstance(value, (basestring,bldr.Fragment,bldr.Element, Stream)):
-            return value
+            return [value,tail]
         else:
             raise "macros can only return strings and genshi objects"
 
@@ -308,9 +334,14 @@ class BlockMacro(WikiElement):
         """
 
         processed = self._build(mo,element_store)
+        if isinstance(processed, list):
+            tail = processed[1]
+            processed = processed[0]
+        else:
+            tail = ''
         if isinstance(processed, basestring):
             #print '_process', repr(processed)
-            text = ''.join([text[:mo.start()],processed,
+            text = ''.join([text[:mo.start()],processed,tail,
                         text[mo.end():]])
             frags = fragmentize(text,wiki_elements,element_store)
         else:
@@ -326,22 +357,16 @@ class BlockMacro(WikiElement):
             if self.append_newline:
                 frags.append('\n')
             # call again for trailing text and extend the result list
-            if mo.end() < len(text):
-                frags.extend(fragmentize(text[mo.end():],wiki_elements,
+            if tail or mo.end() < len(text):
+                frags.extend(fragmentize(tail + text[mo.end():],wiki_elements,
                                          element_store))
         return frags
 
 
     def re_string(self):
         arg_string = '((?!.*>>.*>>).*?)'
-
-        
-        #macro_name = r'([a-zA-Z]+([-.]?[a-zA-Z0-9]+)*)'
-        # allows any number of non-repeating hyphens or periods
-        # underscore is not included because hyphen is
         start = r'(^\s*?\n|\A)' + re.escape(self.token[0])
         end = re.escape(self.token[1]) + r'\s*?\n(\s*?\n|$)'
-                
         return start + '(' + macro_name + arg_string + ')' + end
 
 
@@ -374,29 +399,47 @@ class BodiedBlockMacro(BlockMacro):
         self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
 
     def re_string(self):
-        arg_string = r'((?![^\n]*>>[^\n]*>>)[ \S]*?)'
+        arg_string = r'(?P<arg_string>(?![^\n]*>>[^\n]*>>)[ \S]*?)'
         start = '^' + re.escape(self.token[0])
         #macro_name = r'([a-zA-Z]+([-.]?[a-zA-Z0-9]+)*)'
-        body = r'(.*?\n)'
+        body = r'(?P<body>.*\n)'
         end = re.escape(self.token[0]) + \
-               r'/\2' + re.escape(self.token[1]) + r'\s*?\n'
+               r'/(?P=name)' + re.escape(self.token[1]) + r'\s*?\n'
         
         return start + '(' + macro_name + arg_string + ')' + re.escape(self.token[1]) + \
                r'\s*?\n' + body + end
 
     def _build(self,mo,element_store):
-        #print 'block_bodied_macro', mo.groups()
+        start = ''.join(['^', re.escape(self.token[0]), re.escape(mo.group('name')),
+                         r'(?P<arg_string>(?![^\n]*>>[^\n]*>>)[ \S]*?)', re.escape(self.token[1]),r'\s*?\n'])
+        end = ''.join(['^', re.escape(self.token[0]), '/', re.escape(mo.group('name')),
+                       re.escape(self.token[1]),r'\s*?\n'])
+        count = 0
+        for mo2 in re.finditer(start + '|' + end, mo.group('body'),re.MULTILINE):
+            if re.match(end,mo2.group(0)):
+                count = count + 1
+            else:
+                count = count - 1
+            if count > 0:
+                body = mo.group('body')[:mo2.start()]
+                tail = ''.join([mo.group('body')[mo2.end():], self.token[0],
+                                '/', mo.group('name'), self.token[1],'\n'])
+                break
+        else:
+            body = mo.group('body')
+            tail = ''
+
         if self.func:
-            value = self.func(mo.group(2),mo.group(4),mo.group(5),True)
+            value = self.func(mo.group('name'),mo.group('arg_string'),body,True)
         else:
             value = None
         if value is None:
-            return bldr.tag.pre(self.token[0] + mo.group(1) + self.token[1]
-                            + '\n' + mo.group(5) + self.token[0] + '/'
-                            + mo.group(2) + self.token[1] ,class_="unknown_macro")
+            return [bldr.tag.pre(self.token[0] + mo.group(1) + self.token[1]
+                            + '\n' + body + self.token[0] + '/'
+                            + mo.group('name') + self.token[1] ,class_="unknown_macro"), tail]
         elif isinstance(value, (basestring,bldr.Fragment,
                                 bldr.Element, Stream)):
-            return value
+            return [value, tail]
         else:
             raise "macros can only return strings and genshi objects"
         
