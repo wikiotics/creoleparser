@@ -535,7 +535,7 @@ class MacroTest(unittest.TestCase, BaseTest):
             wrap_result('<q cite="http://example.org">foo</q>'))
         self.assertEquals(
             self.parse('<<html2>><b>hello</b><</html2>>'),
-            wrap_result('<b>hello</b>'))
+            '<b>hello</b>\n')
         self.assertEquals(
             self.parse('<<htmlblock>><q cite="http://example.org">foo</q><</htmlblock>>'),
                 '<q cite="http://example.org">foo</q>\n')
@@ -583,10 +583,10 @@ class MacroTest(unittest.TestCase, BaseTest):
             wrap_result(' <span class="centered">This is a footer.</span>'))
         self.assertEquals(
             self.parse('<<footer2>>'),
-            '<span class="centered">This is a footer.\n</span>')
+            '<p><span class="centered">This is a footer.\n</span></p>')
         self.assertEquals(
             self.parse('<<luca foobar>>'),
-            '<strong> foobar</strong>')
+            '<p><strong> foobar</strong></p>')
         self.assertEquals(
             self.parse("<<reverse-lines>>one<</reverse-lines>>"),
             wrap_result("one\n"))
@@ -598,7 +598,7 @@ class MacroTest(unittest.TestCase, BaseTest):
             wrap_result("two\none\n\n"))
         self.assertEquals(
             self.parse("<<reverse-lines>>\none\n\ntwo\n<</reverse-lines>>"),
-            "two\n\none\n")
+            "<p>two\n\none\n</p>")
         self.assertEquals(
             self.parse("<<reverse-lines>>one\n{{{two}}}\n<</reverse-lines>>"),
             wrap_result("{{{two}}}\none\n"))
@@ -610,7 +610,7 @@ class MacroTest(unittest.TestCase, BaseTest):
             wrap_result("}}}\ntwo\n{{{\none\n"))
         self.assertEquals(
             self.parse("<<reverse-lines>>\none\n{{{\ntwo\n}}}\n<</reverse-lines>>"),
-            "}}}\ntwo\n{{{\none\n")
+            "<p>}}}\ntwo\n{{{\none\n</p>")
         self.assertEquals(
             self.parse("<<reverse-lines output=wiki>>one\n{{{\ntwo\n}}}<</reverse-lines>>"),
             wrap_result("}}}\ntwo\n{{{\none\n"))

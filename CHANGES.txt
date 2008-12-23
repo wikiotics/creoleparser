@@ -1,6 +1,8 @@
 Version 0.6 (???)
 -----------------
 
+ * macros of the same name can nest (previously this was possible
+   only for macros with unique names)
  * macros can now return Markup objects directly (Stream, Fragment,
    Element, and string (preferably unicode) objects were always okay)
  * made creoleparser smarter about adding <p> tags

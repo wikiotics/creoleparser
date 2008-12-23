@@ -15,11 +15,13 @@ from genshi.core import Stream, Markup
 
 from core import escape_char, esc_neg_look, fragmentize 
 
-BLOCK_TAGS = ['h1','h2','h3','h4','h5','h6',
+BLOCK_ONLY_TAGS = ['h1','h2','h3','h4','h5','h6',
               'ul','ol','dl',
               'pre','hr','blockquote','address',
               'p','div','form','fieldset','table',
-              'noscript','ins','del','script']
+              'noscript']
+
+BLOCK_TAGS = BLOCK_ONLY_TAGS + ['ins','del','script']
 
 # use Genshi's HTMLSanitizer if possible (i.e., not on Google App Engine)
 try:
@@ -122,6 +124,18 @@ class WikiElement(object):
     def __repr__(self):
         return "<"+self.__class__.__name__ + " " + str(self.tag)+">"
 
+
+class BlockElement(WikiElement):
+
+    """Block elements inherit form this class
+
+    Wiki elements wanting ``append_newline = True`` should use this
+    as the base also.
+
+    """
+
+    append_newline = True
+    
 
 class InlineElement(WikiElement):
 
@@ -339,7 +353,7 @@ class BlockMacro(WikiElement):
             processed = processed[0]
         else:
             tail = ''
-        if isinstance(processed, basestring):
+        if isinstance(processed, basestring) and not isinstance(processed,Markup):
             #print '_process', repr(processed)
             text = ''.join([text[:mo.start()],processed,tail,
                         text[mo.end():]])
@@ -371,17 +385,20 @@ class BlockMacro(WikiElement):
 
 
     def _build(self,mo,element_store):
-        #print 'block_macro', mo.groups()
         if self.func:
             value = self.func(mo.group(3),mo.group(5),None,True)
         else:
             value = None
         if value is None:
             return bldr.tag.pre(self.token[0] + mo.group(2) + self.token[1],class_="unknown_macro")
-        elif isinstance(value,basestring):
+        elif isinstance(value, basestring) and not isinstance(value, Markup):
             return ''.join([value.rstrip(),'\n'])
-        elif isinstance(value, (bldr.Fragment,bldr.Element, Stream)):
+        elif (isinstance(value, (Stream, basestring)) or
+             (isinstance(value,bldr.Element) and value.tag in BLOCK_TAGS)):
             return value
+        # Add a p tag if the value is a Fragment or Element that needs one
+        elif isinstance(value, bldr.Fragment):
+            return bldr.tag.p(value)
         else:
             raise "macros can only return strings and genshi objects" 
         
@@ -437,9 +454,12 @@ class BodiedBlockMacro(BlockMacro):
             return [bldr.tag.pre(self.token[0] + mo.group(1) + self.token[1]
                             + '\n' + body + self.token[0] + '/'
                             + mo.group('name') + self.token[1] ,class_="unknown_macro"), tail]
-        elif isinstance(value, (basestring,bldr.Fragment,
-                                bldr.Element, Stream)):
+        elif (isinstance(value, (Stream, basestring)) or
+             (isinstance(value,bldr.Element) and value.tag in BLOCK_TAGS)):
             return [value, tail]
+        # Add a p tag if the value is a Fragment or Element that needs one
+        elif isinstance(value, bldr.Fragment):
+            return [bldr.tag.p(value), tail]
         else:
             raise "macros can only return strings and genshi objects"
         
@@ -673,20 +693,6 @@ class WikiLink(WikiElement):
             return fragmentize(mo.group(4),self.child_tags,element_store)
 
 
-
-
-class BlockElement(WikiElement):
-
-    """Block elements inherit form this class
-
-    Wiki elements wanting ``append_newline = True`` should use this
-    as the base also.
-
-    """
-
-    append_newline = True
-
-
 class List(BlockElement):
 
     """Finds list (ordered, unordered, and definition) wiki elements.
@@ -867,21 +873,33 @@ class Paragraph(BlockElement):
 
     def _build(self,mo,element_store):
         content = fragmentize(mo.group(1), self.child_tags, element_store)
-        content_is_block = True
-        # Don't wrap the content in self.tag if it 
-        # is valid block content (according to xhtml1 strict).
-        for element in content:
-            if not (element == '\n'
-                    or (isinstance(element, bldr.Element)
-                                   and element.tag in BLOCK_TAGS)
-                    or isinstance(element,Stream)):
-                content_is_block = False
-                break
-        if content_is_block:   
-            return bldr.tag(content)
+        # Check each list item and record those that are block only
+        block_only_frags = []
+        for i,element in enumerate(content):
+            if ((isinstance(element, bldr.Element) and
+                element.tag in BLOCK_ONLY_TAGS) or
+                isinstance(element,(Stream,Markup))):
+                block_only_frags.append(i)
+
+        # Build a new result list if needed
+        if block_only_frags:
+            new_content = []
+            last_i = -1
+            for i in block_only_frags:
+                if content[last_i+1:i]:
+                    if not (len(content[last_i+1:i])==1 and
+                                                content[last_i+1] == '\n'):
+                        new_content.append(bldr.tag.__getattr__(self.tag)(content[last_i+1:i]))
+                    else:
+                        new_content.append('\n')
+                new_content.append(content[i])
+                last_i = i
+            if content[last_i+1:]:
+                new_content.append(bldr.tag.__getattr__(self.tag)(content[last_i+1:]))
+            return bldr.tag(new_content)
         else:
             return bldr.tag.__getattr__(self.tag)(content)
-
+            
 
 class Heading(BlockElement):
 
