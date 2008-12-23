@@ -122,7 +122,7 @@ help validate any changes made to the library code.
    text2html = core.Parser(dialect)
 
 
-The macros in the example above aren't reliable (e.g., some fail if `arg_string` is `None`)
+The macros in the example above aren't reliable (e.g., some fail if ``arg_string`` is `None`)
 or safe (`include` doesn't guard against circular reference). For a more complete example, see
 `the code used in the sandbox <http://creoleparserwiki.appspot.com/pages/SandBoxCode>`_.
 
@@ -137,25 +137,29 @@ Don't forget that macros can return simple strings (preferably as unicode object
 genshi objects. These will be processed as Creole markup (potentially including other macros!)
 in their new context.
 
-How can I stop a macro from being placed in a paragraph?
-========================================================
+How can I stop a macro from being placed in a paragraph? (or visa versa)
+========================================================================
 Creoleparser tries not to use paragraphs if the content they would enclose are
 valid children of the `body` element (according to  xhtml1 strict). For example, if a paragraph
 is enclosed entirely in a regular bodied macro, and that macro outputs an Element with a `div` tag, no
-`p` tag will be added. Note that this is different from a paragraph enclosed in a *block*
-bodied macro, in which case a `p` tag will *never* be added.
+`p` tag will be added.
+
+For *block* type macros (i.e., when ``isblock`` is true), creole parser will *add* a `p` tag
+if the macro's return value indicates it isn't a valid child of the `body` element. 
 
 Guidelines for macro return values and paragraph control
 --------------------------------------------------------
-These rules apply to paragraphs containing *only* macro content.
 
- * Return a Fragment, string, or Markup object to *always* apply a `p` tag
+ * Return a Fragment to **always** apply a `p` tag (e.g., ``return genshi.builder.tag(my_output)``)
 
- * Return a Stream to *never* apply a `p` tag
+ * Return a Stream (using the generate method) or Markup object (e.g., ``return genshi.Markup('<div>...</div>')``)
+   to **never** apply a `p` tag
 
- * Return an Element to let creoleparser decide
+ * Return a string or Element to let creoleparser decide (e.g., ``return genshi.builder.tag.div(my_output)``)
 
-Note that you can place a Stream in a Fragment if needed.
+Generally, returning a string or Element will reliably produce valid xhtml.
+When returning other objects, you should follow the rules above.
+
 
          
 
