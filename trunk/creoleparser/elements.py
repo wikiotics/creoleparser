@@ -379,8 +379,10 @@ class BlockMacro(WikiElement):
 
     def re_string(self):
         arg_string = '((?!.*>>.*>>).*?)'
-        start = r'(^\s*?\n|\A)' + re.escape(self.token[0])
-        end = re.escape(self.token[1]) + r'\s*?\n(\s*?\n|$)'
+        #start = r'(^\s*?\n|\A)' + re.escape(self.token[0])
+        start = r'((?<=^\n)|(?<=\A))' + re.escape(self.token[0])
+        #end = re.escape(self.token[1]) + r'\s*?\n(\s*?\n|$)'
+        end = re.escape(self.token[1]) + r'\s*?\n(?=\s*?\n|$)'
         return start + '(' + macro_name + arg_string + ')' + end
 
 

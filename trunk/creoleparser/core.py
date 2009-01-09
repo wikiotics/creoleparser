@@ -67,9 +67,7 @@ def fragmentize(text,wiki_elements, element_store,remove_escapes=True):
             for element in wiki_elements[0]:
                 m = element.regexp.search(text)
                 if m:
-                    if x is None:
-                        x,wiki_element,mo = m.start(),element,m
-                    elif m.start() < x:
+                    if x is None or m.start() < x:
                         x,wiki_element,mo = m.start(),element,m
         else:
             wiki_element = wiki_elements[0]

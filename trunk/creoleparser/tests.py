@@ -597,8 +597,25 @@ class MacroTest(unittest.TestCase, BaseTest):
             self.parse("<<reverse-lines>>\none\ntwo<</reverse-lines>>"),
             wrap_result("two\none\n\n"))
         self.assertEquals(
-            self.parse("<<reverse-lines>>\none\n\ntwo\n<</reverse-lines>>"),
-            "<p>two\n\none\n</p>")
+            self.parse(
+"""\
+<<reverse-lines>>
+
+one
+
+two
+
+<</reverse-lines>>
+"""),
+ """\
+<p>two
+
+one
+
+</p>""")
+        self.assertEquals(
+            self.parse(u"\n<<div one>>\nblaa<</div>>"),
+            '<div id="one"><p>blaa</p>\n</div>\n')
         self.assertEquals(
             self.parse("<<reverse-lines>>one\n{{{two}}}\n<</reverse-lines>>"),
             wrap_result("{{{two}}}\none\n"))
