@@ -1,6 +1,6 @@
 # core.py
 #
-# Copyright (c) 2007 Stephen Day
+# Copyright (c) 2009 Stephen Day
 #
 # This module is part of Creoleparser and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php

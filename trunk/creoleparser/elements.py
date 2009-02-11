@@ -1,6 +1,6 @@
 # elements.py
 #
-# Copyright (c) 2007 Stephen Day
+# Copyright (c) 2009 Stephen Day
 #
 # This module is part of Creoleparser and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -530,11 +530,11 @@ class URLLink(WikiElement):
     def __init__(self, tag,token,child_tags,delimiter):
         super(URLLink,self).__init__(tag, token, child_tags)
         self.delimiter = delimiter
-        self.regexp = re.compile(self.re_string())
+        self.regexp = re.compile(self.re_string(),re.DOTALL)
 
     def re_string(self):
         protocol = r'^\s*((\w+?:|/)' #r'^\s*((\w+?://|/)'
-        rest_of_url = r'\S*?)\s*'
+        rest_of_url = r'[\S\n]*?)\s*'
         alias = r'(' + re.escape(self.delimiter) + r' *(.*?))? *$'
         return protocol + rest_of_url + alias
 
@@ -1030,7 +1030,7 @@ class Link(InlineElement):
     
     def __init__(self, tag, token, child_tags):
         super(Link,self).__init__(tag,token , child_tags)
-        self.regexp = re.compile(self.re_string())
+        #self.regexp = re.compile(self.re_string())
 
     def _build(self,mo,element_store):
         
@@ -1120,7 +1120,6 @@ class NoWikiElement(InlineElement):
 
 
 class PreBlock(BlockElement):
-
     """A preformatted block.
 
     If a closing token is found on a line with a space as the first
@@ -1159,7 +1158,6 @@ class PreBlock(BlockElement):
 
 
 class LoneElement(BlockElement):
-
     """Element on a line by itself with no content (e.g., <hr/>)"""
 
     def __init__(self, tag, token, child_tags):
@@ -1206,16 +1204,19 @@ class BlankLine(WikiElement):
 
     
 class LineBreak(InlineElement):
-
     """An inline line break."""
 
     #append_newline = True
-    def __init__(self,tag, token, child_tags=[]):
+    def __init__(self,tag, token, child_tags=[], blog_like=False):
+        self.blog_like = blog_like
         super(LineBreak,self).__init__(tag,token , child_tags)
         self.regexp = re.compile(self.re_string(),re.DOTALL)
 
     def re_string(self):
-        return esc_neg_look + re.escape(self.token)
+        if self.blog_like:
+            return '(' + esc_neg_look + re.escape(self.token) + r'|(?<! )\n)'
+        else:
+            return esc_neg_look + re.escape(self.token)
     
     def _build(self,mo,element_store):
         return bldr.tag.__getattr__(self.tag)()
