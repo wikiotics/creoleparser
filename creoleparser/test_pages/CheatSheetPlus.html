@@ -7,15 +7,15 @@
 <body>
 
 <table><tr><th>Wiki</th><th>Rendered</th><th>Source</th></tr>
-<tr><td><tt><span>//italics//</span></tt></td><td><em>italics</em></td><td><pre>&lt;p&gt;&lt;em&gt;italics&lt;/em&gt;&lt;/p&gt;
+<tr><td><code><span>//italics//</span></code></td><td><em>italics</em></td><td><pre>&lt;p&gt;&lt;em&gt;italics&lt;/em&gt;&lt;/p&gt;
 </pre></td></tr>
-<tr><td><tt><span>**bold**</span></tt></td><td><strong>bold</strong></td><td><pre>&lt;p&gt;&lt;strong&gt;bold&lt;/strong&gt;&lt;/p&gt;
+<tr><td><code><span>**bold**</span></code></td><td><strong>bold</strong></td><td><pre>&lt;p&gt;&lt;strong&gt;bold&lt;/strong&gt;&lt;/p&gt;
 </pre></td></tr>
-<tr><td><tt><span>^^super^^script</span></tt></td><td><sup>super</sup>script</td><td><pre>&lt;p&gt;&lt;sup&gt;super&lt;/sup&gt;script&lt;/p&gt;
+<tr><td><code><span>^^super^^script</span></code></td><td><sup>super</sup>script</td><td><pre>&lt;p&gt;&lt;sup&gt;super&lt;/sup&gt;script&lt;/p&gt;
 </pre></td></tr>
-<tr><td><tt><span>,,sub,,script</span></tt></td><td><sub>sub</sub>script</td><td><pre>&lt;p&gt;&lt;sub&gt;sub&lt;/sub&gt;script&lt;/p&gt;
+<tr><td><code><span>,,sub,,script</span></code></td><td><sub>sub</sub>script</td><td><pre>&lt;p&gt;&lt;sub&gt;sub&lt;/sub&gt;script&lt;/p&gt;
 </pre></td></tr>
-<tr><td><tt><span>##monospace##</span></tt></td><td><tt>monospace</tt></td><td><pre>&lt;p&gt;&lt;tt&gt;monospace&lt;/tt&gt;&lt;/p&gt;
+<tr><td><code><span>##monospace##</span></code></td><td><code>monospace</code></td><td><pre>&lt;p&gt;&lt;code&gt;monospace&lt;/code&gt;&lt;/p&gt;
 </pre></td></tr>
 <tr><td><pre class="plain">* Bullet list
 * Second item
@@ -59,8 +59,8 @@
 &lt;dd&gt;Definition&lt;/dd&gt;
 &lt;/dl&gt;
 </pre></td></tr>
-<tr><td><tt>Link to [[WikiPage]]</tt></td><td>Link to <a class="nonexistent" href="http://creoleparser.srcom.org/cgi-bin/creolepiki/WikiPage">WikiPage</a></td><td><pre>&lt;p&gt;Link to &lt;a href="http://thiswiki.org/WikiPage"&gt;WikiPage&lt;/a&gt;&lt;/p&gt;</pre></td></tr>
-<tr><td><tt><span>[[http://google.com|Google]]</span></tt></td><td><a href="http://google.com">Google</a></td><td><pre>&lt;p&gt;&lt;a href="http://google.com"&gt;Google&lt;/a&gt;&lt;/p&gt;
+<tr><td><code>Link to [[WikiPage]]</code></td><td>Link to <a class="nonexistent" href="http://creoleparser.srcom.org/cgi-bin/creolepiki/WikiPage">WikiPage</a></td><td><pre>&lt;p&gt;Link to &lt;a href="http://thiswiki.org/WikiPage"&gt;WikiPage&lt;/a&gt;&lt;/p&gt;</pre></td></tr>
+<tr><td><code><span>[[http://google.com|Google]]</span></code></td><td><a href="http://google.com">Google</a></td><td><pre>&lt;p&gt;&lt;a href="http://google.com"&gt;Google&lt;/a&gt;&lt;/p&gt;
 </pre></td></tr>
 <tr><td><pre class="plain">== Large heading
 === Medium Heading
@@ -81,7 +81,7 @@ linebreak!</p>
 linebreak!&lt;/p&gt;
 &lt;p&gt;Use empty row&lt;/p&gt;
 </pre></td></tr>
-<tr><td><tt>Force\\linebreak</tt></td><td>Force<br />linebreak</td><td><pre>&lt;p&gt;Force&lt;br /&gt;linebreak&lt;/p&gt;
+<tr><td><code>Force\\linebreak</code></td><td>Force<br />linebreak</td><td><pre>&lt;p&gt;Force&lt;br /&gt;linebreak&lt;/p&gt;
 </pre></td></tr>
 <tr><td><pre class="plain">Horizontal line:
 ----</pre></td><td><p>Horizontal line:</p>
@@ -89,7 +89,7 @@ linebreak!&lt;/p&gt;
 </td><td><pre>&lt;p&gt;Horizontal line:&lt;/p&gt;
 &lt;hr /&gt;
 </pre></td></tr>
-<tr><td><tt><span>{{Image.jpg|title}}</span></tt></td><td><img src="Image.jpg" alt="title" title="title" /></td><td><pre>&lt;p&gt;&lt;img src="Image.jpg" alt="title" title="title" /&gt;&lt;/p&gt;
+<tr><td><code><span>{{Image.jpg|title}}</span></code></td><td><img src="Image.jpg" alt="title" title="title" /></td><td><pre>&lt;p&gt;&lt;img src="Image.jpg" alt="title" title="title" /&gt;&lt;/p&gt;
 </pre></td></tr>
 <tr><td><pre class="plain">|=|=table|=header|
 |a|table|row|
@@ -114,7 +114,7 @@ linebreak!&lt;/p&gt;
 </pre></td></tr>
 <tr><td><span>use a tilde to ~**escape</span></td><td>use a tilde to **escape</td><td><pre>&lt;p&gt;use a tilde to **escape&lt;/p&gt;
 </pre></td></tr>
-<tr><td><tt><span>&lt;&lt;source&gt;&gt;a //simple// macro&lt;&lt;/source&gt;&gt;</span></tt></td><td><pre>&lt;p&gt;a &lt;em&gt;simple&lt;/em&gt; macro&lt;/p&gt;
+<tr><td><code><span>&lt;&lt;source&gt;&gt;a //simple// macro&lt;&lt;/source&gt;&gt;</span></code></td><td><pre>&lt;p&gt;a &lt;em&gt;simple&lt;/em&gt; macro&lt;/p&gt;
 </pre></td><td><pre>&lt;pre&gt;&lt;p&gt;a &lt;em&gt;simple&lt;/em&gt; macro&lt;/p&gt;&lt;/pre&gt;</pre></td></tr>
 </table>
 <p><a href="http://creoleparser.googlecode.com/svn/trunk/creoleparser/test_pages/CheatSheetPlus.txt">raw wiki text</a></p>

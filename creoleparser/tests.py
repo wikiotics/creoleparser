@@ -95,6 +95,9 @@ class BaseTest(object):
             self.parse("[[http://www.google.com]]"),
             wrap_result("""<a href="http://www.google.com">http://www.google.com</a>"""))
         self.assertEquals(
+            self.parse("[[http://www.google.com/search\n?source=ig&hl=en&rlz=&q=creoleparser&btnG=Google+Search&aq=f]]"),
+            wrap_result("""<a href="http://www.google.com/search\n?source=ig&amp;hl=en&amp;rlz=&amp;q=creoleparser&amp;btnG=Google+Search&amp;aq=f">http://www.google.com/search\n?source=ig&amp;hl=en&amp;rlz=&amp;q=creoleparser&amp;btnG=Google+Search&amp;aq=f</a>"""))
+        self.assertEquals(
             self.parse(u"[[ɤ]]"),
             wrap_result("""<a href="http://www.wikicreole.org/wiki/%C9%A4">ɤ</a>"""))
 
@@ -260,8 +263,8 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
             self.parse("a lone escape ~ in the middle of a line"),
             wrap_result("a lone escape ~ in the middle of a line"))
         self.assertEquals(
-            self.parse("or at the end ~"),
-            wrap_result("or at the end ~"))
+            self.parse("or at the end ~\nof a line"),
+            wrap_result("or at the end ~\nof a line"))
         self.assertEquals(
             self.parse("a double ~~ in the middle"),
             wrap_result("a double ~ in the middle"))
@@ -418,16 +421,29 @@ class DialectOptionsTest(unittest.TestCase):
         parse = Parser(dialect)
         self.assertEquals(
             parse("This block of {{{no_wiki **shouldn't** be monospace}}} now"),
-            wrap_result("This block of <tt>no_wiki **shouldn't** be monospace</tt> now"))
+            wrap_result("This block of <code>no_wiki **shouldn't** be monospace</code> now"))
 
     def test_use_additions_option(self):
         dialect = Creole10(use_additions=True)
         parse = Parser(dialect)
         self.assertEquals(
             parse("This block of ##text **should** be monospace## now"),
-            wrap_result("This block of <tt>text <strong>should</strong> be monospace</tt> now"))
+            wrap_result("This block of <code>text <strong>should</strong> be monospace</code> now"))
 
+    def test_blog_line_endings_option(self):
+        dialect = Creole10(blog_line_endings=True)
+        parse = Parser(dialect)
+        self.assertEquals(
+            parse("The first line\nthis text **should** be on the second line\n now third \nnot four"),
+            wrap_result("The first line<br />this text <strong>should</strong> be on the second line<br /> now third \nnot four"))
 
+    def test_simple_tokens_option(self):
+        dialect = Creole10(simple_tokens={'*':'strong','#':'code'})
+        parse = Parser(dialect)
+        self.assertEquals(
+            parse("This block of #text *should* be monospace# now"),
+            wrap_result("This block of <code>text <strong>should</strong> be monospace</code> now"))
+        
 class NoSpaceDialectTest(unittest.TestCase, BaseTest):
 
     def setUp(self):
