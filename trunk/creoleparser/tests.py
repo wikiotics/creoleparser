@@ -434,8 +434,8 @@ class DialectOptionsTest(unittest.TestCase):
         dialect = Creole10(blog_line_endings=True)
         parse = Parser(dialect)
         self.assertEquals(
-            parse("The first line\nthis text **should** be on the second line\n now third \nnot four"),
-            wrap_result("The first line<br />this text <strong>should</strong> be on the second line<br /> now third \nnot four"))
+            parse("The first line\nthis text **should** be on the second line\n now third"),
+            wrap_result("The first line<br />this text <strong>should</strong> be on the second line<br /> now third"))
 
     def test_simple_tokens_option(self):
         dialect = Creole10(simple_tokens={'*':'strong','#':'code'})
@@ -443,6 +443,13 @@ class DialectOptionsTest(unittest.TestCase):
         self.assertEquals(
             parse("This block of #text *should* be monospace# now"),
             wrap_result("This block of <code>text <strong>should</strong> be monospace</code> now"))
+
+    def test_simple_tokens_option2(self):
+        dialect = Creole10(simple_tokens=[('--','del')])
+        parse = Parser(dialect)
+        self.assertEquals(
+            parse("This block of --text **should** be monospace-- now"),
+            wrap_result("This block of <del>text <strong>should</strong> be monospace</del> now"))
         
 class NoSpaceDialectTest(unittest.TestCase, BaseTest):
 
