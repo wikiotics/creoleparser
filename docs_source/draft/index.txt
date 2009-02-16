@@ -12,7 +12,8 @@ Features
   * guarantees well formed xml output by default
   * can instantly switch between HTML 4.01 and XHTML 1.0 (or other formats) (see :class:`~creoleparser.core.Parser`)
   * `many other useful features <http://genshi.edgewall.org/>`_
-  
+
+* Inline markup is easily customized and/or extended.  
 * Advanced macro support. 
 * Runs on Google App Engine!
 
@@ -35,9 +36,7 @@ If you'd like to help out, see `the project page on Googlecode <http://code.goog
 Projects using Creoleparser
 ===========================
 
-* The Werkzeug demo app `Simple Wiki <http://werkzeug.pocoo.org/e/simplewiki/Main_Page>`_
-
-*To be added here, please post to the* `Google Group <http://groups.google.com/group/creoleparser>`_
+A list is maintained `here <http://creoleparserwiki.appspot.com/pages/Projects_Using_Creoleparser>`_.
 
 License
 =======

@@ -19,8 +19,8 @@ import sys, os
 # Creoleparser note: this should point to the current tagged
 # released version if building live site docs and trunk docstrings
 # no longer apply to the released version.
-#sys.path.append(os.path.abspath('../../tags/0.X.X/'))
-sys.path.append(os.path.abspath('../../trunk/'))
+#sys.path.insert(0,os.path.abspath('../../tags/0.X.X/'))
+sys.path.insert(0,os.path.abspath('../../trunk/'))
 
 
 # General configuration

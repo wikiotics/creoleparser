@@ -1,6 +1,9 @@
 Version 0.6 (???)
 -----------------
 
+ * macros now take a fifth positional argument, ``page`` 
+ * creole2html and text2html convenience functions now return html, not xhtml
+ * creole_to_xmtml convenience function removed
  * explicit url links (e.g., [[http://example.com/]]) can be multiline
  * added support for easy inline markup customization (simple_tokens)
  * changed <tt> to <code>

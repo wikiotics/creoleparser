@@ -197,7 +197,7 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
             '<pre class="unknown_macro">&lt;&lt;unknown&gt;&gt;\nfoo\n&lt;&lt;/unknown&gt;&gt;</pre>')
         self.assertEquals(
             self.parse('start\n\n<<unknown>>\n\nend'),
-            wrap_result('start</p>\n<pre class="unknown_macro">&lt;&lt;unknown&gt;&gt;</pre><p>end'))
+            wrap_result('start</p>\n<p><code class="unknown_macro">&lt;&lt;unknown&gt;&gt;</code></p>\n<p>end'))
 
     def test_monotype(self):
         pass
@@ -495,6 +495,9 @@ class MacroTest(unittest.TestCase, BaseTest):
             macro_func=self.macroFactory)
         self.parse = Parser(dialect)
 
+    class Wiki(object):
+        page_title='Home'
+    
     def getFragment(self, text):
         wrapped = Markup(text)
         fragment = builder.tag(wrapped)
@@ -505,9 +508,11 @@ class MacroTest(unittest.TestCase, BaseTest):
         fragment = builder.tag(wrapped)
         return fragment.generate()
 
-    def macroFactory(self, macro_name, arg_string, body, context):
+    def macroFactory(self, macro_name, arg_string, body, context,wiki):
         if macro_name == 'html':
             return self.getFragment(body)
+        elif macro_name == 'title':
+            return wiki.page_title
         elif macro_name == 'span':
             return builder.tag.span(self.parse.generate(body,context='inline'),id_=arg_string.strip())
         elif macro_name == 'div':
@@ -553,6 +558,9 @@ class MacroTest(unittest.TestCase, BaseTest):
                     return builder.tag('\n'.join(l) + '\n')
 
     def test_macros(self):
+        self.assertEquals(
+            self.parse('<<title>>',page=self.Wiki),
+            wrap_result('Home'))
         self.assertEquals(
             self.parse('<<html>><q cite="http://example.org">foo</q><</html>>'),
             wrap_result('<q cite="http://example.org">foo</q>'))
@@ -606,10 +614,10 @@ class MacroTest(unittest.TestCase, BaseTest):
             wrap_result(' <span class="centered">This is a footer.</span>'))
         self.assertEquals(
             self.parse('<<footer2>>'),
-            '<p><span class="centered">This is a footer.\n</span></p>')
+            '<p><span class="centered">\nThis is a footer.\n</span></p>\n')
         self.assertEquals(
             self.parse('<<luca foobar>>'),
-            '<p><strong> foobar</strong></p>')
+            '<p><strong> foobar</strong></p>\n')
         self.assertEquals(
             self.parse("<<reverse-lines>>one<</reverse-lines>>"),
             wrap_result("one\n"))

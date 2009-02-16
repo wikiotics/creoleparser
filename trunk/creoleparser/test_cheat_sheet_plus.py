@@ -34,6 +34,8 @@ def path_func(page_name):
         return 'FrontPage'
     else:
         return page_name
+
+## Start of macros
     
 def include(arg_string,body,isblock):
     page = Page(arg_string.strip())
@@ -53,6 +55,8 @@ def source(arg_string,body,isblock):
 def pre(arg_string,body,isblock):
     return bldr.tag.pre(body)
 
+## End of macros
+
 macros = {'include':include,
           'include-raw':include_raw,
           'include-source':include_source,
@@ -60,7 +64,7 @@ macros = {'include':include,
           'pre':pre
           }
 
-def macro_dispatcher(macro_name,arg_string,body,isblock):
+def macro_dispatcher(macro_name,arg_string,body,isblock,page):
     if macro_name in macros:
         return macros[macro_name](arg_string,body,isblock)
     

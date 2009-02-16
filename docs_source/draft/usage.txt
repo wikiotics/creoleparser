@@ -30,9 +30,9 @@ The builtin `text2html` and `creole2html` functions were created as follows:
 
 .. code-block:: python
 
-   text2html = Parser(dialect=Creole10(use_additions=True,no_wiki_monospace=False))
+   text2html = Parser(dialect=Creole10(use_additions=True,no_wiki_monospace=False), method='html'))
 
-   creole2html = Parser(dialect=Creole10(use_additions=False,no_wiki_monospace=True))
+   creole2html = Parser(dialect=Creole10(use_additions=False,no_wiki_monospace=True), method='html'))
 
 For more infomation, see :class:`creoleparser.core.Parser` and :class:`creoleparser.dialects.Creole10`.
 
