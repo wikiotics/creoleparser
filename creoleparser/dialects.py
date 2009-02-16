@@ -46,10 +46,14 @@ class Creole10(object):
         unaltered page name is equivalent to not supplying this function at all.
       macro_func
         If supplied, this fuction will be called when macro markup is found. The
-        function must accept the macro name as its first argument, the argument
-        string (including any delimter) as the second, the macro body as its
-        third (will be None for a macro without a body), and a Boolean as the
-        fourth (True for Block type macros, False for normal macros).
+        function must accept the following postional arguments:
+        
+        1. macro name (string)
+        2. the argument, including any delimter (string)
+        3. the macro body (string or None for a macro without a body)
+        4. macro type (boolean, True for block macros, False for normal macros)
+        5. a `page` object (see :class:`~creoleparser.core.Parser`)
+        
         The function may return a string (which will be subject to further wiki
         processing) or a Genshi object (Stream, Markup, builder.Fragment, or
         builder.Element). If None is returned, the markup will
@@ -65,9 +69,9 @@ class Creole10(object):
         
            {'**':'strong','//':'em'}
 
-        Alternately, `simple_tokens` may be a list of 2-tuples
-        ( e.g., [('--','del'),('""','q')] ). This will be converted to a
-        dictionary (using dict()) and used to _update_ the default dictionary,
+        Alternately, `simple_tokens` may be a list of 2-tuples like
+        ``[('--','del'),('""','q')]``. This will be converted to a
+        dictionary (using dict()) and used to *update* the default dictionary,
         rather than replace it. 
         
     """
@@ -100,7 +104,7 @@ class Creole10(object):
         self.link = Link('',('[[',']]'),[self.url_link,self.interwiki_link,self.wiki_link])
 
         if isinstance(simple_tokens, dict):
-           simple_token_dict = simple_tokens
+            simple_token_dict = simple_tokens
         else:
             simple_token_dict = {'**':'strong','//':'em'}
             if use_additions:

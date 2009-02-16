@@ -36,7 +36,7 @@ def fill_from_store(text,element_store):
     return frags
 
 
-def fragmentize(text,wiki_elements, element_store,remove_escapes=True):
+def fragmentize(text,wiki_elements, element_store, page, remove_escapes=True):
 
     """Takes a string of wiki markup and outputs a list of genshi
     Fragments (Elements and strings).
@@ -53,6 +53,8 @@ def fragmentize(text,wiki_elements, element_store,remove_escapes=True):
         the text to be parsed
       wiki_elements
         list of WikiElement objects to be searched for
+      page
+        object that may by used by macros
       remove_escapes
         If False, escapes will not be removed
     
@@ -74,7 +76,7 @@ def fragmentize(text,wiki_elements, element_store,remove_escapes=True):
             mo = wiki_element.regexp.search(text)
              
         if mo:
-            frags = wiki_element._process(mo, text, wiki_elements, element_store)
+            frags = wiki_element._process(mo, text, wiki_elements, element_store, page)
             break
         else:
             wiki_elements = wiki_elements[1:]
@@ -93,14 +95,14 @@ class Parser(object):
 
     :parameters:
       dialect
-        A Creole instance
+        A Creole10 instance
       method
-        This value is passed to genshies Steam.render(). Possible values
+        This value is passed to Genshies Steam.render(). Possible values
         include ``xhtml``, ``html``, ``xml``, and ``text``.
       strip_whitespace
-        This value is passed Genshies Steam.render().
+        This value is passed to Genshies Steam.render().
       encoding
-        This value is passed Genshies Steam.render().
+        This value is passed to Genshies Steam.render().
         
     """
     
@@ -110,7 +112,7 @@ class Parser(object):
         self.strip_whitespace = strip_whitespace
         self.encoding=encoding
 
-    def generate(self,text,element_store=None,context='block'):
+    def generate(self,text,element_store=None,context='block', page=None):
         """Returns a Genshi Stream.
 
         :parameters:
@@ -122,7 +124,11 @@ class Parser(object):
             of WikiElement objects (use with caution).
           element_store
             Internal dictionary that's passed around a lot ;)
+          page
+            This can be any type of object. It will be passed to `macro_func`
+            unchanged (see :class:`~creoleparser.dialects.Creole10`)
         """
+        
         if element_store is None:
             element_store = {}
         if not isinstance(context,list):
@@ -141,9 +147,9 @@ class Parser(object):
         else:
             chunks = [text]
 
-        return bldr.tag(*[fragmentize(text,top_level_elements,element_store) for text in chunks]).generate()
+        return bldr.tag(*[fragmentize(text,top_level_elements,element_store, page) for text in chunks]).generate()
 
-    def render(self, text, element_store=None, context='block', **kwargs):
+    def render(self, text, element_store=None, context='block', page=None, **kwargs):
         """Returns final output string (e.g., xhtml)
 
         See generate() (above) and
@@ -156,10 +162,10 @@ class Parser(object):
             kwargs['strip_whitespace'] = self.strip_whitespace
         kwargs.setdefault('method',self.method)
         kwargs.setdefault('encoding',self.encoding)
-        stream = self.generate(text, element_store, context)
+        stream = self.generate(text, element_store, context, page)
         return stream.render(**kwargs)
 
-    def __call__(self,text,element_store=None,context='block', **kwargs):
+    def __call__(self,text,element_store=None,context='block', page=None, **kwargs):
         """Wrapper for the render method. Returns final output string.
 
         See generate() (above) and
@@ -169,7 +175,7 @@ class Parser(object):
 
         if element_store is None:
             element_store = {}
-        return self.render(text,element_store,context, **kwargs)
+        return self.render(text,element_store,context, page, **kwargs)
 
 
 def preprocess(text, dialect):
