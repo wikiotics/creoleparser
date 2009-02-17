@@ -18,7 +18,7 @@ import sys, os
 # absolute, like shown here.
 # Creoleparser note: this should point to the current tagged
 # release version.
-sys.path.append(os.path.abspath('../../tags/0.5.1/'))
+sys.path.insert(0,os.path.abspath('../../tags/0.5.1/'))
 
 # General configuration
 # ---------------------

@@ -7,7 +7,7 @@ Version 0.6 (???)
  * explicit url links (e.g., [[http://example.com/]]) can be multiline
  * added support for easy inline markup customization (simple_tokens)
  * changed <tt> to <code>
- * added support for blog-like line endings (blog_line_endings=True)
+ * added support for blog-like line endings (blog_style_endings=True)
  * macros of the same name can nest (previously this was possible
    only for macros with unique names)
  * macros can now return Markup objects directly (Stream, Fragment,

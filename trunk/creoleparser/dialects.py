@@ -58,7 +58,7 @@ class Creole10(object):
         processing) or a Genshi object (Stream, Markup, builder.Fragment, or
         builder.Element). If None is returned, the markup will
         be rendered unchanged.
-      blog_line_endings
+      blog_style_endings
         If `True`, each newline character in a paragraph will be converted to
         a <br />. Note that the escaping mechanism (tilde) does not work
         for newlines.
@@ -82,14 +82,14 @@ class Creole10(object):
                  wiki_links_class_func=None, macro_func=None,
                  wiki_links_path_func=None, interwiki_links_funcs={},
                  interwiki_links_space_chars={},
-                 blog_line_endings=False,
+                 blog_style_endings=False,
                  simple_tokens=None,
                  ):
         self.macro = Macro('',('<<','>>'),[],func=macro_func)
         self.bodiedmacro = BodiedMacro('',('<<','>>'),[],func=macro_func)
-        self.block_macro = BlockMacro('',('<<','>>'),[],func=macro_func)
+        #self.block_macro = BlockMacro('',('<<','>>'),[],func=macro_func)
         self.bodied_block_macro = BodiedBlockMacro('',('<<','>>'),[],func=macro_func)
-        self.br = LineBreak('br', r'\\',blog_like=blog_line_endings)
+        self.br = LineBreak('br', r'\\',blog_style=blog_style_endings)
         self.raw_link = RawLink('a')
         self.url_link = URLLink('a','',[],delimiter = '|')
         self.interwiki_link = InterWikiLink('a','',[],delimiter1=':',delimiter2='|',
@@ -135,7 +135,7 @@ class Creole10(object):
         self.hr = LoneElement('hr','----',[])
         #self.lone_br = LoneElement('br',r'\\',[])
         self.blank_line = BlankLine()
-        self.lone_place_holder = LonePlaceHolder('',['<<<','>>>'],[])
+        #self.lone_place_holder = LonePlaceHolder('',['<<<','>>>'],[])
 
         self.headings = Heading('','=',inline_elements,tags=['h1','h2','h3','h4','h5','h6'])
 
@@ -163,13 +163,13 @@ class Creole10(object):
         self.pre = PreBlock('pre',['{{{','}}}'])
         self.inline_elements = inline_elements
         if use_additions:
-            self.block_elements = [(self.bodied_block_macro,self.pre,self.block_macro),
+            self.block_elements = [(self.bodied_block_macro,self.pre),#self.block_macro),
                                    self.blank_line,self.table,self.headings,self.hr,
-                                   self.dl,self.ul,self.ol,self.lone_place_holder,self.p]
+                                   self.dl,self.ul,self.ol,self.p]#self.lone_place_holder,self.p]
 
         else:
             self.block_elements = [self.pre,self.blank_line,self.table,self.headings,
-                           self.hr,self.ul,self.ol,self.lone_place_holder,self.p]
+                           self.hr,self.ul,self.ol,self.p]#self.lone_place_holder,self.p]
         """These are the wiki elements that are searched at the top level of text to be
         processed. The order matters because elements later in the list need not have any
         knowledge of those before (as those were parsed out already). This makes the

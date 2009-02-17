@@ -279,7 +279,6 @@ class BodiedMacro(Macro):
 
     def re_string(self):
         content = r'(?P<arg_string>[ \S]*?)'
-        #macro_name = r'([a-zA-Z]+([-.]?[a-zA-Z0-9]+)*)'
         body = '(?P<body>.+)'
         return esc_neg_look + re.escape(self.token[0]) + MACRO_NAME + \
                content + esc_neg_look + re.escape(self.token[1]) + \
@@ -328,18 +327,30 @@ class BodiedMacro(Macro):
         else:
             raise "macros can only return strings and genshi objects"
 
-class BlockMacro(WikiElement):
-    """Finds a block macros.
+       
 
-    Macro must be on a line alone without leading spaces. Resulting
-    output with not be enclosed in paragraph marks or consumed by
-    other markup (except pre blocks and BodiedBlockMacro's)
-    """
+class BodiedBlockMacro(WikiElement):
+    """Finds and processes block macros with bodies.
+
+    The opening and closing tokens must be are each on a line alone without
+    leading spaces. These macros can enclose other block level markup
+    including pre blocks and other BodiedBlockMacro's."""
+
 
     def __init__(self, tag, token, child_tags,func):
-        super(BlockMacro,self).__init__(tag,token , child_tags)
+        super(BodiedBlockMacro,self).__init__(tag,token , child_tags)
         self.func = func
-        self.regexp = re.compile(self.re_string(),re.MULTILINE)
+        self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
+
+    def re_string(self):
+        arg_string = r'(?P<arg_string>(?![^\n]*>>[^\n]*>>)[ \S]*?)'
+        start = '^' + re.escape(self.token[0])
+        body = r'(?P<body>.*\n)'
+        end = re.escape(self.token[0]) + \
+               r'/(?P=name)' + re.escape(self.token[1]) + r'\s*?\n'
+        
+        return start + '(' + MACRO_NAME + arg_string + ')' + re.escape(self.token[1]) + \
+               r'\s*?\n' + body + end
 
     def _process(self, mo, text, wiki_elements,element_store, page):
         """Returns genshi Fragments (Elements and text)
@@ -376,59 +387,6 @@ class BlockMacro(WikiElement):
                 frags.extend(fragmentize(tail + text[mo.end():],wiki_elements,
                                          element_store, page))
         return frags
-
-
-    def re_string(self):
-        arg_string = '(?P<arg_string>(?!.*>>.*>>).*?)'
-        #start = r'(^\s*?\n|\A)' + re.escape(self.token[0])
-        start = r'((?<=^\n)|(?<=\A))' + re.escape(self.token[0])
-        #end = re.escape(self.token[1]) + r'\s*?\n(\s*?\n|$)'
-        end = re.escape(self.token[1]) + r'\s*?\n(?=\s*?\n|$)'
-        return start + '((' + MACRO_NAME + '|)\s*?\n' +arg_string + ')' + end
-
-
-    def _build(self,mo,element_store, page):
-        if self.func:
-            #value = self.func(mo.group(3),mo.group(5),None,True,page)
-            value = self.func(mo.group('name'),mo.group('arg_string'),None,True,page)
-        else:
-            value = None
-        if value is None:
-            return bldr.tag.pre(self.token[0] + mo.group(2) + self.token[1],class_="unknown_macro")
-        elif isinstance(value, basestring) and not isinstance(value, Markup):
-            return ''.join([value.rstrip(),'\n'])
-        elif (isinstance(value, (Stream, basestring)) or
-             (isinstance(value,bldr.Element) and value.tag in BLOCK_TAGS)):
-            return value
-        # Add a p tag if the value is a Fragment or Element that needs one
-        elif isinstance(value, bldr.Fragment):
-            return bldr.tag.p(value)
-        else:
-            raise "macros can only return strings and genshi objects" 
-        
-
-class BodiedBlockMacro(BlockMacro):
-    """Finds and processes block macros with bodies.
-
-    The opening and closing tokens must be are each on a line alone without
-    leading spaces. These macros can enclose other block level markup
-    including pre blocks and other BodiedBlockMacro's."""
-
-    def __init__(self, tag, token, child_tags,func):
-        super(BodiedBlockMacro,self).__init__(tag,token , child_tags,func)
-        self.func = func
-        self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
-
-    def re_string(self):
-        arg_string = r'(?P<arg_string>(?![^\n]*>>[^\n]*>>)[ \S]*?)'
-        start = '^' + re.escape(self.token[0])
-        #macro_name = r'([a-zA-Z]+([-.]?[a-zA-Z0-9]+)*)'
-        body = r'(?P<body>.*\n)'
-        end = re.escape(self.token[0]) + \
-               r'/(?P=name)' + re.escape(self.token[1]) + r'\s*?\n'
-        
-        return start + '(' + MACRO_NAME + arg_string + ')' + re.escape(self.token[1]) + \
-               r'\s*?\n' + body + end
 
     def _build(self,mo,element_store, page):
         start = ''.join(['^', re.escape(self.token[0]), re.escape(mo.group('name')),
@@ -719,8 +677,6 @@ class List(BlockElement):
         leading_whitespace = r'^([ \t]*'
         only_one_token = re.escape(self.token)+'[^'+ re.escape(self.token) + ']'
         rest_of_list = r'.*?\n)'
-##        only_one_other_token = re.escape(self.other_token)+'(?!'+ \
-##                               re.escape(self.other_token) + ')'
         only_one_stop_token = '([' + re.escape(self.stop_tokens) + r'])(?!\3)'        
         look_ahead = '(?=([ \t]*' + only_one_stop_token + '|$))'
         return leading_whitespace + only_one_token + rest_of_list + \
@@ -925,7 +881,6 @@ class Heading(BlockElement):
 
     def re_string(self):
         whitespace = r'[ \t]*'
-        #neg_look_ahead = '(?!' + re.escape(self.token[0]) + ')'
         tokens = '(' + re.escape(self.token) + '{1,' + str(len(self.tags)) +'})'
         content = '(.*?)'
         trailing_markup = '(' + re.escape(self.token) + r'+[ \t]*)?\n'
@@ -938,18 +893,6 @@ class Heading(BlockElement):
                                                           self.child_tags,
                                                           element_store, page))
 
-##    def re_string(self):
-##        whitespace = r'[ \t]*'
-##        neg_look_ahead = '(?!' + re.escape(self.token[0]) + ')'
-##        content = '(.*?)'
-##        trailing_markup = '(' + re.escape(self.token[0]) + r'+[ \t]*)?\n'
-##        return '^' + whitespace + re.escape(self.token) + neg_look_ahead + \
-##               whitespace + content + whitespace + trailing_markup
-##
-##    def _build(self,mo,element_store):
-##        return bldr.tag.__getattr__(self.tag)(fragmentize(mo.group(1),
-##                                                          self.child_tags,
-##                                                          element_store))
 
 class Table(BlockElement):
 
@@ -1172,23 +1115,6 @@ class LoneElement(BlockElement):
     def _build(self,mo,element_store, page):
         return bldr.tag.__getattr__(self.tag)()
 
-class LonePlaceHolder(BlockElement):
-
-    """A place holder on a line by itself or with other place holders.
-    This is used to avoid these being enclosed in a paragraph.
-
-    """
-    append_newline = False
-    def __init__(self, tag, token, child_tags):
-        super(LonePlaceHolder,self).__init__(tag,token , child_tags)
-        self.regexp = re.compile(self.re_string(),re.MULTILINE)
-
-    def re_string(self):
-        place_holder = re.escape(self.token[0]) + r'\S*?' + re.escape(self.token[1])
-        return r'^\s*?(' + place_holder +   r'\s*$)+\s*?\n'
-
-    def _build(self,mo,element_store, page):
-        return bldr.tag(fragmentize(mo.group(0),[],element_store, page))
  
 class BlankLine(WikiElement):
 
@@ -1209,13 +1135,13 @@ class LineBreak(InlineElement):
     """An inline line break."""
 
     #append_newline = True
-    def __init__(self,tag, token, child_tags=[], blog_like=False):
-        self.blog_like = blog_like
+    def __init__(self,tag, token, child_tags=[], blog_style=False):
+        self.blog_style = blog_style
         super(LineBreak,self).__init__(tag,token , child_tags)
         self.regexp = re.compile(self.re_string(),re.DOTALL)
 
     def re_string(self):
-        if self.blog_like:
+        if self.blog_style:
             return '(' + esc_neg_look + re.escape(self.token) + r'|\n)'
         else:
             return esc_neg_look + re.escape(self.token)
