@@ -430,8 +430,8 @@ class DialectOptionsTest(unittest.TestCase):
             parse("This block of ##text **should** be monospace## now"),
             wrap_result("This block of <code>text <strong>should</strong> be monospace</code> now"))
 
-    def test_blog_line_endings_option(self):
-        dialect = Creole10(blog_line_endings=True)
+    def test_blog_style_endings_option(self):
+        dialect = Creole10(blog_style_endings=True)
         parse = Parser(dialect)
         self.assertEquals(
             parse("The first line\nthis text **should** be on the second line\n now third"),
