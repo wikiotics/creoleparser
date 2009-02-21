@@ -200,10 +200,10 @@ class SimpleElement(InlineElement):
        
     """
 
-    def __init__(self, tag, token, child_tags=[],token_dict={}):
+    def __init__(self, token_dict={}):
         self.token_dict = token_dict
         self.tokens = token_dict.keys()
-        super(SimpleElement,self).__init__(tag,token , child_tags)
+        super(SimpleElement,self).__init__('','' , [])
 
     def re_string(self):
         if isinstance(self.token,basestring):
@@ -487,8 +487,8 @@ class URLLink(WikiElement):
     
     """
 
-    def __init__(self, tag,token,child_tags,delimiter):
-        super(URLLink,self).__init__(tag, token, child_tags)
+    def __init__(self, tag,delimiter):
+        super(URLLink,self).__init__(tag, '', [])
         self.delimiter = delimiter
         self.regexp = re.compile(self.re_string(),re.DOTALL)
 
@@ -874,8 +874,8 @@ class Heading(BlockElement):
 
     """
   
-    def __init__(self, tag, token, child_tags, tags):
-        super(Heading,self).__init__(tag,token , child_tags)
+    def __init__(self, token, tags):
+        super(Heading,self).__init__('',token , [])
         self.tags = tags
         self.regexp = re.compile(self.re_string(),re.MULTILINE)
 
@@ -973,8 +973,8 @@ class Link(InlineElement):
 
     """Finds and builds links."""
     
-    def __init__(self, tag, token, child_tags):
-        super(Link,self).__init__(tag,token , child_tags)
+    def __init__(self, token):
+        super(Link,self).__init__('',token , [])
         #self.regexp = re.compile(self.re_string())
 
     def _build(self,mo,element_store, page):
@@ -1038,8 +1038,8 @@ class NoWikiElement(InlineElement):
     
     """
 
-    def __init__(self, tag, token, child_tags=[]):
-        super(NoWikiElement,self).__init__(tag,token , child_tags)
+    def __init__(self, tag, token):
+        super(NoWikiElement,self).__init__(tag,token , [])
         self.regexp = re.compile(self.re_string(),re.DOTALL) 
 
     def _build(self,mo,element_store, page):

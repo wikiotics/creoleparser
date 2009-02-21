@@ -13,7 +13,8 @@ from genshi import builder
 from genshi.core import Markup
 
 from core import Parser
-from dialects import Creole10
+from dialects import Creole10, dialect_base
+from elements import SimpleElement
 
 
 base_url = 'http://www.wikicreole.org/wiki/'
@@ -48,6 +49,7 @@ def wrap_result(expected):
     return "<p>%s</p>\n" % expected
 
 
+        
 class BaseTest(object):
     """
 
@@ -137,7 +139,14 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
     """
     """
     def setUp(self):
-        self.parse = text2html
+        self.parse = Parser(
+        dialect=Creole10(
+        wiki_links_base_url=base_url,
+        interwiki_links_base_urls={'Ohana': inter_wiki_url},
+        use_additions=True,
+        no_wiki_monospace=False
+           )
+        )
 
     def test_links(self):
         super(Text2HTMLTest, self).test_links()
@@ -285,10 +294,12 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
         self.assertEquals(
             self.parse("""{{{
 ** some ** unformatted {{{ stuff }}} ~~~
+
  }}}
 }}}"""),
             """\
 <pre>** some ** unformatted {{{ stuff }}} ~~~
+
 }}}
 </pre>
 """)
@@ -437,19 +448,24 @@ class DialectOptionsTest(unittest.TestCase):
             parse("The first line\nthis text **should** be on the second line\n now third"),
             wrap_result("The first line<br />this text <strong>should</strong> be on the second line<br /> now third"))
 
+class ExtendingTest(unittest.TestCase):
+    
+
     def test_simple_tokens_option(self):
-        dialect = Creole10(simple_tokens={'*':'strong','#':'code'})
-        parse = Parser(dialect)
+        Base = dialect_base()
+        class MyDialect(Base):
+            simple_elements = SimpleElement(token_dict={'*':'strong','#':'code'})
+        parse = Parser(MyDialect())
         self.assertEquals(
             parse("This block of #text *should* be monospace# now"),
             wrap_result("This block of <code>text <strong>should</strong> be monospace</code> now"))
 
-    def test_simple_tokens_option2(self):
-        dialect = Creole10(simple_tokens=[('--','del')])
-        parse = Parser(dialect)
-        self.assertEquals(
-            parse("This block of --text **should** be monospace-- now"),
-            wrap_result("This block of <del>text <strong>should</strong> be monospace</del> now"))
+##    def test_simple_tokens_option2(self):
+##        dialect = Creole10(simple_tokens=[('--','del')])
+##        parse = Parser(dialect)
+##        self.assertEquals(
+##            parse("This block of --text **should** be monospace-- now"),
+##            wrap_result("This block of <del>text <strong>should</strong> be monospace</del> now"))
         
 class NoSpaceDialectTest(unittest.TestCase, BaseTest):
 
@@ -858,6 +874,7 @@ def test_suite():
         unittest.makeSuite(TaintingTest),
         unittest.makeSuite(LongDocumentTest),
         unittest.makeSuite(ContextTest),
+        unittest.makeSuite(ExtendingTest),
         ))
 
 
