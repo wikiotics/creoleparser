@@ -95,7 +95,7 @@ class Parser(object):
 
     :parameters:
       dialect
-        A Creole10 instance
+        Usually created using :func:`creoleparser.dialects.create_dialect`
       method
         This value is passed to Genshies Steam.render(). Possible values
         include ``xhtml``, ``html``, ``xml``, and ``text``.
@@ -158,14 +158,14 @@ class Parser(object):
         """
         if element_store is None:
             element_store = {}
-        if self.method != "text":
-            kwargs['strip_whitespace'] = self.strip_whitespace
         kwargs.setdefault('method',self.method)
         kwargs.setdefault('encoding',self.encoding)
+        if kwargs['method'] != "text":
+            kwargs.setdefault('strip_whitespace',self.strip_whitespace)
         stream = self.generate(text, element_store, context, page)
         return stream.render(**kwargs)
 
-    def __call__(self,text,element_store=None,context='block', page=None, **kwargs):
+    def __call__(self,text, **kwargs):#,element_store=None,context='block', page=None, **kwargs):
         """Wrapper for the render method. Returns final output string.
 
         See generate() (above) and
@@ -173,9 +173,9 @@ class Parser(object):
         for additional keyword arguments.
         """
 
-        if element_store is None:
-            element_store = {}
-        return self.render(text,element_store,context, page, **kwargs)
+       # if element_store is None:
+       #     element_store = {}
+        return self.render(text, **kwargs)#element_store,context, page, **kwargs)
 
 
 def preprocess(text, dialect):

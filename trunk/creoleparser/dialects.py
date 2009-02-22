@@ -10,7 +10,7 @@ from elements import *
 
 
 def create_dialect(**kw_args):
-    """Factory function for dialect objects
+    """Factory function for dialect objects (for parameter defaults, see :func:`dialect_base`)
 
     :parameters:
       wiki_links_base_url
@@ -29,13 +29,13 @@ def create_dialect(**kw_args):
         Dictionary of functions that will be called for interwiki link
         names. Works like wiki_links_path_func
       no_wiki_monospace
-        If `True`, inline no_wiki will be rendered as <tt> not <span>
+        If `True`, inline no_wiki will be rendered as <code> not <span>
       use_additions
         If `True`, markup beyond the Creole 1.0 spec will be allowed:
 
-            1. `sub`, `sup`, `u`, and `code`
-            2. definition lists
-            3. macros
+        * superscript, subscript, underline, and monospace
+        * definition lists
+        * macros
             
         (see http://purl.oclc.org/creoleparser/cheatsheet)
       wiki_links_class_func
@@ -83,12 +83,40 @@ def dialect_base(wiki_links_base_url='',wiki_links_space_char='_',
                  interwiki_links_space_chars={},
                  blog_style_endings=False,
                  ):
-    """Returns a base class for extending. See ``create_dialect`` for
-        parameters
+    """Returns a base class for extending (for parameter descriptions, see :func:`create_dialect`)
+
+       **A Basic Extending Example**
+
+       Here we create a dialect that alters the basic Creole inline syntax by
+       removing underline and adding strike-though::
+
+           >>> Base = dialect_base()
+           >>> class MyDialect(Base):
+           ...       simple_element = SimpleElement(token_dict={'**':'strong',
+           ...                                                  '//':'em',
+           ...                                                  ',,':'sub',
+           ...                                                  '^^':'sup',
+           ...                                                  '--':'del',
+           ...                                                  '##':'code'})
+           >>> from core import Parser
+           >>> parser = Parser(MyDialect())
+           >>> print parser.render("delete --this-- but don't underline __this__"),
+           <p>delete <del>this</del> but don't underline __this__</p>
+               
+       For a more complex example, see the source code of this function. In it,
+       the ``use_additions`` option is implemented by extending a base class.
+
+       .. note::
+
+           It is generally safest to create only one dialect instance per base
+           class. This is because WikiElement objects are bound as class
+           attributes and would therefor be shared between multiple instances,
+           which could lead to unexpected behaviour.
 
     """
         
     class Base(object):
+        """This is the base class that is returned if ``use_additions=False``"""
 
         br = LineBreak('br', r'\\',blog_style=blog_style_endings)
         headings = Heading(['h1','h2','h3','h4','h5','h6'],'=')
@@ -185,3 +213,9 @@ def dialect_base(wiki_links_base_url='',wiki_links_space_char='_',
 
     return Base
  
+def _test():
+    import doctest
+    doctest.testmod()
+
+if __name__ == "__main__":
+    _test()    

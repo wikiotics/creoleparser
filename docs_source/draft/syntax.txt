@@ -6,7 +6,7 @@ Syntax
 Overview
 ========
 
-For a quick glance at what croeleparser implements, see the
+For a quick glance at what creoleparser implements, see the
 `creoleparser cheatsheet <http://purl.oclc.org/creoleparser/cheatsheet>`_.
 
 Creoleparser adhers very closely to the basic `Creole 1.0 specification <http://wikicreole.org/wiki/Creole1.0>`_
@@ -20,8 +20,8 @@ Mixed Lists
 ===========
 
 Creoleparser allows nesting of ordered lists within unordered lists (and visa versa) to any depth.
-Creole 1.0 does not specify or suggest a syntax for mixed list support. Creoleparser uses the same
-syntax as `Confluence <http://www.atlassian.com/software/confluence/>`_::
+Creole 1.0 does not specify or suggest a syntax for mixed list support. The following is the
+creoleparser implementation::
 
    # this is list item one
    ** unordered subitem 1
@@ -42,17 +42,21 @@ In addition to the above, creoleparser supports *macros with bodies*, e.g.,::
 
    <<foo>>Some content to process<</foo>>
 
+An argument string can also be supplied::
+
+   <<foo boo="goo" >>Some content to process<</foo>>
+
 Normally, *bodied* macros will not span other block-level markup (like tables)
 or blank lines. This can be forced however, using the following syntax::
    
-   <<float side=right>>
-   Some content to float.
+   <<foo>>
+   Some content for foo.
 
    Including a second paragraph.
-   <</float>>
+   <</foo>>
               
-Note that both parts of the macro markup are on a line by themselves
-and have no leading spaces, analogous to a Creole pre block::
+Note that both the opening and closing markup are on a line by themselves
+and have no leading spaces. This is analogous to a Creole pre block::
 
    {{{
    Some content to render in a <pre>.
@@ -70,7 +74,7 @@ Macro Arguments and Delimiters
 
 Creoleparser does not specify or suggest the format of macro arguments. Internally,
 the entire string from the `macro_name` to the ``>>`` are passed as the `arg_string`.
-For this reason, an implementer should chose something other than legal macro name
+For this reason, an implementer should choose something other than legal macro name
 characters to delimit the arguments.
 
 
