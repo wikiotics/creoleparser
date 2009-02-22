@@ -9,7 +9,6 @@
 import re
 import urlparse
 import urllib
-import warnings
 
 import genshi.builder as bldr
 from genshi.core import Stream, Markup
