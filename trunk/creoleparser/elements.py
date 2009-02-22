@@ -9,6 +9,7 @@
 import re
 import urlparse
 import urllib
+import warnings
 
 import genshi.builder as bldr
 from genshi.core import Stream, Markup
@@ -52,7 +53,7 @@ class WikiElement(object):
     Should only affect readability of source xml.
     """
     
-    def __init__(self, tag, token, child_tags):
+    def __init__(self, tag, token, child_elements=[]):
         """Constructor for WikiElement objects.
 
         Subclasses may have other keyword arguments.   
@@ -63,7 +64,7 @@ class WikiElement(object):
           token
             The character string (or strings) that identifies the element
             in wiki markup.
-          child_tags
+          child_elements
             A list of wiki_elements that will be searched for in the body of the
             element.  The order of these elements matters, because if an element is
             found before the element that encloses it, the enclosing element will
@@ -73,8 +74,8 @@ class WikiElement(object):
         """
         self.tag = tag
         self.token = token
-        self.child_tags = child_tags
-                
+        self.child_elements = []
+
     def _build(self,mo,element_store, page):
         """Returns a genshi Element that has ``self.tag`` as the
         outermost tag.
@@ -87,7 +88,7 @@ class WikiElement(object):
             self.regexp.search(s) 
         """
         return bldr.tag.__getattr__(self.tag)(fragmentize(mo.group(1),
-                                                          self.child_tags,
+                                                          self.child_elements,
                                                           element_store, page))
 
     def re_string(self):
@@ -145,7 +146,7 @@ class InlineElement(WikiElement):
 
     r"""For finding generic inline elements like ``strong`` and ``em``.
 
-    >>> em = InlineElement('em','//',[])
+    >>> em = InlineElement('em','//')
     >>> mo1 = em.regexp.search('a //word// in a line')
     >>> mo2 = em.regexp.search('a //word in a line\n or two\n')
     >>> mo1.group(0),mo1.group(1)
@@ -156,15 +157,15 @@ class InlineElement(WikiElement):
     Use a list for the ``token`` argument to have different start
     and end strings. These must be closed.
 
-    >>> foo = InlineElement('foo',['<<','>>'],[])
+    >>> foo = InlineElement('foo',['<<','>>'])
     >>> mo = foo.regexp.search('blaa <<here it is >>\n')
     >>> mo.group(1)
     'here it is '
         
     """
 
-    def __init__(self, tag, token, child_tags=[]):
-        super(InlineElement,self).__init__(tag,token , child_tags)
+    def __init__(self, tag, token):
+        super(InlineElement,self).__init__(tag,token)
         self.regexp = re.compile(self.re_string(),re.DOTALL)
 
     def re_string(self):
@@ -190,7 +191,7 @@ class SimpleElement(InlineElement):
 
     r"""For finding generic inline elements like ``strong`` and ``em``.
 
-    >>> em = SimpleElement('','',[],{'//':'em'})
+    >>> em = SimpleElement({'//':'em'})
     >>> mo1 = em.regexp.search('a //word// in a line')
     >>> mo2 = em.regexp.search('a //word in a line\n or two\n')
     >>> mo1.group(0),mo1.group(2)
@@ -203,7 +204,7 @@ class SimpleElement(InlineElement):
     def __init__(self, token_dict={}):
         self.token_dict = token_dict
         self.tokens = token_dict.keys()
-        super(SimpleElement,self).__init__('','' , [])
+        super(SimpleElement,self).__init__('','')
 
     def re_string(self):
         if isinstance(self.token,basestring):
@@ -214,7 +215,7 @@ class SimpleElement(InlineElement):
 
     def _build(self,mo,element_store, page):
         return bldr.tag.__getattr__(self.token_dict[mo.group(1)])(fragmentize(mo.group(2),
-                                                          self.child_tags,
+                                                          self.child_elements,
                                                           element_store, page))
 
 
@@ -222,8 +223,8 @@ class SimpleElement(InlineElement):
 class Macro(WikiElement):
     r"""Finds and processes inline macro elements."""
 
-    def __init__(self, tag, token, child_tags,func):
-        super(Macro,self).__init__(tag,token , child_tags)
+    def __init__(self, tag, token, func):
+        super(Macro,self).__init__(tag,token , [])
         self.func = func
         self.regexp = re.compile(self.re_string())
 
@@ -272,8 +273,8 @@ class BodiedMacro(Macro):
     Does not span across top level block markup
     (see BodiedBlockMacro's for that)."""
 
-    def __init__(self, tag, token, child_tags,func):
-        super(BodiedMacro,self).__init__(tag,token , child_tags,func)
+    def __init__(self, tag, token, func):
+        super(BodiedMacro,self).__init__(tag,token , func)
         self.func = func
         self.regexp = re.compile(self.re_string(),re.DOTALL)
 
@@ -337,8 +338,8 @@ class BodiedBlockMacro(WikiElement):
     including pre blocks and other BodiedBlockMacro's."""
 
 
-    def __init__(self, tag, token, child_tags,func):
-        super(BodiedBlockMacro,self).__init__(tag,token , child_tags)
+    def __init__(self, tag, token, func):
+        super(BodiedBlockMacro,self).__init__(tag,token , func)
         self.func = func
         self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
 
@@ -441,7 +442,7 @@ class RawLink(InlineElement):
     linking_protocols = ['http','https']
     
     def __init__(self, tag):
-        super(RawLink,self).__init__(tag=tag, token=None, child_tags=None)
+        super(RawLink,self).__init__(tag=tag, token=None)
         self.regexp = re.compile(self.re_string())
 
     def re_string(self):
@@ -449,7 +450,6 @@ class RawLink(InlineElement):
         protocol = '((https?|ftp)://'
         rest_of_url = r'\S+?)'
         #allow one punctuation character or '**' or '//'. Don't include a placeholder.
-        #look_ahead = r'(?=(([,.?!:;"\']|\*\*|//)?(\s|$))|<<<)'
         look_ahead = r'(?=([>)}\]]?[,.?!:;"\']?(([^a-zA-Z0-9])\6)?(\s|$))|<<<)'
         return escape + protocol + rest_of_url + look_ahead
 
@@ -478,7 +478,7 @@ class URLLink(WikiElement):
 
     The scope of these is within link markup only (i.e., [[url]]
 
-    >>> url_link = URLLink('a','',[],'|')
+    >>> url_link = URLLink('a','|')
     >>> mo = url_link.regexp.search(" http://www.google.com| here ")
     >>> url_link.href(mo)
     'http://www.google.com'
@@ -488,12 +488,12 @@ class URLLink(WikiElement):
     """
 
     def __init__(self, tag,delimiter):
-        super(URLLink,self).__init__(tag, '', [])
+        super(URLLink,self).__init__(tag, '')
         self.delimiter = delimiter
         self.regexp = re.compile(self.re_string(),re.DOTALL)
 
     def re_string(self):
-        protocol = r'^\s*((\w+?:|/)' #r'^\s*((\w+?://|/)'
+        protocol = r'^\s*((\w+?:|/)' 
         rest_of_url = r'[\S\n]*?)\s*'
         alias = r'(' + re.escape(self.delimiter) + r' *(.*?))? *$'
         return protocol + rest_of_url + alias
@@ -509,7 +509,7 @@ class URLLink(WikiElement):
         if sanitizer.is_safe_uri(mo.group(1)):
             return mo.group(1)
         else:
-            return None #"unsafe_uri_detected"
+            return None 
             
 
     def alias(self,mo,element_store, page):
@@ -517,7 +517,7 @@ class URLLink(WikiElement):
         if not mo.group(4):
             return self.href(mo)
         else:
-            return fragmentize(mo.group(4),self.child_tags,element_store, page)
+            return fragmentize(mo.group(4),self.child_elements,element_store, page)
 
 
 
@@ -527,7 +527,7 @@ class InterWikiLink(WikiElement):
 
     The search scope for these is only inside links. 
 
-    >>> interwiki_link = InterWikiLink('a','',[],
+    >>> interwiki_link = InterWikiLink('a',
     ... delimiter1=':', delimiter2 = '|',
     ... base_urls=dict(somewiki='http://somewiki.org/',
     ...                bigwiki='http://bigwiki.net/'),
@@ -541,9 +541,9 @@ class InterWikiLink(WikiElement):
     
     """
 
-    def __init__(self, tag, token, child_tags,delimiter1,
+    def __init__(self, tag, delimiter1,
                  delimiter2,base_urls,links_funcs,default_space_char,space_chars):
-        super(InterWikiLink,self).__init__(tag, token, child_tags)
+        super(InterWikiLink,self).__init__(tag, '')
         self.delimiter1 = delimiter1
         self.delimiter2 = delimiter2
         self.regexp = re.compile(self.re_string())
@@ -591,7 +591,7 @@ class InterWikiLink(WikiElement):
         if not mo.group(5):
             return ''.join([mo.group(1),self.delimiter1,mo.group(2)])
         else:
-            return fragmentize(mo.group(5),self.child_tags,element_store, page)
+            return fragmentize(mo.group(5),self.child_elements,element_store, page)
 
 
 
@@ -601,7 +601,7 @@ class WikiLink(WikiElement):
 
     The search scope for these is only inside links.
 
-    >>> wiki_link = WikiLink('a','',[],'|',base_url='http://somewiki.org/',
+    >>> wiki_link = WikiLink('a','|',base_url='http://somewiki.org/',
     ...                      space_char='_',class_func=None, path_func=None)
     >>> mo = wiki_link.regexp.search(" Home Page |Home")
     >>> wiki_link.href(mo)
@@ -611,9 +611,9 @@ class WikiLink(WikiElement):
     
     """
 
-    def __init__(self, tag, token, child_tags,delimiter,
+    def __init__(self, tag, delimiter,
                  base_url,space_char,class_func,path_func):
-        super(WikiLink,self).__init__(tag, token, child_tags)
+        super(WikiLink,self).__init__(tag, '')
         self.delimiter = delimiter
         self.base_url = base_url
         self.space_char = space_char
@@ -652,7 +652,7 @@ class WikiLink(WikiElement):
         if not mo.group(3):
             return mo.group(1)
         else:
-            return fragmentize(mo.group(4),self.child_tags,element_store, page)
+            return fragmentize(mo.group(4),self.child_elements,element_store, page)
 
 
 class List(BlockElement):
@@ -664,8 +664,8 @@ class List(BlockElement):
         
     """
 
-    def __init__(self, tag, token,child_tags,stop_tokens):
-        super(List,self).__init__(tag, token, child_tags)
+    def __init__(self, tag, token,stop_tokens):
+        super(List,self).__init__(tag, token)
         self.stop_tokens = stop_tokens
         self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
 
@@ -688,7 +688,7 @@ class ListItem(WikiElement):
 
     Everything up to the next same-level list item is matched.
 
-    >>> list_item = ListItem('li',[],'#*')
+    >>> list_item = ListItem('li','#*')
     >>> mo = list_item.regexp.search("*one\n**one.1\n**one.2\n*two\n")
     >>> mo.group(3)
     'one\n**one.1\n**one.2\n'
@@ -699,33 +699,29 @@ class ListItem(WikiElement):
     
     append_newline = False
 
-    def __init__(self, tag, child_tags, list_tokens):
+    def __init__(self, tag, list_tokens):
         """Constructor for list items.
 
         :parameters"
           list_tokens
             A string that includes the tokens used for lists
         """
-        super(ListItem,self).__init__(tag, token=None,
-                                      child_tags=child_tags)
+        super(ListItem,self).__init__(tag, None)
         self.list_tokens = list_tokens
         self.regexp = re.compile(self.re_string(),re.DOTALL)
 
     def re_string(self):
         whitespace = r'[ \t]*'
-        #item_start = '(([*#])+)'
         item_start = '(([' + self.list_tokens + r'])\2*)'
-        #rest_of_item = r'(.*?)\n?'
         rest_of_item = r'(.*?\n)'
         start_of_same_level_item = r'\1(?!\2)'
-        #look_ahead = r'(?=(\n' + whitespace + start_of_same_level_item + '|$))'
         look_ahead = r'(?=(' + whitespace + start_of_same_level_item + '|$))'
         return whitespace + item_start + whitespace + \
                rest_of_item + look_ahead
 
     def _build(self,mo,element_store, page):
         return bldr.tag.__getattr__(self.tag)(fragmentize(mo.group(3),
-                                                          self.child_tags,
+                                                          self.child_elements,
                                                           element_store, page))
 
 
@@ -733,7 +729,7 @@ class NestedList(WikiElement):
 
     r"""Finds a list in the current list item.
 
-    >>> nested_ul = NestedList('ul','*',[])
+    >>> nested_ul = NestedList('ul','*')
     >>> mo = nested_ul.regexp.search('one\n**one.1\n**one.2\n')
     >>> mo.group(1)
     '**one.1\n**one.2\n'
@@ -742,8 +738,8 @@ class NestedList(WikiElement):
 
     """
 
-    def __init__(self, tag, token,child_tags):
-        super(NestedList,self).__init__(tag, token, child_tags)
+    def __init__(self, tag, token):
+        super(NestedList,self).__init__(tag, token)
         self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
 
     def re_string(self):
@@ -758,7 +754,7 @@ class DefinitionTerm(BlockElement):
 
     r"""Processes definition terms.
 
-    >>> term = DefinitionTerm('dt',';',[],stop_token=':')
+    >>> term = DefinitionTerm('dt',';',stop_token=':')
     >>> mo1,mo2 = term.regexp.finditer(";term1\n:def1\n;term2:def2\n")
     >>> mo1.group(1), mo2.group(1)
     ('term1', 'term2')
@@ -769,8 +765,8 @@ class DefinitionTerm(BlockElement):
         
     """
 
-    def __init__(self, tag, token,child_tags,stop_token):
-        super(DefinitionTerm,self).__init__(tag, token, child_tags)
+    def __init__(self, tag, token,stop_token):
+        super(DefinitionTerm,self).__init__(tag, token)
         self.stop_token = stop_token
         self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
 
@@ -789,7 +785,7 @@ class DefinitionDef(BlockElement):
 
     r"""Processes definitions.
 
-    >>> definition = DefinitionDef('dd',':',[])
+    >>> definition = DefinitionDef('dd',':')
     >>> mo1,mo2 = definition.regexp.finditer(":def1a\ndef1b\n:def2\n")
     >>> mo1.group(1), mo2.group(1)
     ('def1a\ndef1b', 'def2')
@@ -801,8 +797,8 @@ class DefinitionDef(BlockElement):
         
     """
 
-    def __init__(self, tag, token,child_tags):
-        super(DefinitionDef,self).__init__(tag, token, child_tags)
+    def __init__(self, tag, token):
+        super(DefinitionDef,self).__init__(tag, token)
         self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
 
     def re_string(self):
@@ -824,15 +820,15 @@ class Paragraph(BlockElement):
     
     """
 
-    def __init__(self, tag, child_tags):
-        super(Paragraph,self).__init__(tag,token=None, child_tags=child_tags)
+    def __init__(self, tag):
+        super(Paragraph,self).__init__(tag,None)
         self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
 
     def re_string(self):
         return r'^(.*)\n'
 
     def _build(self,mo,element_store, page):
-        content = fragmentize(mo.group(1), self.child_tags, element_store, page)
+        content = fragmentize(mo.group(1), self.child_elements, element_store, page)
         # Check each list item and record those that are block only
         block_only_frags = []
         for i,element in enumerate(content):
@@ -840,7 +836,6 @@ class Paragraph(BlockElement):
                 element.tag in BLOCK_ONLY_TAGS) or
                 isinstance(element,(Stream,Markup))):
                 block_only_frags.append(i)
-
         # Build a new result list if needed
         if block_only_frags:
             new_content = []
@@ -865,7 +860,7 @@ class Heading(BlockElement):
 
     r"""Finds heading wiki elements.
 
-    >>> h1 = Heading('','=',[],['h1','h2'])
+    >>> h1 = Heading(['h1','h2'],'=')
     >>> mo = h1.regexp.search('before\n = An important thing = \n after')
     >>> mo.group(2)
     'An important thing'
@@ -874,9 +869,9 @@ class Heading(BlockElement):
 
     """
   
-    def __init__(self, token, tags):
-        super(Heading,self).__init__('',token , [])
-        self.tags = tags
+    def __init__(self, tag, token):
+        super(Heading,self).__init__('',token )
+        self.tags = tag
         self.regexp = re.compile(self.re_string(),re.MULTILINE)
 
     def re_string(self):
@@ -890,7 +885,7 @@ class Heading(BlockElement):
     def _build(self,mo,element_store, page):
         heading_tag = self.tags[len(mo.group(1))-1]
         return bldr.tag.__getattr__(heading_tag)(fragmentize(mo.group(2),
-                                                          self.child_tags,
+                                                          self.child_elements,
                                                           element_store, page))
 
 
@@ -898,7 +893,7 @@ class Table(BlockElement):
 
     r"""Find tables.
 
-    >>> table = Table('table','|',[])
+    >>> table = Table('table','|')
     >>> mo = table.regexp.search("before\n | one | two |\n|one|two \n hi")
     >>> mo.group(1)
     ' | one | two |\n|one|two \n'
@@ -907,8 +902,8 @@ class Table(BlockElement):
     
     """
 
-    def __init__(self, tag, token, child_tags=[]):
-        super(Table,self).__init__(tag,token , child_tags)
+    def __init__(self, tag, token):
+        super(Table,self).__init__(tag,token)
         self.regexp = re.compile(self.re_string(),re.MULTILINE)
 
     def re_string(self):
@@ -922,7 +917,7 @@ class TableRow(BlockElement):
 
     r"""Finds rows in a table.
 
-    >>> row = TableRow('tr','|',[])
+    >>> row = TableRow('tr','|')
     >>> mo = row.regexp.search(' | one | two |\n|one|two \n')
     >>> mo.group(1)
     '| one | two '
@@ -931,8 +926,8 @@ class TableRow(BlockElement):
     
     """
 
-    def __init__(self, tag, token, child_tags=[]):
-        super(TableRow,self).__init__(tag,token , child_tags)
+    def __init__(self, tag, token):
+        super(TableRow,self).__init__(tag,token)
         self.regexp = re.compile(self.re_string(),re.MULTILINE)
 
     def re_string(self):
@@ -947,7 +942,7 @@ class TableCell(WikiElement):
 
     r"""Finds cells in a table row.
 
-    >>> cell = TableCell('td','|',[])
+    >>> cell = TableCell('td','|')
     >>> mo = cell.regexp.search('| one | two ')
     >>> mo.group(1)
     'one'
@@ -956,8 +951,8 @@ class TableCell(WikiElement):
     
     """
 
-    def __init__(self, tag, token, child_tags=[]):
-        super(TableCell,self).__init__(tag,token , child_tags)
+    def __init__(self, tag, token):
+        super(TableCell,self).__init__(tag,token )
         self.regexp = re.compile(self.re_string())
 
     def re_string(self):
@@ -973,17 +968,15 @@ class Link(InlineElement):
 
     """Finds and builds links."""
     
-    def __init__(self, token):
-        super(Link,self).__init__('',token , [])
-        #self.regexp = re.compile(self.re_string())
+    def __init__(self,tag, token):
+        super(Link,self).__init__(tag,token)
 
     def _build(self,mo,element_store, page):
         
-        for tag in self.child_tags:
+        for tag in self.child_elements:
             m = tag.regexp.search(mo.group(1))
             if m:
                 link = tag._build(m,element_store, page)
-                #print repr(tag), repr(link),m.group(1)
                 if link:
                     break
         else:
@@ -998,15 +991,15 @@ class Image(InlineElement):
 
     """Processes image elements.
 
-    >>> img = Image('img',('{{','}}'),[], delimiter='|')
+    >>> img = Image('img',('{{','}}'), delimiter='|')
     >>> mo = img.regexp.search('{{ picture.jpg | An image of a house }}')
     >>> img._build(mo,{},None).generate().render()
     '<img src="picture.jpg" alt="An image of a house" title="An image of a house"/>'
 
     """
 
-    def __init__(self, tag, token, child_tags,delimiter):
-        super(Image,self).__init__(tag,token , child_tags)
+    def __init__(self, tag, token, delimiter):
+        super(Image,self).__init__(tag,token )
         self.regexp = re.compile(self.re_string())
         self.delimiter = delimiter
         self.src_regexp = re.compile(r'^\s*(\S+)\s*$')
@@ -1039,17 +1032,17 @@ class NoWikiElement(InlineElement):
     """
 
     def __init__(self, tag, token):
-        super(NoWikiElement,self).__init__(tag,token , [])
+        super(NoWikiElement,self).__init__(tag,token )
         self.regexp = re.compile(self.re_string(),re.DOTALL) 
 
     def _build(self,mo,element_store, page):
         if self.tag:
             return bldr.tag.__getattr__(self.tag)(
-                   fragmentize(mo.group(1), self.child_tags,
+                   fragmentize(mo.group(1), self.child_elements,
                                element_store,page,
                                remove_escapes=False))
         else:
-            return bldr.tag(fragmentize(mo.group(1),self.child_tags,
+            return bldr.tag(fragmentize(mo.group(1),self.child_elements,
                                         element_store, page,
                                         remove_escapes=False))
 
@@ -1072,8 +1065,8 @@ class PreBlock(BlockElement):
     
     """
 
-    def __init__(self, tag, token, child_tags=[]):
-        super(PreBlock,self).__init__(tag,token , child_tags)
+    def __init__(self, tag, token ):
+        super(PreBlock,self).__init__(tag,token )
         self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
         self.regexp2 = re.compile(self.re_string2(),re.MULTILINE)
 
@@ -1098,15 +1091,15 @@ class PreBlock(BlockElement):
         match = self.regexp2.sub(r'\1',mo.group(1))
         
         return bldr.tag.__getattr__(self.tag)(
-            fragmentize(match,self.child_tags,
+            fragmentize(match,self.child_elements,
                         element_store, page,remove_escapes=False))
 
 
 class LoneElement(BlockElement):
     """Element on a line by itself with no content (e.g., <hr/>)"""
 
-    def __init__(self, tag, token, child_tags):
-        super(LoneElement,self).__init__(tag,token , child_tags)
+    def __init__(self, tag, token):
+        super(LoneElement,self).__init__(tag,token )
         self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
 
     def re_string(self):
@@ -1121,7 +1114,7 @@ class BlankLine(WikiElement):
     """Blank lines divide elements but don't add any output."""
 
     def __init__(self):
-        super(BlankLine,self).__init__(tag=None,token='' , child_tags=[])
+        super(BlankLine,self).__init__(tag=None,token='' , child_elements=[])
         self.regexp = re.compile(self.re_string(),re.MULTILINE)
 
     def re_string(self):
@@ -1134,10 +1127,9 @@ class BlankLine(WikiElement):
 class LineBreak(InlineElement):
     """An inline line break."""
 
-    #append_newline = True
-    def __init__(self,tag, token, child_tags=[], blog_style=False):
+    def __init__(self,tag, token, blog_style=False):
         self.blog_style = blog_style
-        super(LineBreak,self).__init__(tag,token , child_tags)
+        super(LineBreak,self).__init__(tag,token )
         self.regexp = re.compile(self.re_string(),re.DOTALL)
 
     def re_string(self):

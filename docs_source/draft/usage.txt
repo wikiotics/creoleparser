@@ -15,10 +15,10 @@ To customize things a little, create your own dialect and parser function:
 
 .. doctest::
 
-   >>> from creoleparser.dialects import Creole10
+   >>> from creoleparser.dialects import create_dialect
    >>> from creoleparser.core import Parser
 
-   >>> my_dialect=Creole10(wiki_links_base_url='http://www.mysite.net/',
+   >>> my_dialect=create_dialect(wiki_links_base_url='http://www.mysite.net/',
    ... interwiki_links_base_urls=dict(wikicreole='http://wikicreole.org/wiki/'))
 
    >>> my_parser = Parser(dialect=my_dialect)
@@ -30,9 +30,9 @@ The builtin `text2html` and `creole2html` functions were created as follows:
 
 .. code-block:: python
 
-   text2html = Parser(dialect=Creole10(use_additions=True,no_wiki_monospace=False), method='html'))
+   text2html = Parser(dialect=create_dialect(), method='html'))
 
-   creole2html = Parser(dialect=Creole10(use_additions=False,no_wiki_monospace=True), method='html'))
+   creole2html = Parser(dialect=create_dialect(use_additions=False), method='html'))
 
-For more infomation, see :class:`creoleparser.core.Parser` and :class:`creoleparser.dialects.Creole10`.
+For more infomation, see :class:`creoleparser.core.Parser` and :method:`creoleparser.dialects.create_dialect`.
 

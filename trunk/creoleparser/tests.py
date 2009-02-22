@@ -454,7 +454,7 @@ class ExtendingTest(unittest.TestCase):
     def test_simple_tokens_option(self):
         Base = dialect_base()
         class MyDialect(Base):
-            simple_elements = SimpleElement(token_dict={'*':'strong','#':'code'})
+            simple_element = SimpleElement(token_dict={'*':'strong','#':'code'})
         parse = Parser(MyDialect())
         self.assertEquals(
             parse("This block of #text *should* be monospace# now"),

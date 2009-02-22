@@ -27,7 +27,7 @@ In the code above, `macros` is a dictionary of functions. Note that if `macro_na
 not in the dictionary, or if a macro returns `None`, creoleparser will treat the macro as
 unknown and render the raw wikitext unaltered.
 
-Additional information about `macro_func` is documented with the :class:`~creoleparser.dialects.Creole10` class.
+Additional information about `macro_func` is documented with the :method:`~creoleparser.dialects.create_dialect` factory function.
 
 
 Full Macro Example
@@ -111,7 +111,7 @@ help validate any changes made to the library code.
        if macro_name in macros:
            return macros[macro_name](arg_string,body,isblock)
 
-   dialect = dialects.Creole10(
+   dialect = dialects.create_dialect(
        wiki_links_base_url='http://creoleparser.srcom.org/cgi-bin/creolepiki/',
        wiki_links_space_char='',
        use_additions=True,
