@@ -36,7 +36,7 @@ def fill_from_store(text,element_store):
     return frags
 
 
-def fragmentize(text,wiki_elements, element_store, page, remove_escapes=True):
+def fragmentize(text,wiki_elements, element_store, environ, remove_escapes=True):
 
     """Takes a string of wiki markup and outputs a list of genshi
     Fragments (Elements and strings).
@@ -53,7 +53,7 @@ def fragmentize(text,wiki_elements, element_store, page, remove_escapes=True):
         the text to be parsed
       wiki_elements
         list of WikiElement objects to be searched for
-      page
+      environ
         object that may by used by macros
       remove_escapes
         If False, escapes will not be removed
@@ -76,7 +76,7 @@ def fragmentize(text,wiki_elements, element_store, page, remove_escapes=True):
             mo = wiki_element.regexp.search(text)
              
         if mo:
-            frags = wiki_element._process(mo, text, wiki_elements, element_store, page)
+            frags = wiki_element._process(mo, text, wiki_elements, element_store, environ)
             break
         else:
             wiki_elements = wiki_elements[1:]
@@ -112,7 +112,7 @@ class Parser(object):
         self.strip_whitespace = strip_whitespace
         self.encoding=encoding
 
-    def generate(self,text,element_store=None,context='block', page=None):
+    def generate(self,text,element_store=None,context='block', environ=None):
         """Returns a Genshi Stream.
 
         :parameters:
@@ -124,7 +124,7 @@ class Parser(object):
             of WikiElement objects (use with caution).
           element_store
             Internal dictionary that's passed around a lot ;)
-          page
+          environ
             This can be any type of object. It will be passed to `macro_func`
             unchanged (see :class:`~creoleparser.dialects.Creole10`)
         """
@@ -147,9 +147,9 @@ class Parser(object):
         else:
             chunks = [text]
 
-        return bldr.tag(*[fragmentize(text,top_level_elements,element_store, page) for text in chunks]).generate()
+        return bldr.tag(*[fragmentize(text,top_level_elements,element_store, environ) for text in chunks]).generate()
 
-    def render(self, text, element_store=None, context='block', page=None, **kwargs):
+    def render(self, text, element_store=None, context='block', environ=None, **kwargs):
         """Returns final output string (e.g., xhtml)
 
         See generate() (above) and
@@ -162,7 +162,7 @@ class Parser(object):
         kwargs.setdefault('encoding',self.encoding)
         if kwargs['method'] != "text":
             kwargs.setdefault('strip_whitespace',self.strip_whitespace)
-        stream = self.generate(text, element_store, context, page)
+        stream = self.generate(text, element_store, context, environ)
         return stream.render(**kwargs)
 
     def __call__(self,text, **kwargs):#,element_store=None,context='block', page=None, **kwargs):

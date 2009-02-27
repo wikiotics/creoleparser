@@ -64,7 +64,7 @@ macros = {'include':include,
           'pre':pre
           }
 
-def macro_dispatcher(macro_name,arg_string,body,isblock,page):
+def macro_dispatcher(macro_name,arg_string,body,isblock,environ):
     if macro_name in macros:
         return macros[macro_name](arg_string,body,isblock)
     
