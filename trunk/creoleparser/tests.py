@@ -575,7 +575,7 @@ class MacroTest(unittest.TestCase, BaseTest):
 
     def test_macros(self):
         self.assertEquals(
-            self.parse('<<title>>',page=self.Wiki),
+            self.parse('<<title>>',environ=self.Wiki),
             wrap_result('Home'))
         self.assertEquals(
             self.parse('<<html>><q cite="http://example.org">foo</q><</html>>'),

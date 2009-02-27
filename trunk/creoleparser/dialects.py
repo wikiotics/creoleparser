@@ -58,7 +58,7 @@ def create_dialect(**kw_args):
         2. the argument, including any delimter (string)
         3. the macro body (string or None for a macro without a body)
         4. macro type (boolean, True for block macros, False for normal macros)
-        5. a `page` object (see :class:`~creoleparser.core.Parser`)
+        5. an `environ` object (see :class:`~creoleparser.core.Parser`)
         
         The function may return a string (which will be subject to further wiki
         processing) or a Genshi object (Stream, Markup, builder.Fragment, or
