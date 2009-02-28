@@ -14,7 +14,7 @@ To build these docs run the following from the `docs_source` folder::
 This will create an unversioned folder named "html" containing the html. There
 is currently no plan to publish the trunk docs as html, so don't check them in.
 
-To run the doctect block::
+To run the doctect blocks::
 
    sphinx-build -b doctest draft html
 

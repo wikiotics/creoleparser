@@ -7,7 +7,7 @@
 #
 
 from core import Parser
-from dialects import create_dialect
+from dialects import create_dialect, Creole10
 
 __docformat__ = 'restructuredtext en'
 

@@ -6,11 +6,14 @@
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 #
 
+import warnings
+
 from elements import *
 
 
-def create_dialect(**kw_args):
-    """Factory function for dialect objects (for parameter defaults, see :func:`dialect_base`)
+def create_dialect(use_additions=True,macro_func=None, **kw_args):
+    """Factory function for dialect objects (for other parameter defaults,
+    see :func:`creole10_base`)
 
     :parameters:
       wiki_links_base_url
@@ -71,52 +74,31 @@ def create_dialect(**kw_args):
         
     """
 
-    return dialect_base(**kw_args)()
+    if use_additions:
+        Base = creole11_base(macro_func=macro_func,**kw_args)
+    else:
+        Base = creole10_base(**kw_args)
 
-Creole10 = create_dialect
+    return Base()
 
-def dialect_base(wiki_links_base_url='',wiki_links_space_char='_',
+
+
+def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
                  interwiki_links_base_urls={},
-                 no_wiki_monospace=True, use_additions=True,
-                 wiki_links_class_func=None, macro_func=None,
+                 no_wiki_monospace=True,
+                 wiki_links_class_func=None,
                  wiki_links_path_func=None, interwiki_links_funcs={},
                  interwiki_links_space_chars={},
                  blog_style_endings=False,
                  ):
     """Returns a base class for extending (for parameter descriptions, see :func:`create_dialect`)
 
-       **A Basic Extending Example**
-
-       Here we create a dialect that alters the basic Creole inline syntax by
-       removing underline and adding strike-though::
-
-           >>> Base = dialect_base()
-           >>> class MyDialect(Base):
-           ...       simple_element = SimpleElement(token_dict={'**':'strong',
-           ...                                                  '//':'em',
-           ...                                                  ',,':'sub',
-           ...                                                  '^^':'sup',
-           ...                                                  '--':'del',
-           ...                                                  '##':'code'})
-           >>> from core import Parser
-           >>> parser = Parser(MyDialect())
-           >>> print parser.render("delete --this-- but don't underline __this__"),
-           <p>delete <del>this</del> but don't underline __this__</p>
-               
-       For a more complex example, see the source code of this function. In it,
-       the ``use_additions`` option is implemented by extending a base class.
-
-       .. note::
-
-           It is generally safest to create only one dialect instance per base
-           class. This is because WikiElement objects are bound as class
-           attributes and would therefor be shared between multiple instances,
-           which could lead to unexpected behaviour.
+       The returned class does not implement any of the proposed additions to
+       to Creole 1.0 specification.
 
     """
         
-    class Base(object):
-        """This is the base class that is returned if ``use_additions=False``"""
+    class Base(Dialect):
 
         br = LineBreak('br', r'\\',blog_style=blog_style_endings)
         headings = Heading(['h1','h2','h3','h4','h5','h6'],'=')
@@ -183,35 +165,91 @@ def dialect_base(wiki_links_base_url='',wiki_links_space_char='_',
             regular expression patterns for later elements very simple.
             """        
 
-    if use_additions:
-        class Base(Base):
-            simple_element = SimpleElement(token_dict={'**':'strong','//':'em',',,':'sub',
-                                                      '^^':'sup','__':'u','##':'code'})
-            dd = DefinitionDef('dd',':')
-            dt = DefinitionTerm('dt',';',stop_token=':')
-            dl = List('dl',';',stop_tokens='*#')
-
-            macro = Macro('',('<<','>>'),func=macro_func)
-            bodiedmacro = BodiedMacro('',('<<','>>'),func=macro_func)
-            bodied_block_macro = BodiedBlockMacro('',('<<','>>'),func=macro_func)    
-
-            def __init__(self):
-                super(Base,self).__init__()
-                self.tr.child_elements[0] = (self.no_wiki,self.bodiedmacro,self.macro)
-                self.dd.child_elements = [self.br, self.raw_link, self.simple_element]
-                self.dt.child_elements = [self.br, self.raw_link, self.simple_element]
-                self.dl.child_elements = [(self.no_wiki,self.bodiedmacro,self.macro),self.img,self.link,self.dt,self.dd]
-            
-            @property 
-            def inline_elements(self):
-                return [(self.no_wiki,self.bodiedmacro,self.macro), self.img, self.link, self.br, self.raw_link, self.simple_element]
-
-            @property 
-            def block_elements(self):
-                return [(self.bodied_block_macro,self.pre),self.blank_line,self.table,self.headings,
-                               self.hr,self.dl,self.ul,self.ol,self.p]
-
     return Base
+
+
+
+def creole11_base(macro_func=None,**kwargs):
+    """Returns a base class for extending (for parameter descriptions, see :func:`create_dialect`)
+
+    The returned class implements most of the *officially* proposed additions to
+    to Creole 1.0 specification.    
+
+   **A Basic Extending Example**
+
+   Here we create a dialect that alters the basic Creole inline syntax by
+   removing underline and adding strike-though::
+
+       >>> Base = creole11_base()
+       >>> class MyDialect(Base):
+       ...       simple_element = SimpleElement(token_dict={'**':'strong',
+       ...                                                  '//':'em',
+       ...                                                  ',,':'sub',
+       ...                                                  '^^':'sup',
+       ...                                                  '--':'del',
+       ...                                                  '##':'code'})
+       >>> from core import Parser
+       >>> parser = Parser(MyDialect())
+       >>> print parser.render("delete --this-- but don't underline __this__"),
+       <p>delete <del>this</del> but don't underline __this__</p>
+           
+   For a more complex example, see the source code of this function. It extends
+   the class created from creole10_base().
+
+   .. note::
+
+       It is generally safest to create only one dialect instance per base
+       class. This is because WikiElement objects are bound as class
+       attributes and would therefor be shared between multiple instances,
+       which could lead to unexpected behaviour.
+
+    
+    """
+    
+    Creole10Base = creole10_base(**kwargs)
+    
+    class Base(Creole10Base):
+        
+        simple_element = SimpleElement(token_dict={'**':'strong','//':'em',',,':'sub',
+                                                  '^^':'sup','__':'u','##':'code'})
+        dd = DefinitionDef('dd',':')
+        dt = DefinitionTerm('dt',';',stop_token=':')
+        dl = List('dl',';',stop_tokens='*#')
+
+        macro = Macro('',('<<','>>'),func=macro_func)
+        bodiedmacro = BodiedMacro('',('<<','>>'),func=macro_func)
+        bodied_block_macro = BodiedBlockMacro('',('<<','>>'),func=macro_func)    
+
+        def __init__(self):
+            super(Base,self).__init__()
+            self.tr.child_elements[0] = (self.no_wiki,self.bodiedmacro,self.macro)
+            self.dd.child_elements = [self.br, self.raw_link, self.simple_element]
+            self.dt.child_elements = [self.br, self.raw_link, self.simple_element]
+            self.dl.child_elements = [(self.no_wiki,self.bodiedmacro,self.macro),self.img,self.link,self.dt,self.dd]
+        
+        @property 
+        def inline_elements(self):
+            return [(self.no_wiki,self.bodiedmacro,self.macro), self.img, self.link, self.br, self.raw_link, self.simple_element]
+
+        @property 
+        def block_elements(self):
+            return [(self.bodied_block_macro,self.pre),self.blank_line,self.table,self.headings,
+                           self.hr,self.dl,self.ul,self.ol,self.p]
+    return Base
+
+
+class Dialect(object):
+    """Abstract base class for dialect objects"""
+    pass
+
+def Creole10(use_additions=False, **kwargs):
+    warnings.warn("""
+Use of Creole10 is depreciated, use create_dialect() instead. \
+If you are getting many of these warnings, you are probably unnecessarily \
+creating dialect objects, which is computationally expensive.
+"""
+                  )
+    return create_dialect(use_additions=use_additions,**kwargs)
  
 def _test():
     import doctest

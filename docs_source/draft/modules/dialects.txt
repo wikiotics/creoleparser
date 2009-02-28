@@ -2,4 +2,4 @@
 ****************************
 
 .. automodule:: creoleparser.dialects
-   :members: create_dialect, dialect_base
+   :members: create_dialect, creole10_base, creole11_base

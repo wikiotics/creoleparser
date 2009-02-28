@@ -75,6 +75,6 @@ default rendering of code blocks has been modified.
 For a full list of parameters, see :meth:`~creoleparser.dialects.create_dialect`. 
 
 Further customization of a dialect is possible though sub-classing. For more
-information see the :func:`creoleparser.dialects.dialect_base` class factory.
+information see the :func:`creoleparser.dialects.creole11_base` class factory.
    
 
