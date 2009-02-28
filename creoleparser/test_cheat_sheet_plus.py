@@ -1,3 +1,8 @@
+"""The macros below aren't reliable (e.g., some fail if ``arg_string`` is `None`)
+or safe (``include`` doesn't guard against circular reference). For a more complete example, see
+`the code used in the sandbox <http://code.google.com/p/urlminer/source/browse/examples/wiki/macros.py>`_.
+
+"""
 import genshi.builder as bldr
 import dialects, core
 import os

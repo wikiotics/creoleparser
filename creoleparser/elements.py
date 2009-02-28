@@ -322,7 +322,7 @@ class BodiedMacro(Macro):
             return [bldr.tag.code(self.token[0] + mo.group('name') + mo.group('arg_string')+ self.token[1],
                             content_out , self.token[0] + '/'
                             + mo.group('name') + self.token[1],class_="unknown_macro"),tail]
-        elif isinstance(value, (basestring,bldr.Fragment,bldr.Element, Stream)):
+        elif isinstance(value, (basestring,bldr.Fragment, Stream)):
             return [value,tail]
         else:
             raise "macros can only return strings and genshi objects"
