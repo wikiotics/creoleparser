@@ -73,7 +73,7 @@ def macro_dispatcher(macro_name,arg_string,body,isblock,environ):
     if macro_name in macros:
         return macros[macro_name](arg_string,body,isblock)
     
-dialect = dialects.Creole10(
+dialect = dialects.create_dialect(
     wiki_links_base_url='http://creoleparser.srcom.org/cgi-bin/creolepiki/',
     wiki_links_space_char='',
     use_additions=True,

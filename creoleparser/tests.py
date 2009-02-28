@@ -13,9 +13,10 @@ from genshi import builder
 from genshi.core import Markup
 
 from core import Parser
-from dialects import Creole10, dialect_base
+from dialects import creole10_base, create_dialect, Creole10
 from elements import SimpleElement
 
+create_dialect = Creole10
 
 base_url = 'http://www.wikicreole.org/wiki/'
 inter_wiki_url = 'http://wikiohana.net/cgi-bin/wiki.pl/'
@@ -36,7 +37,7 @@ def path_name_function(page_name):
 
 
 text2html = Parser(
-    dialect=Creole10(
+    dialect=create_dialect(
         wiki_links_base_url=base_url,
         interwiki_links_base_urls={'Ohana': inter_wiki_url},
         use_additions=True,
@@ -120,7 +121,7 @@ class Creole2HTMLTest(unittest.TestCase, BaseTest):
     """
     def setUp(self):
         creole2html = Parser(
-            dialect=Creole10(
+            dialect=create_dialect(
                 wiki_links_base_url=base_url,
                 interwiki_links_base_urls={'Ohana': inter_wiki_url},
                 use_additions=False,
@@ -140,7 +141,7 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
     """
     def setUp(self):
         self.parse = Parser(
-        dialect=Creole10(
+        dialect=create_dialect(
         wiki_links_base_url=base_url,
         interwiki_links_base_urls={'Ohana': inter_wiki_url},
         use_additions=True,
@@ -428,21 +429,21 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
 class DialectOptionsTest(unittest.TestCase):
 
     def test_no_wiki_monospace_option(self):
-        dialect = Creole10(no_wiki_monospace=True)
+        dialect = create_dialect(no_wiki_monospace=True)
         parse = Parser(dialect)
         self.assertEquals(
             parse("This block of {{{no_wiki **shouldn't** be monospace}}} now"),
             wrap_result("This block of <code>no_wiki **shouldn't** be monospace</code> now"))
 
     def test_use_additions_option(self):
-        dialect = Creole10(use_additions=True)
+        dialect = create_dialect(use_additions=True)
         parse = Parser(dialect)
         self.assertEquals(
             parse("This block of ##text **should** be monospace## now"),
             wrap_result("This block of <code>text <strong>should</strong> be monospace</code> now"))
 
     def test_blog_style_endings_option(self):
-        dialect = Creole10(blog_style_endings=True)
+        dialect = create_dialect(blog_style_endings=True)
         parse = Parser(dialect)
         self.assertEquals(
             parse("The first line\nthis text **should** be on the second line\n now third"),
@@ -452,7 +453,7 @@ class ExtendingTest(unittest.TestCase):
     
 
     def test_simple_tokens_option(self):
-        Base = dialect_base()
+        Base = creole10_base()
         class MyDialect(Base):
             simple_element = SimpleElement(token_dict={'*':'strong','#':'code'})
         parse = Parser(MyDialect())
@@ -461,7 +462,7 @@ class ExtendingTest(unittest.TestCase):
             wrap_result("This block of <code>text <strong>should</strong> be monospace</code> now"))
 
 ##    def test_simple_tokens_option2(self):
-##        dialect = Creole10(simple_tokens=[('--','del')])
+##        dialect = create_dialect(simple_tokens=[('--','del')])
 ##        parse = Parser(dialect)
 ##        self.assertEquals(
 ##            parse("This block of --text **should** be monospace-- now"),
@@ -471,7 +472,7 @@ class NoSpaceDialectTest(unittest.TestCase, BaseTest):
 
     def setUp(self):
         noSpaces = Parser(
-            dialect=Creole10(
+            dialect=create_dialect(
                 wiki_links_base_url=base_url,
                 wiki_links_space_char='',
                 use_additions=True,
@@ -503,7 +504,7 @@ class MacroTest(unittest.TestCase, BaseTest):
     """
 
     def setUp(self):
-        dialect = Creole10(
+        dialect = create_dialect(
             wiki_links_base_url='http://creoleparser.x10hosting.com/cgi-bin/creolepiki/',
             wiki_links_space_char='',
             use_additions=True,
@@ -766,7 +767,7 @@ class InterWikiLinksTest(unittest.TestCase):
             'poo': '+',
             }
 
-        dialect = Creole10(
+        dialect = create_dialect(
             interwiki_links_funcs=functions,
             interwiki_links_base_urls=base_urls,
             interwiki_links_space_chars=space_characters
