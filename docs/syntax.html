@@ -3,13 +3,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Syntax &mdash; creoleparser v0.5.1 documentation</title>
+    <title>Syntax &mdash; creoleparser v0.6 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
           URL_ROOT:    '',
-          VERSION:     '0.5.1',
+          VERSION:     '0.6',
           COLLAPSE_MODINDEX: false,
           FILE_SUFFIX: '.html'
       };
@@ -18,7 +18,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="creoleparser v0.5.1 documentation" href="index.html" />
+    <link rel="top" title="creoleparser v0.6 documentation" href="index.html" />
     <link rel="next" title="Basic Usage" href="usage.html" />
     <link rel="prev" title="Creoleparser: for parsing Creole wiki markup" href="index.html" /> 
   </head>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="index.html" title="Creoleparser: for parsing Creole wiki markup"
              accesskey="P">previous</a> |</li>
-        <li><a href="contents.html">creoleparser v0.5.1 documentation</a> &raquo;</li> 
+        <li><a href="contents.html">creoleparser v0.6 documentation</a> &raquo;</li> 
       </ul>
     </div>  
     <div class="document">
@@ -51,7 +51,7 @@
 <span id="syntax"></span><h1>Syntax<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p>For a quick glance at what croeleparser implements, see the
+<p>For a quick glance at what creoleparser implements, see the
 <a class="reference" href="http://purl.oclc.org/creoleparser/cheatsheet">creoleparser cheatsheet</a>.</p>
 <p>Creoleparser adhers very closely to the basic <a class="reference" href="http://wikicreole.org/wiki/Creole1.0">Creole 1.0 specification</a>
 and optionally implements most <a class="reference" href="http://wiki.wikicreole.org/Creole%201.0/additions">additions</a> (not including
@@ -81,16 +81,19 @@ creoleparser implementation:</p>
 <p>In addition to the above, creoleparser supports <em>macros with bodies</em>, e.g.,:</p>
 <div class="highlight-python"><pre>&lt;&lt;foo&gt;&gt;Some content to process&lt;&lt;/foo&gt;&gt;</pre>
 </div>
+<p>An argument string can also be supplied:</p>
+<div class="highlight-python"><pre>&lt;&lt;foo boo="goo" &gt;&gt;Some content to process&lt;&lt;/foo&gt;&gt;</pre>
+</div>
 <p>Normally, <em>bodied</em> macros will not span other block-level markup (like tables)
 or blank lines. This can be forced however, using the following syntax:</p>
-<div class="highlight-python"><pre>&lt;&lt;float side=right&gt;&gt;
-Some content to float.
+<div class="highlight-python"><pre>&lt;&lt;foo&gt;&gt;
+Some content for foo.
 
 Including a second paragraph.
-&lt;&lt;/float&gt;&gt;</pre>
+&lt;&lt;/foo&gt;&gt;</pre>
 </div>
-<p>Note that both parts of the macro markup are on a line by themselves
-and have no leading spaces, analogous to a Creole pre block:</p>
+<p>Note that both the opening and closing markup are on a line by themselves
+and have no leading spaces. This is analogous to a Creole pre block:</p>
 <div class="highlight-python"><pre>{{{
 Some content to render in a &lt;pre&gt;.
 
@@ -106,7 +109,7 @@ and non-repeating periods and hyphens.</p>
 <h3>Macro Arguments and Delimiters<a class="headerlink" href="#macro-arguments-and-delimiters" title="Permalink to this headline">¶</a></h3>
 <p>Creoleparser does not specify or suggest the format of macro arguments. Internally,
 the entire string from the <cite>macro_name</cite> to the <tt class="docutils literal"><span class="pre">&gt;&gt;</span></tt> are passed as the <cite>arg_string</cite>.
-For this reason, an implementer should chose something other than legal macro name
+For this reason, an implementer should choose something other than legal macro name
 characters to delimit the arguments.</p>
 </div>
 </div>
@@ -165,11 +168,11 @@ characters to delimit the arguments.</p>
         <li class="right" >
           <a href="index.html" title="Creoleparser: for parsing Creole wiki markup"
              accesskey="P">previous</a> |</li>
-        <li><a href="contents.html">creoleparser v0.5.1 documentation</a> &raquo;</li> 
+        <li><a href="contents.html">creoleparser v0.6 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-      &copy; Copyright 2008, Stephen Day.
+      &copy; Copyright 2009, Stephen Day.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.
     </div>
 

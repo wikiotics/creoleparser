@@ -3,13 +3,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>creoleparser.core &mdash; creoleparser v0.5.1 documentation</title>
+    <title>creoleparser.core &mdash; creoleparser v0.6 documentation</title>
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
           URL_ROOT:    '../',
-          VERSION:     '0.5.1',
+          VERSION:     '0.6',
           COLLAPSE_MODINDEX: false,
           FILE_SUFFIX: '.html'
       };
@@ -18,7 +18,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="top" title="creoleparser v0.5.1 documentation" href="../index.html" />
+    <link rel="top" title="creoleparser v0.6 documentation" href="../index.html" />
     <link rel="up" title="Generated API documentation" href="../modules.html" />
     <link rel="next" title="creoleparser.elements" href="elements.html" />
     <link rel="prev" title="creoleparser.dialects" href="dialects.html" /> 
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="dialects.html" title="creoleparser.dialects"
              accesskey="P">previous</a> |</li>
-        <li><a href="../contents.html">creoleparser v0.5.1 documentation</a> &raquo;</li>
+        <li><a href="../contents.html">creoleparser v0.6 documentation</a> &raquo;</li>
           <li><a href="../modules.html" accesskey="U">Generated API documentation</a> &raquo;</li> 
       </ul>
     </div>  
@@ -54,6 +54,9 @@
 <dl class="class">
 <dt id="creoleparser.core.Parser">
 <!--[creoleparser.core.Parser]-->class <tt class="descclassname">creoleparser.core.</tt><tt class="descname">Parser</tt><big>(</big><em>dialect</em>, <em>method='xhtml'</em>, <em>strip_whitespace=False</em>, <em>encoding='utf-8'</em><big>)</big><a class="headerlink" href="#creoleparser.core.Parser" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="creoleparser.core.Parser.__init__">
+<!--[creoleparser.core.Parser.__init__]--><tt class="descname">__init__</tt><big>(</big><em>dialect</em>, <em>method='xhtml'</em>, <em>strip_whitespace=False</em>, <em>encoding='utf-8'</em><big>)</big><a class="headerlink" href="#creoleparser.core.Parser.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructor for Parser objects</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -61,26 +64,28 @@
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
 <dt>dialect</dt>
-<dd><p class="first last">A Creole instance</p>
+<dd><p class="first last">Usually created using <a title="creoleparser.dialects.create_dialect" class="reference" href="dialects.html#creoleparser.dialects.create_dialect"><tt class="xref docutils literal"><span class="pre">creoleparser.dialects.create_dialect()</span></tt></a></p>
 </dd>
 <dt>method</dt>
-<dd><p class="first last">This value is passed to genshies Steam.render(). Possible values
+<dd><p class="first last">This value is passed to Genshies Steam.render(). Possible values
 include <tt class="docutils literal"><span class="pre">xhtml</span></tt>, <tt class="docutils literal"><span class="pre">html</span></tt>, <tt class="docutils literal"><span class="pre">xml</span></tt>, and <tt class="docutils literal"><span class="pre">text</span></tt>.</p>
 </dd>
 <dt>strip_whitespace</dt>
-<dd><p class="first last">This value is passed Genshies Steam.render().</p>
+<dd><p class="first last">This value is passed to Genshies Steam.render().</p>
 </dd>
 <dt>encoding</dt>
-<dd><p class="first last">This value is passed Genshies Steam.render().</p>
+<dd><p class="first last">This value is passed to Genshies Steam.render().</p>
 </dd>
 </dl>
 </td>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
 <dl class="method">
 <dt id="creoleparser.core.Parser.generate">
-<!--[creoleparser.core.Parser.generate]--><tt class="descname">generate</tt><big>(</big><em>text</em>, <em>element_store=None</em>, <em>context='block'</em><big>)</big><a class="headerlink" href="#creoleparser.core.Parser.generate" title="Permalink to this definition">¶</a></dt>
+<!--[creoleparser.core.Parser.generate]--><tt class="descname">generate</tt><big>(</big><em>text</em>, <em>element_store=None</em>, <em>context='block'</em>, <em>environ=None</em><big>)</big><a class="headerlink" href="#creoleparser.core.Parser.generate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a Genshi Stream.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -98,6 +103,11 @@ of WikiElement objects (use with caution).</p>
 <dt>element_store</dt>
 <dd><p class="first last">Internal dictionary that&#8217;s passed around a lot ;)</p>
 </dd>
+<dt>environ</dt>
+<dd><p class="first last">This can be any type of object. It will be passed to <tt class="docutils literal"><span class="pre">macro_func</span></tt>
+unchanged (for a description of <tt class="docutils literal"><span class="pre">macro_func</span></tt>, see
+<a title="creoleparser.dialects.create_dialect" class="reference" href="dialects.html#creoleparser.dialects.create_dialect"><tt class="xref docutils literal"><span class="pre">create_dialect()</span></tt></a>).</p>
+</dd>
 </dl>
 </td>
 </tr>
@@ -107,72 +117,19 @@ of WikiElement objects (use with caution).</p>
 
 <dl class="method">
 <dt id="creoleparser.core.Parser.render">
-<!--[creoleparser.core.Parser.render]--><tt class="descname">render</tt><big>(</big><em>text</em>, <em>element_store=None</em>, <em>context='block'</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#creoleparser.core.Parser.render" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns final output string (e.g., xhtml)</p>
-<p>See generate() (above) and
-<a class="reference" href="http://genshi.edgewall.org/wiki/Documentation/streams.html#serialization-options">Genshi documentation</a>
-for additional keyword arguments.</p>
+<!--[creoleparser.core.Parser.render]--><tt class="descname">render</tt><big>(</big><em>text</em>, <em>element_store=None</em>, <em>context='block'</em>, <em>environ=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#creoleparser.core.Parser.render" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the final output string (e.g., xhtml). See
+<a title="creoleparser.core.Parser.generate" class="reference" href="#creoleparser.core.Parser.generate"><tt class="xref docutils literal"><span class="pre">generate()</span></tt></a> for named parameter descriptions.</p>
+<p>Left over keyword arguments (<tt class="docutils literal"><span class="pre">kwargs</span></tt>) will be passed to Genshi&#8217;s Stream.render() method,
+overriding the corresponding attributes of the Parser object. For more infomation on Streams,
+see the <a class="reference" href="http://genshi.edgewall.org/wiki/Documentation/streams.html#serialization-options">Genshi documentation</a>.</p>
 </dd></dl>
 
-</dd></dl>
+<dl class="method">
+<dt id="creoleparser.core.Parser.__call__">
+<!--[creoleparser.core.Parser.__call__]--><tt class="descname">__call__</tt><big>(</big><em>text</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#creoleparser.core.Parser.__call__" title="Permalink to this definition">¶</a></dt>
+<dd>Wrapper for the render method. Returns final output string.</dd></dl>
 
-<dl class="function">
-<dt id="creoleparser.core.chunk">
-<!--[creoleparser.core.chunk]--><tt class="descclassname">creoleparser.core.</tt><tt class="descname">chunk</tt><big>(</big><em>text</em>, <em>blank_lines</em>, <em>hard_elements</em>, <em>limit</em><big>)</big><a class="headerlink" href="#creoleparser.core.chunk" title="Permalink to this definition">¶</a></dt>
-<dd>Safely breaks large Creole documents into a list of smaller
-ones (strings)</dd></dl>
-
-<dl class="function">
-<dt id="creoleparser.core.fragmentize">
-<!--[creoleparser.core.fragmentize]--><tt class="descclassname">creoleparser.core.</tt><tt class="descname">fragmentize</tt><big>(</big><em>text</em>, <em>wiki_elements</em>, <em>element_store</em>, <em>remove_escapes=True</em><big>)</big><a class="headerlink" href="#creoleparser.core.fragmentize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Takes a string of wiki markup and outputs a list of genshi
-Fragments (Elements and strings).</p>
-<p>This recursive function, with help from the WikiElement objects,
-does almost all the parsing.</p>
-<p>When no WikiElement objects are supplied, escapes are removed from
-<tt class="docutils literal"><span class="pre">text</span></tt> (except if remove_escapes=True)  and it is
-returned as-is. This is the only way for recursion to stop.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt>text</dt>
-<dd><p class="first last">the text to be parsed</p>
-</dd>
-<dt>wiki_elements</dt>
-<dd><p class="first last">list of WikiElement objects to be searched for</p>
-</dd>
-<dt>remove_escapes</dt>
-<dd><p class="first last">If False, escapes will not be removed</p>
-</dd>
-</dl>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="creoleparser.core.preprocess">
-<!--[creoleparser.core.preprocess]--><tt class="descclassname">creoleparser.core.</tt><tt class="descname">preprocess</tt><big>(</big><em>text</em>, <em>dialect</em><big>)</big><a class="headerlink" href="#creoleparser.core.preprocess" title="Permalink to this definition">¶</a></dt>
-<dd><p>This should generally be called before fragmentize().</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt>text</dt>
-<dd><p class="first last">text to be processsed.</p>
-</dd>
-<dt>dialect</dt>
-<dd><p class="first last">a <tt class="docutils literal"><span class="pre">Creole</span></tt> object.</p>
-</dd>
-</dl>
-</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </div>
@@ -216,12 +173,12 @@ returned as-is. This is the only way for recursion to stop.</p>
         <li class="right" >
           <a href="dialects.html" title="creoleparser.dialects"
              accesskey="P">previous</a> |</li>
-        <li><a href="../contents.html">creoleparser v0.5.1 documentation</a> &raquo;</li>
+        <li><a href="../contents.html">creoleparser v0.6 documentation</a> &raquo;</li>
           <li><a href="../modules.html" accesskey="U">Generated API documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-      &copy; Copyright 2008, Stephen Day.
+      &copy; Copyright 2009, Stephen Day.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.
     </div>
 

@@ -3,13 +3,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Implementing Macros &mdash; creoleparser v0.5.1 documentation</title>
+    <title>Implementing Macros &mdash; creoleparser v0.6 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
           URL_ROOT:    '',
-          VERSION:     '0.5.1',
+          VERSION:     '0.6',
           COLLAPSE_MODINDEX: false,
           FILE_SUFFIX: '.html'
       };
@@ -18,7 +18,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="creoleparser v0.5.1 documentation" href="index.html" />
+    <link rel="top" title="creoleparser v0.6 documentation" href="index.html" />
     <link rel="next" title="Changelog" href="changelog.html" />
     <link rel="prev" title="Basic Usage" href="usage.html" /> 
   </head>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="usage.html" title="Basic Usage"
              accesskey="P">previous</a> |</li>
-        <li><a href="contents.html">creoleparser v0.5.1 documentation</a> &raquo;</li> 
+        <li><a href="contents.html">creoleparser v0.6 documentation</a> &raquo;</li> 
       </ul>
     </div>  
     <div class="document">
@@ -52,113 +52,22 @@
 <p>This page describes how to implement macros (i.e, extensions) in a wiki engine.
 For end user usage, please see <a class="reference" href="syntax.html#syntax"><em>Syntax</em></a>.</p>
 <div class="section" id="the-macro-func">
-<h2>The <cite>macro_func</cite><a class="headerlink" href="#the-macro-func" title="Permalink to this headline">¶</a></h2>
-<p><cite>macro_func</cite> is an optional argument used during instantiation of a
-<a title="creoleparser.dialects.Creole10" class="reference" href="modules/dialects.html#creoleparser.dialects.Creole10"><tt class="xref docutils literal"><span class="pre">Creole10</span></tt></a> dialect object. Most often, this function
-will act as a dispatcher and call other functions based on the <cite>macro_name</cite>. Using this
-method, the <cite>macro_func</cite> can be very simple, particularily if the actual macros
-have the same signature.</p>
-<p><strong>A very simple `macro_func`:</strong></p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">macro_dispatcher</span><span class="p">(</span><span class="n">macro_name</span><span class="p">,</span><span class="n">arg_string</span><span class="p">,</span><span class="n">body</span><span class="p">,</span><span class="n">isblock</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">macro_name</span> <span class="ow">in</span> <span class="n">macros</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">macros</span><span class="p">[</span><span class="n">macro_name</span><span class="p">](</span><span class="n">arg_string</span><span class="p">,</span><span class="n">body</span><span class="p">,</span><span class="n">isblock</span><span class="p">)</span>
+<h2>The <tt class="docutils literal"><span class="pre">macro_func</span></tt><a class="headerlink" href="#the-macro-func" title="Permalink to this headline">¶</a></h2>
+<p><tt class="docutils literal"><span class="pre">macro_func</span></tt> is an optional argument used during instantiation of a dialect object.
+Most often, this function will act as a dispatcher and call other functions based
+on <tt class="docutils literal"><span class="pre">macro_name</span></tt>&#8216;s that are encountered while a Parser is working. Using this method,
+the <tt class="docutils literal"><span class="pre">macro_func</span></tt> can be very simple, particularily if the actual macros have the
+same signature.</p>
+<p><strong>A very simple macro_func:</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">macro_dispatcher</span><span class="p">(</span><span class="n">macro_name</span><span class="p">,</span><span class="n">arg_string</span><span class="p">,</span><span class="n">body</span><span class="p">,</span><span class="n">isblock</span><span class="p">,</span><span class="n">environ</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">macro_name</span> <span class="ow">in</span> <span class="n">environ</span><span class="p">[</span><span class="s">&#39;macros&#39;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">environ</span><span class="p">[</span><span class="s">&#39;macros&#39;</span><span class="p">][</span><span class="n">macro_name</span><span class="p">](</span><span class="n">arg_string</span><span class="p">,</span><span class="n">body</span><span class="p">,</span><span class="n">isblock</span><span class="p">,</span><span class="n">environ</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>In the code above, <cite>macros</cite> is a dictionary of functions. Note that if <cite>macro_name</cite> is
+<p>In the code above, <tt class="docutils literal"><span class="pre">eniviron['macros']</span></tt> is a dictionary of functions. Note that if <tt class="docutils literal"><span class="pre">macro_name</span></tt> is
 not in the dictionary, or if a macro returns <cite>None</cite>, creoleparser will treat the macro as
 unknown and render the raw wikitext unaltered.</p>
-<p>Additional information about <cite>macro_func</cite> is documented with the <a title="creoleparser.dialects.Creole10" class="reference" href="modules/dialects.html#creoleparser.dialects.Creole10"><tt class="xref docutils literal"><span class="pre">Creole10</span></tt></a> class.</p>
-<div class="section" id="full-macro-example">
-<h3>Full Macro Example<a class="headerlink" href="#full-macro-example" title="Permalink to this headline">¶</a></h3>
-<p>The code below is taken from
-<a class="reference" href="http://code.google.com/p/creoleparser/source/browse/trunk/creoleparser/test_cheat_sheet_plus.py">test_cheat_sheet_plus.py</a>
-which is used to generate the <a class="reference" href="http://creoleparser.googlepages.com/CheatSheetPlus.html">creoleparser cheatsheet</a> and
-help validate any changes made to the library code.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">import</span> <span class="nn">genshi.builder</span> <span class="k">as</span> <span class="nn">bldr</span>
-<span class="k">import</span> <span class="nn">dialects</span><span class="o">,</span> <span class="nn">core</span>
-<span class="k">import</span> <span class="nn">os</span>
-
-<span class="k">class</span> <span class="nc">Page</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="n">root</span> <span class="o">=</span> <span class="s">&#39;test_pages&#39;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">page_name</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">page_name</span>
-
-    <span class="k">def</span> <span class="nf">get_raw_body</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">&#39;.txt&#39;</span><span class="p">),</span><span class="s">&#39;r&#39;</span><span class="p">)</span>
-            <span class="n">s</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-            <span class="k">return</span> <span class="n">s</span>
-        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">None</span>
-
-    <span class="k">def</span> <span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">&#39;.txt&#39;</span><span class="p">),</span><span class="s">&#39;r&#39;</span><span class="p">)</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-            <span class="k">return</span> <span class="bp">True</span>
-        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">False</span>
-
-<span class="k">def</span> <span class="nf">class_func</span><span class="p">(</span><span class="n">page_name</span><span class="p">):</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">Page</span><span class="p">(</span><span class="n">page_name</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-        <span class="k">return</span> <span class="s">&#39;nonexistent&#39;</span>
-
-<span class="k">def</span> <span class="nf">path_func</span><span class="p">(</span><span class="n">page_name</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">page_name</span> <span class="o">==</span> <span class="s">&#39;Home&#39;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s">&#39;FrontPage&#39;</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">page_name</span>
-
-<span class="c">## Start of macro functions</span>
-
-<span class="k">def</span> <span class="nf">include</span><span class="p">(</span><span class="n">arg_string</span><span class="p">,</span><span class="n">body</span><span class="p">,</span><span class="n">isblock</span><span class="p">):</span>
-    <span class="n">page</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span><span class="n">arg_string</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
-    <span class="k">return</span> <span class="n">text2html</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">page</span><span class="o">.</span><span class="n">get_raw_body</span><span class="p">())</span>
-
-<span class="k">def</span> <span class="nf">include_raw</span><span class="p">(</span><span class="n">arg_string</span><span class="p">,</span><span class="n">body</span><span class="p">,</span><span class="n">isblock</span><span class="p">):</span>
-    <span class="n">page</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span><span class="n">arg_string</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
-    <span class="k">return</span> <span class="n">bldr</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">pre</span><span class="p">(</span><span class="n">page</span><span class="o">.</span><span class="n">get_raw_body</span><span class="p">(),</span><span class="n">class_</span><span class="o">=</span><span class="s">&#39;plain&#39;</span><span class="p">)</span>
-
-<span class="k">def</span> <span class="nf">include_source</span><span class="p">(</span><span class="n">arg_string</span><span class="p">,</span><span class="n">body</span><span class="p">,</span><span class="n">isblock</span><span class="p">):</span>
-    <span class="n">page</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span><span class="n">arg_string</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
-    <span class="k">return</span> <span class="n">bldr</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">pre</span><span class="p">(</span><span class="n">text2html</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">page</span><span class="o">.</span><span class="n">get_raw_body</span><span class="p">()))</span>
-
-<span class="k">def</span> <span class="nf">source</span><span class="p">(</span><span class="n">arg_string</span><span class="p">,</span><span class="n">body</span><span class="p">,</span><span class="n">isblock</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">bldr</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">pre</span><span class="p">(</span><span class="n">text2html</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">body</span><span class="p">))</span>
-
-<span class="k">def</span> <span class="nf">pre</span><span class="p">(</span><span class="n">arg_string</span><span class="p">,</span><span class="n">body</span><span class="p">,</span><span class="n">isblock</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">bldr</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">pre</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
-
-<span class="c">## End of macro functions</span>
-
-<span class="n">macros</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;include&#39;</span><span class="p">:</span><span class="n">include</span><span class="p">,</span>
-          <span class="s">&#39;include-raw&#39;</span><span class="p">:</span><span class="n">include_raw</span><span class="p">,</span>
-          <span class="s">&#39;include-source&#39;</span><span class="p">:</span><span class="n">include_source</span><span class="p">,</span>
-          <span class="s">&#39;source&#39;</span><span class="p">:</span><span class="n">source</span><span class="p">,</span>
-          <span class="s">&#39;pre&#39;</span><span class="p">:</span><span class="n">pre</span>
-          <span class="p">}</span>
-
-<span class="k">def</span> <span class="nf">macro_dispatcher</span><span class="p">(</span><span class="n">macro_name</span><span class="p">,</span><span class="n">arg_string</span><span class="p">,</span><span class="n">body</span><span class="p">,</span><span class="n">isblock</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">macro_name</span> <span class="ow">in</span> <span class="n">macros</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">macros</span><span class="p">[</span><span class="n">macro_name</span><span class="p">](</span><span class="n">arg_string</span><span class="p">,</span><span class="n">body</span><span class="p">,</span><span class="n">isblock</span><span class="p">)</span>
-
-<span class="n">dialect</span> <span class="o">=</span> <span class="n">dialects</span><span class="o">.</span><span class="n">Creole10</span><span class="p">(</span>
-    <span class="n">wiki_links_base_url</span><span class="o">=</span><span class="s">&#39;http://creoleparser.srcom.org/cgi-bin/creolepiki/&#39;</span><span class="p">,</span>
-    <span class="n">wiki_links_space_char</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span>
-    <span class="n">use_additions</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
-    <span class="n">no_wiki_monospace</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
-    <span class="n">wiki_links_class_func</span><span class="o">=</span><span class="n">class_func</span><span class="p">,</span>
-    <span class="n">wiki_links_path_func</span><span class="o">=</span><span class="n">path_func</span><span class="p">,</span>
-    <span class="n">macro_func</span><span class="o">=</span><span class="n">macro_dispatcher</span><span class="p">)</span>
-
-<span class="n">text2html</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">Parser</span><span class="p">(</span><span class="n">dialect</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The macros in the example above aren&#8217;t reliable (e.g., some fail if <cite>arg_string</cite> is <cite>None</cite>)
-or safe (<cite>include</cite> doesn&#8217;t guard against circular reference). For a more complete example, see
-<a class="reference" href="http://creoleparserwiki.appspot.com/pages/SandBoxCode">the code used in the sandbox</a>.</p>
-</div>
+<p>Additional information about <tt class="docutils literal"><span class="pre">macro_func</span></tt> is documented with the <a title="creoleparser.dialects.create_dialect" class="reference" href="modules/dialects.html#creoleparser.dialects.create_dialect"><tt class="xref docutils literal"><span class="pre">create_dialect()</span></tt></a> factory function.</p>
 </div>
 <div class="section" id="macros-returning-html">
 <h2>Macros Returning HTML<a class="headerlink" href="#macros-returning-html" title="Permalink to this headline">¶</a></h2>
@@ -167,8 +76,51 @@ an example <a class="reference" href="http://creoleparserwiki.appspot.com/pages/
 </div>
 <div class="section" id="macros-returning-creole">
 <h2>Macros Returning Creole<a class="headerlink" href="#macros-returning-creole" title="Permalink to this headline">¶</a></h2>
-<p>Don&#8217;t forget that macros can return simple strings rather than genshi objects. These will
-be processed as Creole markup (potentially including other macros!) in their new context.</p>
+<p>Don&#8217;t forget that macros can return simple strings (preferably as unicode objects) rather than
+genshi objects. These will be processed as Creole markup (potentially including other macros!)
+in their new context.</p>
+</div>
+<div class="section" id="how-can-i-stop-a-macro-from-being-placed-in-a-paragraph-or-visa-versa">
+<h2>How can I stop a macro from being placed in a paragraph? (or visa versa)<a class="headerlink" href="#how-can-i-stop-a-macro-from-being-placed-in-a-paragraph-or-visa-versa" title="Permalink to this headline">¶</a></h2>
+<p>Creoleparser tries not to use paragraphs if the content they would enclose are
+valid children of the <cite>body</cite> element (according to  xhtml1 strict). For example, if a section of
+wiki text is enclosed entirely in a regular bodied macro, and that macro outputs an Element with a <cite>div</cite> tag, no
+<cite>p</cite> tag will be added.</p>
+<p>For <em>block</em> type macros (i.e., when <tt class="docutils literal"><span class="pre">isblock</span></tt> is true), creole parser will <em>add</em> a <cite>p</cite> tag
+if the macro&#8217;s return value indicates it isn&#8217;t a valid child of the <cite>body</cite> element.</p>
+<div class="section" id="guidelines-for-macro-return-values-and-paragraph-control">
+<h3>Guidelines for macro return values and paragraph control<a class="headerlink" href="#guidelines-for-macro-return-values-and-paragraph-control" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p class="first">Return a Fragment to <strong>always</strong> apply a <cite>p</cite> tag (unless the macro appears in other block level markup) e.g.:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">return</span> <span class="n">genshi</span><span class="o">.</span><span class="n">builder</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">my_output</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Return a Stream (using the generate method) or Markup object to <strong>never</strong> apply a <cite>p</cite> tag, e.g.:</p>
+<div class="highlight-python"><pre>return genshi.builder.tag(my_output).generate()
+or
+return genshi.Markup('&lt;div&gt;...&lt;/div&gt;')</pre>
+</div>
+</li>
+<li><p class="first">Return a string or Element to let creoleparser decide, e.g.:</p>
+<div class="highlight-python"><pre>return 'some string (raw html will be escaped!)'
+or
+return genshi.builder.tag.div(my_output)</pre>
+</div>
+</li>
+</ul>
+<p>Generally, returning a string or Element will reliably produce valid xhtml.
+When returning other objects, you should follow the rules above.</p>
+</div>
+</div>
+<div class="section" id="other-macro-implementation-examples">
+<h2>Other Macro Implementation Examples<a class="headerlink" href="#other-macro-implementation-examples" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference" href="http://code.google.com/p/creoleparser/source/browse/trunk/creoleparser/test_cheat_sheet_plus.py">test_cheat_sheet_plus.py</a>
+which is used to generate the <a class="reference" href="http://creoleparser.googlepages.com/CheatSheetPlus.html">creoleparser cheatsheet</a> and
+help validate any changes made to the library code.</li>
+<li><a class="reference" href="http://code.google.com/p/urlminer/source/browse/examples/wiki/macros.py">the code used in the sandbox wiki</a>.</li>
+</ul>
 </div>
 </div>
 
@@ -181,12 +133,14 @@ be processed as Creole markup (potentially including other macros!) in their new
             <h3><a href="contents.html">Table Of Contents</a></h3>
             <ul>
 <li><a class="reference" href="">Implementing Macros</a><ul>
-<li><a class="reference" href="#the-macro-func">The <cite>macro_func</cite></a><ul>
-<li><a class="reference" href="#full-macro-example">Full Macro Example</a></li>
-</ul>
-</li>
+<li><a class="reference" href="#the-macro-func">The <tt class="docutils literal"><span class="pre">macro_func</span></tt></a></li>
 <li><a class="reference" href="#macros-returning-html">Macros Returning HTML</a></li>
 <li><a class="reference" href="#macros-returning-creole">Macros Returning Creole</a></li>
+<li><a class="reference" href="#how-can-i-stop-a-macro-from-being-placed-in-a-paragraph-or-visa-versa">How can I stop a macro from being placed in a paragraph? (or visa versa)</a><ul>
+<li><a class="reference" href="#guidelines-for-macro-return-values-and-paragraph-control">Guidelines for macro return values and paragraph control</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#other-macro-implementation-examples">Other Macro Implementation Examples</a></li>
 </ul>
 </li>
 </ul>
@@ -224,11 +178,11 @@ be processed as Creole markup (potentially including other macros!) in their new
         <li class="right" >
           <a href="usage.html" title="Basic Usage"
              accesskey="P">previous</a> |</li>
-        <li><a href="contents.html">creoleparser v0.5.1 documentation</a> &raquo;</li> 
+        <li><a href="contents.html">creoleparser v0.6 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-      &copy; Copyright 2008, Stephen Day.
+      &copy; Copyright 2009, Stephen Day.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.
     </div>
 

@@ -1,8 +1,11 @@
 Basic Usage
 ***********
 
-The simplest way to use creoleparser is to call the builtin `text2html` function
-with one argument (the text to be parsed):
+Overview
+--------
+
+The simplest way to use creoleparser is to call the builtin ``text2html``
+Parser object with one argument (the text to be parsed):
 
 .. doctest::
   
@@ -11,28 +14,67 @@ with one argument (the text to be parsed):
    >>> print text2html("Some real **simple** mark-up"),
    <p>Some real <strong>simple</strong> mark-up</p>
 
-To customize things a little, create your own dialect and parser function:
+By default ``text2html`` outputs html. You can change this by providing
+the ``method`` parameter.
 
 .. doctest::
 
-   >>> from creoleparser.dialects import Creole10
+   >>> print text2html(r"Some real **simple** mark-up\\line two",method='html'),
+   <p>Some real <strong>simple</strong> mark-up<br>line two</p>
+
+   >>> print text2html(r"Some real **simple** mark-up\\line two",method='xhtml'),
+   <p>Some real <strong>simple</strong> mark-up<br />line two</p>
+
+Creating a custom parser
+------------------------
+
+To change a parser's default parameter values, you can create a new one. In order
+to do that you will also need to provide a dialect object.  
+
+.. doctest::
+
+   >>> from creoleparser.dialects import create_dialect, creole10_base, creole11_base
    >>> from creoleparser.core import Parser
 
-   >>> my_dialect=Creole10(wiki_links_base_url='http://www.mysite.net/',
-   ... interwiki_links_base_urls=dict(wikicreole='http://wikicreole.org/wiki/'))
+   >>> my_parser = Parser(dialect=create_dialect(creole11_base), method='xml')
+   >>> print my_parser(r"Some real **simple** mark-up\\line two"),
+   <p>Some real <strong>simple</strong> mark-up<br/>line two</p>
 
-   >>> my_parser = Parser(dialect=my_dialect)
+   The builtin text2html and croele2html parsers where created
+   as follows:
 
-   >>> print my_parser("[[Home]] and [[wikicreole:Home]]"),
-   <p><a href="http://www.mysite.net/Home">Home</a> and <a href="http://wikicreole.org/wiki/Home">wikicreole:Home</a></p>
+   >>> text2html = Parser(dialect=create_dialect(creole11_base), method='html')
 
-The builtin `text2html` and `creole2html` functions were created as follows:
+   >>> creole2html = Parser(dialect=create_dialect(creole10_base),
+   ...                      method='html')
 
-.. code-block:: python
 
-   text2html = Parser(dialect=Creole10(use_additions=True,no_wiki_monospace=False))
 
-   creole2html = Parser(dialect=Creole10(use_additions=False,no_wiki_monospace=True))
+For more information on Parser constructor parameters, see
+:class:`~creoleparser.core.Parser`. Also note
+that the ``__call__`` method of Parser wraps its
+:meth:`~creoleparser.core.Parser.render` method.
 
-For more infomation, see :class:`creoleparser.core.Parser` and :class:`creoleparser.dialects.Creole10`.
+Creating a custom dialect
+-------------------------
+
+Most customization in creoleparser is achieved by creating a new dialect object
+using the ``create_dialect`` factory function. In the following example, the
+default rendering of code blocks has been modified. 
+
+.. doctest::
+
+   >>> my_parser = Parser(dialect=create_dialect(creole11_base))
+   >>> print my_parser("Some real {{{**simple** mark-up}}}"),
+   <p>Some real <code>**simple** mark-up</code></p>
+
+   >>> my_parser = Parser(dialect=create_dialect(creole11_base, no_wiki_monospace=False))
+   >>> print my_parser("Some real {{{**simple** mark-up}}}"),
+   <p>Some real <span>**simple** mark-up</span></p>
+
+For a full list of parameters, see :func:`~creoleparser.dialects.create_dialect`. 
+
+Further customization of a dialect is possible though sub-classing. For more
+information see the :func:`creoleparser.dialects.creole11_base` class factory.
+   
 

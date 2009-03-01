@@ -2,4 +2,6 @@
 ************************
 
 .. automodule:: creoleparser.core
-   :members:
+
+   .. autoclass:: creoleparser.core.Parser
+      :members: __init__, generate, render, __call__

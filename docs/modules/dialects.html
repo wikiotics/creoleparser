@@ -3,13 +3,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>creoleparser.dialects &mdash; creoleparser v0.5.1 documentation</title>
+    <title>creoleparser.dialects &mdash; creoleparser v0.6 documentation</title>
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
           URL_ROOT:    '../',
-          VERSION:     '0.5.1',
+          VERSION:     '0.6',
           COLLAPSE_MODINDEX: false,
           FILE_SUFFIX: '.html'
       };
@@ -18,7 +18,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="top" title="creoleparser v0.5.1 documentation" href="../index.html" />
+    <link rel="top" title="creoleparser v0.6 documentation" href="../index.html" />
     <link rel="up" title="Generated API documentation" href="../modules.html" />
     <link rel="next" title="creoleparser.core" href="core.html" />
     <link rel="prev" title="Generated API documentation" href="../modules.html" /> 
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="../modules.html" title="Generated API documentation"
              accesskey="P">previous</a> |</li>
-        <li><a href="../contents.html">creoleparser v0.5.1 documentation</a> &raquo;</li>
+        <li><a href="../contents.html">creoleparser v0.6 documentation</a> &raquo;</li>
           <li><a href="../modules.html" accesskey="U">Generated API documentation</a> &raquo;</li> 
       </ul>
     </div>  
@@ -51,15 +51,21 @@
   
   <div class="section" id="module-creoleparser.dialects">
 <h1><tt class="xref docutils literal"><span class="pre">creoleparser.dialects</span></tt><a class="headerlink" href="#module-creoleparser.dialects" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
-<dt id="creoleparser.dialects.Creole10">
-<!--[creoleparser.dialects.Creole10]-->class <tt class="descclassname">creoleparser.dialects.</tt><tt class="descname">Creole10</tt><big>(</big><em>wiki_links_base_url=''</em>, <em>wiki_links_space_char='_'</em>, <em>interwiki_links_base_urls={}</em>, <em>no_wiki_monospace=True</em>, <em>use_additions=False</em>, <em>wiki_links_class_func=None</em>, <em>macro_func=None</em>, <em>wiki_links_path_func=None</em>, <em>interwiki_links_funcs={}</em>, <em>interwiki_links_space_chars={}</em><big>)</big><a class="headerlink" href="#creoleparser.dialects.Creole10" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constructor for Creole10 objects</p>
+<dl class="function">
+<dt id="creoleparser.dialects.create_dialect">
+<!--[creoleparser.dialects.create_dialect]--><tt class="descclassname">creoleparser.dialects.</tt><tt class="descname">create_dialect</tt><big>(</big><em>dialect_base</em>, <em>**kw_args</em><big>)</big><a class="headerlink" href="#creoleparser.dialects.create_dialect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factory function for dialect objects (for parameter defaults,
+see <a title="creoleparser.dialects.creole10_base" class="reference" href="#creoleparser.dialects.creole10_base"><tt class="xref docutils literal"><span class="pre">creole10_base()</span></tt></a>)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt>dialect_base</dt>
+<dd><p class="first last">The class factory to use for creating the dialect object.
+<tt class="docutils literal"><span class="pre">creoleparser.dialects.creole10_base</span></tt> and  
+<tt class="docutils literal"><span class="pre">creoleparser.dialects.creole11_base</span></tt> are possible values.</p>
+</dd>
 <dt>wiki_links_base_url</dt>
 <dd><p class="first last">The page name found in wiki links will be appended to this to form
 the href.</p>
@@ -81,11 +87,7 @@ name, the wiki_links_space_char will be used.</p>
 names. Works like wiki_links_path_func</p>
 </dd>
 <dt>no_wiki_monospace</dt>
-<dd><p class="first last">If <cite>True</cite>, inline no_wiki will be rendered as &lt;tt&gt; not &lt;span&gt;</p>
-</dd>
-<dt>use_additions</dt>
-<dd><p class="first last">If <cite>True</cite>, markup beyond the Creole 1.0 spec will be allowed
-(see <a class="reference" href="http://purl.oclc.org/creoleparser/cheatsheet">http://purl.oclc.org/creoleparser/cheatsheet</a>)</p>
+<dd><p class="first last">If <cite>True</cite>, inline no_wiki will be rendered as &lt;code&gt; not &lt;span&gt;</p>
 </dd>
 <dt>wiki_links_class_func</dt>
 <dd><p class="first last">If supplied, this fuction will be called when a wiki link is found and
@@ -102,20 +104,83 @@ spaces will have been replaced) as it&#8217;s only argument. Returning the
 unaltered page name is equivalent to not supplying this function at all.</p>
 </dd>
 <dt>macro_func</dt>
-<dd><p class="first last">If supplied, this fuction will be called when macro markup is found. The
-function must accept the macro name as its first argument, the argument
-string (including any delimter) as the second, the macro body as its
-third (will be None for a macro without a body), and a Boolean as the
-fourth (True for Block type macros, False for normal macros).
-The function may return a string (which will be subject to further wiki
-processing) or a Genshi Stream object. If None is returned, the markup will
+<dd><p class="first">If supplied, this fuction will be called when macro markup is found. The
+function must accept the following postional arguments:</p>
+<ol class="arabic simple">
+<li>macro name (string)</li>
+<li>the argument, including any delimter (string)</li>
+<li>the macro body (string or None for a macro without a body)</li>
+<li>macro type (boolean, True for block macros, False for normal macros)</li>
+<li>an <cite>environ</cite> object (see <a title="creoleparser.core.Parser.generate" class="reference" href="core.html#creoleparser.core.Parser.generate"><tt class="xref docutils literal"><span class="pre">creoleparser.core.Parser.generate()</span></tt></a>)</li>
+</ol>
+<p class="last">The function may return a string (which will be subject to further wiki
+processing) or a Genshi object (Stream, Markup, builder.Fragment, or
+builder.Element). If None is returned, the markup will
 be rendered unchanged.</p>
+</dd>
+<dt>blog_style_endings</dt>
+<dd><p class="first last">If <cite>True</cite>, each newline character in a paragraph will be converted to
+a &lt;br /&gt;. Note that the escaping mechanism (tilde) does not work
+for newlines.</p>
 </dd>
 </dl>
 </td>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="function">
+<dt id="creoleparser.dialects.creole10_base">
+<!--[creoleparser.dialects.creole10_base]--><tt class="descclassname">creoleparser.dialects.</tt><tt class="descname">creole10_base</tt><big>(</big><em>wiki_links_base_url=''</em>, <em>wiki_links_space_char='_'</em>, <em>interwiki_links_base_urls={}</em>, <em>no_wiki_monospace=True</em>, <em>wiki_links_class_func=None</em>, <em>wiki_links_path_func=None</em>, <em>interwiki_links_funcs={}</em>, <em>interwiki_links_space_chars={}</em>, <em>blog_style_endings=False</em><big>)</big><a class="headerlink" href="#creoleparser.dialects.creole10_base" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a base class for extending
+(for parameter descriptions, see <a title="creoleparser.dialects.create_dialect" class="reference" href="#creoleparser.dialects.create_dialect"><tt class="xref docutils literal"><span class="pre">create_dialect()</span></tt></a>)</p>
+<p>The returned class does not implement any of the proposed additions to
+to Creole 1.0 specification.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="creoleparser.dialects.creole11_base">
+<!--[creoleparser.dialects.creole11_base]--><tt class="descclassname">creoleparser.dialects.</tt><tt class="descname">creole11_base</tt><big>(</big><em>macro_func=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#creoleparser.dialects.creole11_base" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a base class for extending (for parameter descriptions, see <a title="creoleparser.dialects.create_dialect" class="reference" href="#creoleparser.dialects.create_dialect"><tt class="xref docutils literal"><span class="pre">create_dialect()</span></tt></a>)</p>
+<blockquote>
+<p>The returned class implements most of the <em>officially</em> proposed additions to
+to Creole 1.0 specification:</p>
+<blockquote>
+<ul class="simple">
+<li>superscript, subscript, underline, and monospace</li>
+<li>definition lists</li>
+<li>macros</li>
+</ul>
+<p>(see <a class="reference" href="http://purl.oclc.org/creoleparser/cheatsheet">http://purl.oclc.org/creoleparser/cheatsheet</a>)</p>
+</blockquote>
+</blockquote>
+<p><strong>A Basic Extending Example</strong></p>
+<p>Here we create a dialect that alters the basic Creole inline syntax by
+removing underline and adding strike-though:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Base</span> <span class="o">=</span> <span class="n">creole11_base</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MyDialect</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<span class="gp">... </span>      <span class="n">simple_element</span> <span class="o">=</span> <span class="n">SimpleElement</span><span class="p">(</span><span class="n">token_dict</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;**&#39;</span><span class="p">:</span><span class="s">&#39;strong&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                                                 <span class="s">&#39;//&#39;</span><span class="p">:</span><span class="s">&#39;em&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                                                 <span class="s">&#39;,,&#39;</span><span class="p">:</span><span class="s">&#39;sub&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                                                 <span class="s">&#39;^^&#39;</span><span class="p">:</span><span class="s">&#39;sup&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                                                 <span class="s">&#39;--&#39;</span><span class="p">:</span><span class="s">&#39;del&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                                                 <span class="s">&#39;##&#39;</span><span class="p">:</span><span class="s">&#39;code&#39;</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">from</span> <span class="nn">core</span> <span class="k">import</span> <span class="n">Parser</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parser</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">MyDialect</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">parser</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="s">&quot;delete --this-- but don&#39;t underline __this__&quot;</span><span class="p">),</span>
+<span class="go">&lt;p&gt;delete &lt;del&gt;this&lt;/del&gt; but don&#39;t underline __this__&lt;/p&gt;</span>
+</pre></div>
+</div>
+<p>For a more complex example, see the <a class="reference" href="http://code.google.com/p/creoleparser/source/browse/trunk/creoleparser/dialects.py">source code of this function</a>.
+It extends the class created from creole10_base().</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">It is generally safest to create only one dialect instance per base
+class. This is because WikiElement objects are bound as class
+attributes and would therefor be shared between multiple instances,
+which could lead to unexpected behaviour.</p>
+</div>
 </dd></dl>
 
 </div>
@@ -159,12 +224,12 @@ be rendered unchanged.</p>
         <li class="right" >
           <a href="../modules.html" title="Generated API documentation"
              accesskey="P">previous</a> |</li>
-        <li><a href="../contents.html">creoleparser v0.5.1 documentation</a> &raquo;</li>
+        <li><a href="../contents.html">creoleparser v0.6 documentation</a> &raquo;</li>
           <li><a href="../modules.html" accesskey="U">Generated API documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-      &copy; Copyright 2008, Stephen Day.
+      &copy; Copyright 2009, Stephen Day.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.
     </div>
 

@@ -3,13 +3,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Basic Usage &mdash; creoleparser v0.5.1 documentation</title>
+    <title>Basic Usage &mdash; creoleparser v0.6 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
           URL_ROOT:    '',
-          VERSION:     '0.5.1',
+          VERSION:     '0.6',
           COLLAPSE_MODINDEX: false,
           FILE_SUFFIX: '.html'
       };
@@ -18,7 +18,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="creoleparser v0.5.1 documentation" href="index.html" />
+    <link rel="top" title="creoleparser v0.6 documentation" href="index.html" />
     <link rel="next" title="Implementing Macros" href="macros.html" />
     <link rel="prev" title="Syntax" href="syntax.html" /> 
   </head>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="syntax.html" title="Syntax"
              accesskey="P">previous</a> |</li>
-        <li><a href="contents.html">creoleparser v0.5.1 documentation</a> &raquo;</li> 
+        <li><a href="contents.html">creoleparser v0.6 documentation</a> &raquo;</li> 
       </ul>
     </div>  
     <div class="document">
@@ -49,34 +49,69 @@
   
   <div class="section" id="basic-usage">
 <h1>Basic Usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h1>
-<p>The simplest way to use creoleparser is to call the builtin <cite>text2html</cite> function
-with one argument (the text to be parsed):</p>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>The simplest way to use creoleparser is to call the builtin <tt class="docutils literal"><span class="pre">text2html</span></tt>
+Parser object with one argument (the text to be parsed):</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">from</span> <span class="nn">creoleparser</span> <span class="k">import</span> <span class="n">text2html</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">text2html</span><span class="p">(</span><span class="s">&quot;Some real **simple** mark-up&quot;</span><span class="p">),</span>
 <span class="go">&lt;p&gt;Some real &lt;strong&gt;simple&lt;/strong&gt; mark-up&lt;/p&gt;</span>
 </pre></div>
 </div>
-<p>To customize things a little, create your own dialect and parser function:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">from</span> <span class="nn">creoleparser.dialects</span> <span class="k">import</span> <span class="n">Creole10</span>
+<p>By default <tt class="docutils literal"><span class="pre">text2html</span></tt> outputs html. You can change this by providing
+the <tt class="docutils literal"><span class="pre">method</span></tt> parameter.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">text2html</span><span class="p">(</span><span class="s">r&quot;Some real **simple** mark-up</span><span class="se">\\</span><span class="s">line two&quot;</span><span class="p">,</span><span class="n">method</span><span class="o">=</span><span class="s">&#39;html&#39;</span><span class="p">),</span>
+<span class="go">&lt;p&gt;Some real &lt;strong&gt;simple&lt;/strong&gt; mark-up&lt;br&gt;line two&lt;/p&gt;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">text2html</span><span class="p">(</span><span class="s">r&quot;Some real **simple** mark-up</span><span class="se">\\</span><span class="s">line two&quot;</span><span class="p">,</span><span class="n">method</span><span class="o">=</span><span class="s">&#39;xhtml&#39;</span><span class="p">),</span>
+<span class="go">&lt;p&gt;Some real &lt;strong&gt;simple&lt;/strong&gt; mark-up&lt;br /&gt;line two&lt;/p&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="creating-a-custom-parser">
+<h2>Creating a custom parser<a class="headerlink" href="#creating-a-custom-parser" title="Permalink to this headline">¶</a></h2>
+<p>To change a parser&#8217;s default parameter values, you can create a new one. In order
+to do that you will also need to provide a dialect object.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">from</span> <span class="nn">creoleparser.dialects</span> <span class="k">import</span> <span class="n">create_dialect</span><span class="p">,</span> <span class="n">creole10_base</span><span class="p">,</span> <span class="n">creole11_base</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">from</span> <span class="nn">creoleparser.core</span> <span class="k">import</span> <span class="n">Parser</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">my_dialect</span><span class="o">=</span><span class="n">Creole10</span><span class="p">(</span><span class="n">wiki_links_base_url</span><span class="o">=</span><span class="s">&#39;http://www.mysite.net/&#39;</span><span class="p">,</span>
-<span class="gp">... </span><span class="n">interwiki_links_base_urls</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">wikicreole</span><span class="o">=</span><span class="s">&#39;http://wikicreole.org/wiki/&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_parser</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">dialect</span><span class="o">=</span><span class="n">create_dialect</span><span class="p">(</span><span class="n">creole11_base</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="s">&#39;xml&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">my_parser</span><span class="p">(</span><span class="s">r&quot;Some real **simple** mark-up</span><span class="se">\\</span><span class="s">line two&quot;</span><span class="p">),</span>
+<span class="go">&lt;p&gt;Some real &lt;strong&gt;simple&lt;/strong&gt; mark-up&lt;br/&gt;line two&lt;/p&gt;</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">my_parser</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">dialect</span><span class="o">=</span><span class="n">my_dialect</span><span class="p">)</span>
+<span class="go">The builtin text2html and croele2html parsers where created</span>
+<span class="go">as follows:</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">my_parser</span><span class="p">(</span><span class="s">&quot;[[Home]] and [[wikicreole:Home]]&quot;</span><span class="p">),</span>
-<span class="go">&lt;p&gt;&lt;a href=&quot;http://www.mysite.net/Home&quot;&gt;Home&lt;/a&gt; and &lt;a href=&quot;http://wikicreole.org/wiki/Home&quot;&gt;wikicreole:Home&lt;/a&gt;&lt;/p&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">text2html</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">dialect</span><span class="o">=</span><span class="n">create_dialect</span><span class="p">(</span><span class="n">creole11_base</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="s">&#39;html&#39;</span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">creole2html</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">dialect</span><span class="o">=</span><span class="n">create_dialect</span><span class="p">(</span><span class="n">creole10_base</span><span class="p">),</span>
+<span class="gp">... </span>                     <span class="n">method</span><span class="o">=</span><span class="s">&#39;html&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The builtin <cite>text2html</cite> and <cite>creole2html</cite> functions were created as follows:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">text2html</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">dialect</span><span class="o">=</span><span class="n">Creole10</span><span class="p">(</span><span class="n">use_additions</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">no_wiki_monospace</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span>
+<p>For more information on Parser constructor parameters, see
+<a title="creoleparser.core.Parser" class="reference" href="modules/core.html#creoleparser.core.Parser"><tt class="xref docutils literal"><span class="pre">Parser</span></tt></a>. Also note
+that the <tt class="docutils literal"><span class="pre">__call__</span></tt> method of Parser wraps its
+<a title="creoleparser.core.Parser.render" class="reference" href="modules/core.html#creoleparser.core.Parser.render"><tt class="xref docutils literal"><span class="pre">render()</span></tt></a> method.</p>
+</div>
+<div class="section" id="creating-a-custom-dialect">
+<h2>Creating a custom dialect<a class="headerlink" href="#creating-a-custom-dialect" title="Permalink to this headline">¶</a></h2>
+<p>Most customization in creoleparser is achieved by creating a new dialect object
+using the <tt class="docutils literal"><span class="pre">create_dialect</span></tt> factory function. In the following example, the
+default rendering of code blocks has been modified.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">my_parser</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">dialect</span><span class="o">=</span><span class="n">create_dialect</span><span class="p">(</span><span class="n">creole11_base</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">my_parser</span><span class="p">(</span><span class="s">&quot;Some real {{{**simple** mark-up}}}&quot;</span><span class="p">),</span>
+<span class="go">&lt;p&gt;Some real &lt;code&gt;**simple** mark-up&lt;/code&gt;&lt;/p&gt;</span>
 
-<span class="n">creole2html</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">dialect</span><span class="o">=</span><span class="n">Creole10</span><span class="p">(</span><span class="n">use_additions</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span><span class="n">no_wiki_monospace</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_parser</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">dialect</span><span class="o">=</span><span class="n">create_dialect</span><span class="p">(</span><span class="n">creole11_base</span><span class="p">,</span> <span class="n">no_wiki_monospace</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">my_parser</span><span class="p">(</span><span class="s">&quot;Some real {{{**simple** mark-up}}}&quot;</span><span class="p">),</span>
+<span class="go">&lt;p&gt;Some real &lt;span&gt;**simple** mark-up&lt;/span&gt;&lt;/p&gt;</span>
 </pre></div>
 </div>
-<p>For more infomation, see <a title="creoleparser.core.Parser" class="reference" href="modules/core.html#creoleparser.core.Parser"><tt class="xref docutils literal"><span class="pre">creoleparser.core.Parser</span></tt></a> and <a title="creoleparser.dialects.Creole10" class="reference" href="modules/dialects.html#creoleparser.dialects.Creole10"><tt class="xref docutils literal"><span class="pre">creoleparser.dialects.Creole10</span></tt></a>.</p>
+<p>For a full list of parameters, see <a title="creoleparser.dialects.create_dialect" class="reference" href="modules/dialects.html#creoleparser.dialects.create_dialect"><tt class="xref docutils literal"><span class="pre">create_dialect()</span></tt></a>.</p>
+<p>Further customization of a dialect is possible though sub-classing. For more
+information see the <a title="creoleparser.dialects.creole11_base" class="reference" href="modules/dialects.html#creoleparser.dialects.creole11_base"><tt class="xref docutils literal"><span class="pre">creoleparser.dialects.creole11_base()</span></tt></a> class factory.</p>
+</div>
 </div>
 
 
@@ -85,6 +120,16 @@ with one argument (the text to be parsed):</p>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <h3><a href="contents.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference" href="">Basic Usage</a><ul>
+<li><a class="reference" href="#overview">Overview</a></li>
+<li><a class="reference" href="#creating-a-custom-parser">Creating a custom parser</a></li>
+<li><a class="reference" href="#creating-a-custom-dialect">Creating a custom dialect</a></li>
+</ul>
+</li>
+</ul>
+
             <h4>Previous topic</h4>
             <p class="topless"><a href="syntax.html" title="previous chapter">Syntax</a></p>
             <h4>Next topic</h4>
@@ -118,11 +163,11 @@ with one argument (the text to be parsed):</p>
         <li class="right" >
           <a href="syntax.html" title="Syntax"
              accesskey="P">previous</a> |</li>
-        <li><a href="contents.html">creoleparser v0.5.1 documentation</a> &raquo;</li> 
+        <li><a href="contents.html">creoleparser v0.6 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-      &copy; Copyright 2008, Stephen Day.
+      &copy; Copyright 2009, Stephen Day.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.
     </div>
 
