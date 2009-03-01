@@ -1,5 +1,5 @@
-Version 0.6 (???)
------------------
+Version 0.6 (March 1 2009)
+--------------------------
 
  * refactored dialects.py to make extending easier
 
