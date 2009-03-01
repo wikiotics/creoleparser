@@ -18,22 +18,95 @@ esc_to_remove = re.compile(''.join([r'(?<!',re.escape(escape_char),')',re.escape
 place_holder_re = re.compile(r'<<<(-?\d+?)>>>')
 max_blank_lines = 250
 
-def fill_from_store(text,element_store):
-    frags = []
-    mo = place_holder_re.search(text)
-    while mo:
-        if mo.start():
-            frags.append(text[:mo.start()])
-        frags.append(element_store.get(mo.group(1),
-                       mo.group(1).join(['<<<','>>>'])))
-        if mo.end() < len(text):
-            text = text[mo.end():]
+
+class Parser(object):
+    
+    def __init__(self,dialect, method='xhtml', strip_whitespace=False, encoding='utf-8'):
+        """Constructor for Parser objects
+
+        :parameters:
+          dialect
+            Usually created using :func:`creoleparser.dialects.create_dialect`
+          method
+            This value is passed to Genshies Steam.render(). Possible values
+            include ``xhtml``, ``html``, ``xml``, and ``text``.
+          strip_whitespace
+            This value is passed to Genshies Steam.render().
+          encoding
+            This value is passed to Genshies Steam.render().
+            
+        """
+    
+        self.dialect = dialect
+        self.method = method
+        self.strip_whitespace = strip_whitespace
+        self.encoding=encoding
+
+    def generate(self,text,element_store=None,context='block', environ=None):
+        """Returns a Genshi Stream.
+
+        :parameters:
+          text
+            The text to be parsed.
+          context
+            This is useful for marco development where (for example) supression
+            of paragraph tags is desired. Can be 'inline', 'block', or a list
+            of WikiElement objects (use with caution).
+          element_store
+            Internal dictionary that's passed around a lot ;)
+          environ
+            This can be any type of object. It will be passed to ``macro_func``
+            unchanged (for a description of ``macro_func``, see
+            :func:`~creoleparser.dialects.create_dialect`).
+            
+        """
+        
+        if element_store is None:
+            element_store = {}
+        if not isinstance(context,list):
+            if context == 'block':
+                top_level_elements = self.dialect.block_elements
+                do_preprocess = True
+            elif context == 'inline':
+                top_level_elements = self.dialect.inline_elements
+                do_preprocess = False
         else:
-            break
-        mo = place_holder_re.search(text)
-    else:
-        frags.append(text)
-    return frags
+            top_level_elements = context
+            do_preprocess = False
+
+        if do_preprocess:
+            chunks = preprocess(text,self.dialect)
+        else:
+            chunks = [text]
+
+        return bldr.tag(*[fragmentize(text,top_level_elements,element_store, environ) for text in chunks]).generate()
+
+    def render(self, text, element_store=None, context='block', environ=None, **kwargs):
+        """Returns the final output string (e.g., xhtml). See
+        :meth:`~creoleparser.core.Parser.generate` for named parameter descriptions.
+
+        Left over keyword arguments (``kwargs``) will be passed to Genshi's Stream.render() method,
+        overriding the corresponding attributes of the Parser object. For more infomation on Streams,
+        see the `Genshi documentation <http://genshi.edgewall.org/wiki/Documentation/streams.html#serialization-options>`_.
+        
+        """
+
+        if element_store is None:
+            element_store = {}
+        kwargs.setdefault('method',self.method)
+        kwargs.setdefault('encoding',self.encoding)
+        if kwargs['method'] != "text":
+            kwargs.setdefault('strip_whitespace',self.strip_whitespace)
+        stream = self.generate(text, element_store, context, environ)
+        return stream.render(**kwargs)
+
+    def __call__(self,text, **kwargs):
+        """Wrapper for the render method. Returns final output string.
+
+        """
+
+        return self.render(text, **kwargs)
+
 
 
 def fragmentize(text,wiki_elements, element_store, environ, remove_escapes=True):
@@ -90,92 +163,22 @@ def fragmentize(text,wiki_elements, element_store, environ, remove_escapes=True)
     return frags
 
 
-class Parser(object):
-    """Constructor for Parser objects
-
-    :parameters:
-      dialect
-        Usually created using :func:`creoleparser.dialects.create_dialect`
-      method
-        This value is passed to Genshies Steam.render(). Possible values
-        include ``xhtml``, ``html``, ``xml``, and ``text``.
-      strip_whitespace
-        This value is passed to Genshies Steam.render().
-      encoding
-        This value is passed to Genshies Steam.render().
-        
-    """
-    
-    def __init__(self,dialect, method='xhtml', strip_whitespace=False, encoding='utf-8'):
-        self.dialect = dialect
-        self.method = method
-        self.strip_whitespace = strip_whitespace
-        self.encoding=encoding
-
-    def generate(self,text,element_store=None,context='block', environ=None):
-        """Returns a Genshi Stream.
-
-        :parameters:
-          text
-            The text to be parsed.
-          context
-            This is useful for marco development where (for example) supression
-            of paragraph tags is desired. Can be 'inline', 'block', or a list
-            of WikiElement objects (use with caution).
-          element_store
-            Internal dictionary that's passed around a lot ;)
-          environ
-            This can be any type of object. It will be passed to `macro_func`
-            unchanged (see :class:`~creoleparser.dialects.Creole10`)
-        """
-        
-        if element_store is None:
-            element_store = {}
-        if not isinstance(context,list):
-            if context == 'block':
-                top_level_elements = self.dialect.block_elements
-                do_preprocess = True
-            elif context == 'inline':
-                top_level_elements = self.dialect.inline_elements
-                do_preprocess = False
+def fill_from_store(text,element_store):
+    frags = []
+    mo = place_holder_re.search(text)
+    while mo:
+        if mo.start():
+            frags.append(text[:mo.start()])
+        frags.append(element_store.get(mo.group(1),
+                       mo.group(1).join(['<<<','>>>'])))
+        if mo.end() < len(text):
+            text = text[mo.end():]
         else:
-            top_level_elements = context
-            do_preprocess = False
-
-        if do_preprocess:
-            chunks = preprocess(text,self.dialect)
-        else:
-            chunks = [text]
-
-        return bldr.tag(*[fragmentize(text,top_level_elements,element_store, environ) for text in chunks]).generate()
-
-    def render(self, text, element_store=None, context='block', environ=None, **kwargs):
-        """Returns final output string (e.g., xhtml)
-
-        See generate() (above) and
-        `Genshi documentation <http://genshi.edgewall.org/wiki/Documentation/streams.html#serialization-options>`_
-        for additional keyword arguments.
-        """
-        if element_store is None:
-            element_store = {}
-        kwargs.setdefault('method',self.method)
-        kwargs.setdefault('encoding',self.encoding)
-        if kwargs['method'] != "text":
-            kwargs.setdefault('strip_whitespace',self.strip_whitespace)
-        stream = self.generate(text, element_store, context, environ)
-        return stream.render(**kwargs)
-
-    def __call__(self,text, **kwargs):#,element_store=None,context='block', page=None, **kwargs):
-        """Wrapper for the render method. Returns final output string.
-
-        See generate() (above) and
-        `Genshi documentation <http://genshi.edgewall.org/wiki/Documentation/streams.html#serialization-options>`_
-        for additional keyword arguments.
-        """
-
-       # if element_store is None:
-       #     element_store = {}
-        return self.render(text, **kwargs)#element_store,context, page, **kwargs)
+            break
+        mo = place_holder_re.search(text)
+    else:
+        frags.append(text)
+    return frags
 
 
 def preprocess(text, dialect):

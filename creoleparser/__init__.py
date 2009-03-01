@@ -7,14 +7,16 @@
 #
 
 from core import Parser
-from dialects import create_dialect, Creole10
+from dialects import creole11_base, creole10_base, create_dialect, Creole10
 
 __docformat__ = 'restructuredtext en'
 
-creole2html = Parser(dialect=create_dialect(use_additions=False), method='html')
+__version__ = '0.6'
+
+creole2html = Parser(dialect=create_dialect(creole10_base), method='html')
 """This is a pure Creole 1.0 parser created for convenience"""
 
-text2html = Parser(dialect=create_dialect(), method='html')
+text2html = Parser(dialect=create_dialect(creole11_base), method='html')
 """This is a Creole 1.0 parser (+ additions) created for convenience"""
 
 def _test():

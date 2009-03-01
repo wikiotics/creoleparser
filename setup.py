@@ -9,7 +9,7 @@ except ImportError:
 
 
 setup(name='Creoleparser',
-      version='0.5.1',
+      version='0.6',
       install_requires=['Genshi>=0.4'],
       description='Parser for the Creole common wiki markup language',
       author='Stephen Day',
