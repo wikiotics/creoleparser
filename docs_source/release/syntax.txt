@@ -20,8 +20,8 @@ Mixed Lists
 ===========
 
 Creoleparser allows nesting of ordered lists within unordered lists (and visa versa) to any depth.
-Creole 1.0 does not specify or suggest a syntax for mixed list support. Creoleparser uses the same
-syntax as `Confluence <http://www.atlassian.com/software/confluence/>`_::
+Creole 1.0 does not specify or suggest a syntax for mixed list support. The following is the
+creoleparser implementation::
 
    # this is list item one
    ** unordered subitem 1
