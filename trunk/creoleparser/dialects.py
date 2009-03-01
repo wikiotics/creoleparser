@@ -11,11 +11,16 @@ import warnings
 from elements import *
 
 
-def create_dialect(use_additions=True,macro_func=None, **kw_args):
-    """Factory function for dialect objects (for other parameter defaults,
-    see :func:`creole10_base`)
+
+def create_dialect(dialect_base, **kw_args):
+    """Factory function for dialect objects (for parameter defaults,
+    see :func:`~creoleparser.dialects.creole10_base`)
 
     :parameters:
+      dialect_base
+        The class factory to use for creating the dialect object.
+        ``creoleparser.dialects.creole10_base`` and  
+        ``creoleparser.dialects.creole11_base`` are possible values.
       wiki_links_base_url
         The page name found in wiki links will be appended to this to form
         the href.
@@ -33,14 +38,6 @@ def create_dialect(use_additions=True,macro_func=None, **kw_args):
         names. Works like wiki_links_path_func
       no_wiki_monospace
         If `True`, inline no_wiki will be rendered as <code> not <span>
-      use_additions
-        If `True`, markup beyond the Creole 1.0 spec will be allowed:
-
-        * superscript, subscript, underline, and monospace
-        * definition lists
-        * macros
-            
-        (see http://purl.oclc.org/creoleparser/cheatsheet)
       wiki_links_class_func
         If supplied, this fuction will be called when a wiki link is found and
         the return value (should be a string) will be added as a class attribute
@@ -61,7 +58,7 @@ def create_dialect(use_additions=True,macro_func=None, **kw_args):
         2. the argument, including any delimter (string)
         3. the macro body (string or None for a macro without a body)
         4. macro type (boolean, True for block macros, False for normal macros)
-        5. an `environ` object (see :class:`~creoleparser.core.Parser`)
+        5. an `environ` object (see :meth:`creoleparser.core.Parser.generate`)
         
         The function may return a string (which will be subject to further wiki
         processing) or a Genshi object (Stream, Markup, builder.Fragment, or
@@ -74,12 +71,7 @@ def create_dialect(use_additions=True,macro_func=None, **kw_args):
         
     """
 
-    if use_additions:
-        Base = creole11_base(macro_func=macro_func,**kw_args)
-    else:
-        Base = creole10_base(**kw_args)
-
-    return Base()
+    return dialect_base(**kw_args)()
 
 
 
@@ -91,10 +83,11 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
                  interwiki_links_space_chars={},
                  blog_style_endings=False,
                  ):
-    """Returns a base class for extending (for parameter descriptions, see :func:`create_dialect`)
+    """Returns a base class for extending
+    (for parameter descriptions, see :func:`~creoleparser.dialects.create_dialect`)
 
-       The returned class does not implement any of the proposed additions to
-       to Creole 1.0 specification.
+    The returned class does not implement any of the proposed additions to
+    to Creole 1.0 specification.
 
     """
         
@@ -170,10 +163,16 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
 
 
 def creole11_base(macro_func=None,**kwargs):
-    """Returns a base class for extending (for parameter descriptions, see :func:`create_dialect`)
+    """Returns a base class for extending (for parameter descriptions, see :func:`~creoleparser.dialects.create_dialect`)
 
     The returned class implements most of the *officially* proposed additions to
-    to Creole 1.0 specification.    
+    to Creole 1.0 specification:
+
+        * superscript, subscript, underline, and monospace
+        * definition lists
+        * macros
+            
+        (see http://purl.oclc.org/creoleparser/cheatsheet)
 
    **A Basic Extending Example**
 
@@ -193,8 +192,9 @@ def creole11_base(macro_func=None,**kwargs):
        >>> print parser.render("delete --this-- but don't underline __this__"),
        <p>delete <del>this</del> but don't underline __this__</p>
            
-   For a more complex example, see the source code of this function. It extends
-   the class created from creole10_base().
+   For a more complex example, see the `source code of this function
+   <http://code.google.com/p/creoleparser/source/browse/trunk/creoleparser/dialects.py>`_.
+   It extends the class created from creole10_base().
 
    .. note::
 
@@ -238,18 +238,25 @@ def creole11_base(macro_func=None,**kwargs):
     return Base
 
 
+
 class Dialect(object):
-    """Abstract base class for dialect objects"""
+    """Base class for dialect objects. Doesn't do anything."""
     pass
+
 
 def Creole10(use_additions=False, **kwargs):
     warnings.warn("""
-Use of Creole10 is depreciated, use create_dialect() instead. \
-If you are getting many of these warnings, you are probably unnecessarily \
-creating dialect objects, which is computationally expensive.
+Use of Creole10 is depreciated, use create_dialect() instead. 
 """
                   )
-    return create_dialect(use_additions=use_additions,**kwargs)
+
+    if use_additions:
+        dialect_base = creole11_base
+    else:
+        dialect_base = creole10_base
+        
+
+    return create_dialect(dialect_base=dialect_base,**kwargs)
  
 def _test():
     import doctest
