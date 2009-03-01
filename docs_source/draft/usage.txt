@@ -33,19 +33,19 @@ to do that you will also need to provide a dialect object.
 
 .. doctest::
 
-   >>> from creoleparser.dialects import create_dialect
+   >>> from creoleparser.dialects import create_dialect, creole10_base, creole11_base
    >>> from creoleparser.core import Parser
 
-   >>> my_parser = Parser(dialect=create_dialect(), method='xml')
+   >>> my_parser = Parser(dialect=create_dialect(creole11_base), method='xml')
    >>> print my_parser(r"Some real **simple** mark-up\\line two"),
    <p>Some real <strong>simple</strong> mark-up<br/>line two</p>
 
    The builtin text2html and croele2html parsers where created
    as follows:
 
-   >>> text2html = Parser(dialect=create_dialect(), method='html')
+   >>> text2html = Parser(dialect=create_dialect(creole11_base), method='html')
 
-   >>> creole2html = Parser(dialect=create_dialect(use_additions=False),
+   >>> creole2html = Parser(dialect=create_dialect(creole10_base),
    ...                      method='html')
 
 
@@ -64,15 +64,15 @@ default rendering of code blocks has been modified.
 
 .. doctest::
 
-   >>> my_parser = Parser(dialect=create_dialect())
+   >>> my_parser = Parser(dialect=create_dialect(creole11_base))
    >>> print my_parser("Some real {{{**simple** mark-up}}}"),
    <p>Some real <code>**simple** mark-up</code></p>
 
-   >>> my_parser = Parser(dialect=create_dialect(no_wiki_monospace=False))
+   >>> my_parser = Parser(dialect=create_dialect(creole11_base, no_wiki_monospace=False))
    >>> print my_parser("Some real {{{**simple** mark-up}}}"),
    <p>Some real <span>**simple** mark-up</span></p>
 
-For a full list of parameters, see :meth:`~creoleparser.dialects.create_dialect`. 
+For a full list of parameters, see :func:`~creoleparser.dialects.create_dialect`. 
 
 Further customization of a dialect is possible though sub-classing. For more
 information see the :func:`creoleparser.dialects.creole11_base` class factory.

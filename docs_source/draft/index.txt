@@ -13,7 +13,7 @@ Features
   * can instantly switch between HTML 4.01 and XHTML 1.0 (or other formats) (see :class:`~creoleparser.core.Parser`)
   * `many other useful features <http://genshi.edgewall.org/>`_
 
-* Inline markup is easily customized (see :func:`~creoleparser.dialects.dialect_base`).
+* Inline markup is easily customized (see :func:`~creoleparser.dialects.creole11_base`).
 * Advanced macro support. 
 * Runs on Google App Engine!
 
