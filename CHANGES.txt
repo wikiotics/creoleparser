@@ -6,10 +6,10 @@ Version 0.6 (March 1 2009)
    * added ``creole10_base`` class factory function
    * added ``creole11_base`` class factory function
    * added ``create_dialect`` factory function
-   * The old ``Creole10`` is now a factory function and
+   * The old ``Creole10`` class is now a factory function and
      it is depreciated. 
 
- * ``macro_func`` now take a fifth positional argument, ``environ`` 
+ * ``macro_func`` now takes a fifth positional argument, ``environ`` 
  * creole2html and text2html convenience functions now return html, not xhtml
 
    * ``no_wiki_monospace`` is now True for text2html
@@ -18,7 +18,7 @@ Version 0.6 (March 1 2009)
  * explicit url links (e.g., [[http://example.com/]]) can be multiline
  * added support for easy inline markup customization (SimpleElement)
  * changed <tt> to <code>
- * added support for blog-like line endings (blog_style_endings=True)
+ * added support for blog-style line endings (blog_style_endings=True)
  * macros of the same name can nest (previously this was possible
    only for macros with unique names)
  * macros can now return Markup objects directly (Stream, Fragment,
