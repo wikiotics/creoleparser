@@ -192,9 +192,9 @@ def creole11_base(macro_func=None,**kwargs):
        >>> print parser.render("delete --this-- but don't underline __this__"),
        <p>delete <del>this</del> but don't underline __this__</p>
            
-   For a more complex example, see the `source code of this function
-   <http://code.google.com/p/creoleparser/source/browse/trunk/creoleparser/dialects.py>`_.
-   It extends the class created from creole10_base().
+   For a more complex example, see the `source code
+   <http://code.google.com/p/creoleparser/source/browse/trunk/creoleparser/dialects.py>`_
+   of this function. It extends the class created from creole10_base().
 
    .. note::
 

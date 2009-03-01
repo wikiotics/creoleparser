@@ -9,8 +9,8 @@ creoleparser.elements.BlockElement class modules/elements.html
 creoleparser.elements.WikiElement.re_string method modules/elements.html
 creoleparser.elements.BodiedMacro class modules/elements.html
 creoleparser.elements.RawLink class modules/elements.html
-creoleparser.dialects.creole10_base function modules/dialects.html
 creoleparser.elements.URLLink.alias method modules/elements.html
+creoleparser.dialects.creole10_base function modules/dialects.html
 creoleparser.elements.DefinitionDef class modules/elements.html
 creoleparser.core.Parser.render method modules/core.html
 creoleparser.elements.WikiLink.alias method modules/elements.html

@@ -57,11 +57,11 @@
 <li>added <tt class="docutils literal"><span class="pre">creole10_base</span></tt> class factory function</li>
 <li>added <tt class="docutils literal"><span class="pre">creole11_base</span></tt> class factory function</li>
 <li>added <tt class="docutils literal"><span class="pre">create_dialect</span></tt> factory function</li>
-<li>The old <tt class="docutils literal"><span class="pre">Creole10</span></tt> is now a factory function and
+<li>The old <tt class="docutils literal"><span class="pre">Creole10</span></tt> class is now a factory function and
 it is depreciated.</li>
 </ul>
 </li>
-<li><tt class="docutils literal"><span class="pre">macro_func</span></tt> now take a fifth positional argument, <tt class="docutils literal"><span class="pre">environ</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">macro_func</span></tt> now takes a fifth positional argument, <tt class="docutils literal"><span class="pre">environ</span></tt></li>
 <li>creole2html and text2html convenience functions now return html, not xhtml<ul>
 <li><tt class="docutils literal"><span class="pre">no_wiki_monospace</span></tt> is now True for text2html</li>
 </ul>
@@ -70,7 +70,7 @@ it is depreciated.</li>
 <li>explicit url links (e.g., [[<a class="reference" href="http://example.com/">http://example.com/</a>]]) can be multiline</li>
 <li>added support for easy inline markup customization (SimpleElement)</li>
 <li>changed &lt;tt&gt; to &lt;code&gt;</li>
-<li>added support for blog-like line endings (blog_style_endings=True)</li>
+<li>added support for blog-style line endings (blog_style_endings=True)</li>
 <li>macros of the same name can nest (previously this was possible
 only for macros with unique names)</li>
 <li>macros can now return Markup objects directly (Stream, Fragment,
