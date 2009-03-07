@@ -27,6 +27,7 @@ MACRO_NAME = r'(?P<name>[a-zA-Z]+([-.]?[a-zA-Z0-9]+)*)'
 """allows any number of non-repeating hyphens or periods.
 Underscore is not included because hyphen is"""
 
+
 # use Genshi's HTMLSanitizer if possible (i.e., not on Google App Engine)
 try:
     from genshi.filters import HTMLSanitizer
@@ -347,7 +348,7 @@ class BodiedBlockMacro(WikiElement):
         start = '^' + re.escape(self.token[0])
         body = r'(?P<body>.*\n)'
         end = re.escape(self.token[0]) + \
-               r'/(?P=name)' + re.escape(self.token[1]) + r'\s*?\n'
+               r'/(?P=name)' + re.escape(self.token[1]) + r'\s*?$'
         
         return start + '(' + MACRO_NAME + arg_string + ')' + re.escape(self.token[1]) + \
                r'\s*?\n' + body + end
@@ -392,7 +393,7 @@ class BodiedBlockMacro(WikiElement):
         start = ''.join(['^', re.escape(self.token[0]), re.escape(mo.group('name')),
                          r'(?P<arg_string>(?![^\n]*>>[^\n]*>>)[ \S]*?)', re.escape(self.token[1]),r'\s*?\n'])
         end = ''.join(['^', re.escape(self.token[0]), '/', re.escape(mo.group('name')),
-                       re.escape(self.token[1]),r'\s*?\n'])
+                       re.escape(self.token[1]),r'\s*?$'])
         count = 0
         for mo2 in re.finditer(start + '|' + end, mo.group('body'),re.MULTILINE):
             if re.match(end,mo2.group(0)):
@@ -675,7 +676,7 @@ class List(BlockElement):
         """
         leading_whitespace = r'^([ \t]*'
         only_one_token = re.escape(self.token)+'[^'+ re.escape(self.token) + ']'
-        rest_of_list = r'.*?\n)'
+        rest_of_list = r'.*?(?:\n|\Z))'
         only_one_stop_token = '([' + re.escape(self.stop_tokens) + r'])(?!\3)'        
         look_ahead = '(?=([ \t]*' + only_one_stop_token + '|$))'
         return leading_whitespace + only_one_token + rest_of_list + \
@@ -712,7 +713,7 @@ class ListItem(WikiElement):
     def re_string(self):
         whitespace = r'[ \t]*'
         item_start = '(([' + self.list_tokens + r'])\2*)'
-        rest_of_item = r'(.*?\n)'
+        rest_of_item = r'(.*?(?:\n|\Z))'
         start_of_same_level_item = r'\1(?!\2)'
         look_ahead = r'(?=(' + whitespace + start_of_same_level_item + '|$))'
         return whitespace + item_start + whitespace + \
@@ -770,14 +771,9 @@ class DefinitionTerm(BlockElement):
         self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
 
     def re_string(self):
-        leading_whitespace = r'^([ \t]*'
-        #only_one_token = re.escape(self.token)+'[^'+ re.escape(self.token) + ']'
-        rest_of_list = r'.*?\n)'
-        #only_one_stop_token = '([' + re.escape(self.stop_tokens) + r'])(?!\3)'
-        #look_ahead = r'(?=([ \t]*' + only_one_stop_token + '|$))'
+        look_ahead = r'(\n|(?=(' + esc_neg_look + re.escape(self.stop_token) + r'|$)))'
         return r'^[ \t]*' + re.escape(self.token) + r'[ \t]*(.*?' + \
-               re.escape(self.stop_token) +  '?)\s*(\n|(?=(' + \
-               esc_neg_look + re.escape(self.stop_token) + r'|$)))'
+               re.escape(self.stop_token) +  '?)\s*' + look_ahead 
 
 
 class DefinitionDef(BlockElement):
@@ -801,12 +797,8 @@ class DefinitionDef(BlockElement):
         self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
 
     def re_string(self):
-        leading_whitespace = r'^([ \t]*'
-        rest_of_list = r'.*?\n)'
-        look_ahead = r'(?=([ \t]*' + re.escape(self.token) + r')|$)'
-        return r'^[ \t]*' + re.escape(self.token) + r'?[ \t]*(.+?)\s*\n(?=([ \t]*' + \
-               re.escape(self.token) + r')|$)'
-
+        look_ahead = r'(?=(^[ \t]*' + re.escape(self.token) + r')|\Z)'
+        return r'^[ \t]*' + re.escape(self.token) + r'?[ \t]*(.+?)\s*' + look_ahead 
 
 class Paragraph(BlockElement):
     """"This should be the last outer level wiki element to be searched.
@@ -821,10 +813,10 @@ class Paragraph(BlockElement):
 
     def __init__(self, tag):
         super(Paragraph,self).__init__(tag,None)
-        self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
+        self.regexp = re.compile(self.re_string(),re.DOTALL)#+re.MULTILINE)
 
     def re_string(self):
-        return r'^(.*)\n'
+        return r'^(.*?)\n?$' 
 
     def _build(self,mo,element_store, environ):
         content = fragmentize(mo.group(1), self.child_elements, element_store, environ)
@@ -877,7 +869,7 @@ class Heading(BlockElement):
         whitespace = r'[ \t]*'
         tokens = '(' + re.escape(self.token) + '{1,' + str(len(self.tags)) +'})'
         content = '(.*?)'
-        trailing_markup = '(' + re.escape(self.token) + r'+[ \t]*)?\n'
+        trailing_markup = '(' + re.escape(self.token) + r'+[ \t]*)?(\n|\Z)'
         return '^' + whitespace + tokens + \
                whitespace + content + whitespace + trailing_markup
 
@@ -907,7 +899,7 @@ class Table(BlockElement):
 
     def re_string(self):
         whitespace = r'[ \t]*'
-        rest_of_line = r'.*?\n'
+        rest_of_line = r'.*?(\n|\Z)'
         return '^((' + whitespace + re.escape(self.token) + \
                rest_of_line + ')+)'
 
@@ -934,7 +926,7 @@ class TableRow(BlockElement):
         content = '(' + re.escape(self.token) + '.*?)'
         trailing_token = re.escape(self.token) + '?'
         return '^' + whitespace + content + trailing_token + \
-               whitespace + r'\n'
+               whitespace + r'(\n|\Z)'
 
 
 class TableCell(WikiElement):
@@ -1076,7 +1068,7 @@ class PreBlock(BlockElement):
         else:
             start = '^' + re.escape(self.token[0]) + r'\s*?\n'
             content = r'(.+?\n)'
-            end = re.escape(self.token[1]) + r'\s*?\n'
+            end = re.escape(self.token[1]) + r'\s*?$'
             return start + content + end
 
     def re_string2(self):
@@ -1102,7 +1094,7 @@ class LoneElement(BlockElement):
         self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
 
     def re_string(self):
-        return r'^(\s*?' + re.escape(self.token) + r'\s*?\n)'
+        return r'^(\s*?' + re.escape(self.token) + r'\s*?(\n|\Z))'
 
     def _build(self,mo,element_store, environ):
         return bldr.tag.__getattr__(self.tag)()
@@ -1117,7 +1109,7 @@ class BlankLine(WikiElement):
         self.regexp = re.compile(self.re_string(),re.MULTILINE)
 
     def re_string(self):
-        return r'^(\s*\n)+'
+        return r'^\s*(\n|\Z)' # r'^(\s*\n)+'
      
     def _build(self,mo,element_store, environ):
         return None
@@ -1133,7 +1125,7 @@ class LineBreak(InlineElement):
 
     def re_string(self):
         if self.blog_style:
-            return '(' + esc_neg_look + re.escape(self.token) + r'|\n)'
+            return '(' + esc_neg_look + re.escape(self.token) + r'|\n(?!$))'
         else:
             return esc_neg_look + re.escape(self.token)
     

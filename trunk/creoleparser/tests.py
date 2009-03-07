@@ -70,6 +70,11 @@ class BaseTest(object):
             self.parse(r"break\\this"),
             wrap_result("break<br />this"))
 
+    def test_horizontal_line(self):
+        self.assertEquals(
+            self.parse(r"----"),
+            "<hr />\n")
+
     def test_raw_links(self):
         self.assertEquals(
             self.parse("http://www.google.com"),
@@ -221,8 +226,7 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
 
   |= Item|= Size|= Price
   | fish | big  |//cheap//
-  | crab | small|**very\\expesive**
-                """),
+  | crab | small|**very\\expesive**"""),
             """<table><tr><th>Item</th><th>Size</th><th>Price</th></tr>
 <tr><td>fish</td><td><strong>big</strong></td><td>cheap</td></tr>
 <tr><td>crab</td><td>small</td><td>expesive</td></tr>
@@ -265,7 +269,7 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
             "<h1>Also Level = 1</h1>\n")
         
         self.assertEquals(
-            self.parse("=== This **is** //parsed// ==="),
+            self.parse("=== This **is** //parsed// ===\n"),
             "<h3>This <strong>is</strong> <em>parsed</em></h3>\n")
 
     def test_escape(self):
@@ -288,7 +292,7 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
             self.parse("preventing markup for ~= headings"),
             wrap_result("preventing markup for = headings"))
         self.assertEquals(
-            self.parse("|preventing markup|for a pipe ~| in a table|"),
+            self.parse("|preventing markup|for a pipe ~| in a table|\n"),
             "<table><tr><td>preventing markup</td><td>for a pipe | in a table</td></tr>\n</table>\n")
 
     def test_preformat(self):
@@ -314,7 +318,7 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
 
     def test_link_in_table(self):
         self.assertEquals(
-            self.parse("|http://www.google.com|Google|"),
+            self.parse("|http://www.google.com|Google|\n"),
             """<table><tr><td><a href="http://www.google.com">http://www.google.com</a></td><td>Google</td></tr>\n</table>\n""")
 
     def test_link_in_bold(self):
@@ -324,13 +328,13 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
 
     def test_link_in_heading(self):
         self.assertEquals(
-            self.parse("= [[http://www.google.com|Google]]"),
+            self.parse("= [[http://www.google.com|Google]]\n"),
             """<h1><a href="http://www.google.com">Google</a></h1>\n""")
         self.assertEquals(
-            self.parse("== http://www.google.com"),
+            self.parse("== http://www.google.com\n"),
             """<h2><a href="http://www.google.com">http://www.google.com</a></h2>\n""")
         self.assertEquals(
-            self.parse("== ~http://www.google.com"),
+            self.parse("== ~http://www.google.com\n"),
             "<h2>http://www.google.com</h2>\n")
 
     def test_unordered_lists(self):
@@ -370,9 +374,9 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
 # **item two
 ** Unorder subitem 1
 ** Unorder subitem 2
-# **item three**
-            """),
-            "<ol><li>this is list <strong>item one</strong>\n<ul><li><em>unordered subitem 1</em>\n</li><li><em>unordered subitem 2</em>\n</li></ul></li><li><strong>item two</strong>\n<ul><li>Unorder subitem 1\n</li><li>Unorder subitem 2\n</li></ul></li><li><strong>item three</strong>\n</li></ol>\n")
+# **item three**"""),
+            "<ol><li>this is list <strong>item one</strong>\n<ul><li><em>unordered subitem 1</em>\n</li><li><em>unordered subitem 2</em>\n</li></ul></li>\
+<li><strong>item two</strong>\n<ul><li>Unorder subitem 1\n</li><li>Unorder subitem 2\n</li></ul></li><li><strong>item three</strong></li></ol>\n")
 
     def test_definition_lists(self):
         self.assertEquals(
@@ -385,13 +389,14 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
 ** and this emphasized!
 ; Title
 : definition 1
-: defintioins 2"""),
+: defintioins 2
+"""),
             "<dl><dt>This is a title:</dt>\n<dd>this is its entry</dd>\n<dt>Another title</dt>\n<dd>it's definition entry</dd>\n<dt>This is : a another title:</dt>\n<dd>this is its entry\n<strong> and this emphasized!</strong></dd>\n<dt>Title</dt>\n<dd>definition 1</dd>\n<dd>defintioins 2</dd>\n</dl>\n")
 
     def test_image(self):
         self.assertEquals(
             self.parse("{{campfire.jpg}}"),
-            """<p><img src="campfire.jpg" alt="campfire.jpg" title="campfire.jpg" /></p>\n""")
+            wrap_result("""<img src="campfire.jpg" alt="campfire.jpg" title="campfire.jpg" />"""))
 
     def test_image_in_link(self):
         self.assertEquals(
@@ -403,7 +408,7 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
 
     def test_image_in_table(self):
         self.assertEquals(
-            self.parse("|nice picture |{{campfire.jpg}}|"),
+            self.parse("|nice picture |{{campfire.jpg}}|\n"),
             """<table><tr><td>nice picture</td><td><img src="campfire.jpg" alt="campfire.jpg" title="campfire.jpg" /></td></tr>\n</table>\n""")
 
     def test_super_and_sub_scripts(self):
@@ -631,10 +636,10 @@ class MacroTest(unittest.TestCase, BaseTest):
             wrap_result(' <span class="centered">This is a footer.</span>'))
         self.assertEquals(
             self.parse('<<footer2>>'),
-            '<p><span class="centered">\nThis is a footer.\n</span></p>\n')
+            wrap_result('<span class="centered">\nThis is a footer.\n</span>'))
         self.assertEquals(
             self.parse('<<luca foobar>>'),
-            '<p><strong> foobar</strong></p>\n')
+            wrap_result('<strong> foobar</strong>'))
         self.assertEquals(
             self.parse("<<reverse-lines>>one<</reverse-lines>>"),
             wrap_result("one\n"))
@@ -805,7 +810,7 @@ class TaintingTest(unittest.TestCase):
     def test_cookies(self):
         self.assertEquals(
             self.parse("{{javascript:alert(document.cookie)}}"),
-            """<p><img src="unsafe_uri_detected" alt="unsafe_uri_detected" title="unsafe_uri_detected" /></p>\n""")
+            wrap_result("""<img src="unsafe_uri_detected" alt="unsafe_uri_detected" title="unsafe_uri_detected" />"""))
         self.assertEquals(
             self.parse("[[javascript:alert(document.cookie)]]"),
             wrap_result("[[javascript:alert(document.cookie)]]"))
@@ -820,7 +825,7 @@ class LongDocumentTest(unittest.TestCase):
         lines[500] = '}}}'
         lines[1100] = '{{{'
         lines[1400] = '}}}'
-        doc = '\n\n'.join(lines)
+        doc = '\n\n'.join(lines) + '\n'
         pre = False
         expected_lines = []
         for line in lines:
