@@ -95,9 +95,9 @@ if __name__ == '__main__':
     template = f.read()
     f.close()
 
-##    out = open(os.path.join('test_pages','out.html'),'w')
-##    out.write(template % text2html(text))
-##    out.close()
+    #out = open(os.path.join('test_pages','out.html'),'w')
+    #out.write(template % text2html(text))
+    #out.close()
     
     assert template % text2html(text) == rendered
 

@@ -188,11 +188,10 @@ def preprocess(text, dialect):
       text
         text to be processsed.
       dialect
-        a ``Creole`` object.
+        a ``Dialect`` object.
     """
     text = text.replace("\r\n", "\n")
     text = text.replace("\r", "\n")
-    text = ''.join([text.rstrip(),'\n'])
     blank_lines = list(dialect.blank_line.regexp.finditer(text))
     if len(blank_lines) > max_blank_lines:
         return chunk(text,blank_lines,[dialect.pre,dialect.bodied_block_macro],max_blank_lines)

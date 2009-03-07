@@ -26,18 +26,7 @@ def create_dialect(dialect_base, **kw_args):
         the href.
       wiki_links_space_char
         When wiki_links have spaces, this character replaces those spaces in
-        the url. 
-      interwiki_links_base_urls
-        Dictionary of urls for interwiki links.
-      interwiki_links_space_chars
-        Dictionary of characters that that will be used to replace spaces
-        that occur in interwiki_links. If no key is present for an interwiki
-        name, the wiki_links_space_char will be used.
-      interwiki_links_funcs
-        Dictionary of functions that will be called for interwiki link
-        names. Works like wiki_links_path_func
-      no_wiki_monospace
-        If `True`, inline no_wiki will be rendered as <code> not <span>
+        the url.
       wiki_links_class_func
         If supplied, this fuction will be called when a wiki link is found and
         the return value (should be a string) will be added as a class attribute
@@ -50,6 +39,17 @@ def create_dialect(dialect_base, **kw_args):
         to form the url for href. The function must accept the page name (any
         spaces will have been replaced) as it's only argument. Returning the
         unaltered page name is equivalent to not supplying this function at all.
+      interwiki_links_base_urls
+        Dictionary of urls for interwiki links.
+      interwiki_links_space_chars
+        Dictionary of characters that that will be used to replace spaces
+        that occur in interwiki_links. If no key is present for an interwiki
+        name, the wiki_links_space_char will be used.
+      interwiki_links_funcs
+        Dictionary of functions that will be called for interwiki link
+        names. Works like wiki_links_path_func
+      no_wiki_monospace
+        If `False`, inline no_wiki will be rendered as <span> not <code>
       macro_func
         If supplied, this fuction will be called when macro markup is found. The
         function must accept the following postional arguments:
@@ -255,8 +255,8 @@ Use of Creole10 is depreciated, use create_dialect() instead.
     else:
         dialect_base = creole10_base
         
-
     return create_dialect(dialect_base=dialect_base,**kwargs)
+
  
 def _test():
     import doctest
