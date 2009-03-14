@@ -843,6 +843,28 @@ class LongDocumentTest(unittest.TestCase):
         rendered = text2html(doc)
         self.assertEquals(text2html(doc), expected)
 
+    def test_very_long_list(self):
+        lines = ['* blaa blaa' for x in range(2000)]
+        doc = '\n'.join(lines) + '\n'
+        expected_lines = ['<ul>']
+        for line in lines:
+            expected_lines.append('<li>'+'blaa blaa'+'\n</li>')
+        expected_lines.append('</ul>\n')        
+        expected = ''.join(expected_lines)
+        rendered = text2html(doc)
+        self.assertEquals(text2html(doc), expected)
+
+    def test_very_long_table(self):
+        lines = ['| blaa blaa' for x in range(2000)]
+        doc = '\n'.join(lines) + '\n'
+        expected_lines = ['<table>']
+        for line in lines:
+            expected_lines.append('<tr><td>'+'blaa blaa'+'</td></tr>\n')
+        expected_lines.append('</table>\n')        
+        expected = ''.join(expected_lines)
+        rendered = text2html(doc)
+        self.assertEquals(text2html(doc), expected)
+
 
 class ContextTest(unittest.TestCase):
     """

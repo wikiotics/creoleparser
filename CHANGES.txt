@@ -1,3 +1,9 @@
+Version 0.6.1 (??? 2009)
+------------------------
+
+ * fixed recursion issue with long lists and tables (>400 rows)
+
+
 Version 0.6 (March 1 2009)
 --------------------------
 
