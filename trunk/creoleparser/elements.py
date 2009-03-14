@@ -144,7 +144,7 @@ class BlockElement(WikiElement):
 
 class InlineElement(WikiElement):
 
-    r"""For finding generic inline elements like ``strong`` and ``em``.
+    r"""For finding generic inline elements
 
     >>> em = InlineElement('em','//')
     >>> mo1 = em.regexp.search('a //word// in a line')
@@ -664,9 +664,10 @@ class List(BlockElement):
         
     """
 
-    def __init__(self, tag, token,stop_tokens):
-        super(List,self).__init__(tag, token)
+    def __init__(self, tag, token,stop_tokens=None):
         self.stop_tokens = stop_tokens
+        super(List,self).__init__(tag, token)
+        #self.stop_tokens = stop_tokens
         self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
 
     def re_string(self):
@@ -682,8 +683,29 @@ class List(BlockElement):
         return leading_whitespace + only_one_token + rest_of_list + \
                look_ahead
 
+class RegularList(List):
 
-class ListItem(WikiElement):
+    """Finds list (ordered, unordered, and definition) wiki elements.
+
+    group(1) of the match object includes all lines from the list
+    including newline characters.
+        
+    """
+
+    def _build(self,mo,element_store, environ):
+        """Special build method to avoid recursion errors"""
+        
+        assert len(self.child_elements) == 1
+        wiki_element = self.child_elements[0]
+        mos = wiki_element.regexp.finditer(mo.group(1))
+        frags = []
+        for mo in mos:
+            frags.append(wiki_element._build(mo, element_store, environ))
+        
+        return bldr.tag.__getattr__(self.tag)(frags)
+
+
+class ListItem(BlockElement):#WikiElement):
     r"""Matches the current list item.
 
     Everything up to the next same-level list item is matched.
@@ -706,8 +728,9 @@ class ListItem(WikiElement):
           list_tokens
             A string that includes the tokens used for lists
         """
-        super(ListItem,self).__init__(tag, None)
         self.list_tokens = list_tokens
+        super(ListItem,self).__init__(tag, None)
+        #self.list_tokens = list_tokens
         self.regexp = re.compile(self.re_string(),re.DOTALL)
 
     def re_string(self):
@@ -749,6 +772,17 @@ class NestedList(WikiElement):
         return look_behind + '^' + whitespace + re.escape(self.token) + \
                rest_of_list
 
+    def _build(self,mo,element_store, environ):
+        """Special build method to avoid recursion errors"""
+
+        assert len(self.child_elements) == 1
+        wiki_element = self.child_elements[0]
+        mos = wiki_element.regexp.finditer(mo.group(1))
+        frags = []
+        for mo in mos:
+            frags.append(wiki_element._build(mo, element_store, environ))
+        
+        return bldr.tag.__getattr__(self.tag)(frags)
 
 class DefinitionTerm(BlockElement):
 
@@ -902,6 +936,17 @@ class Table(BlockElement):
         rest_of_line = r'.*?(\n|\Z)'
         return '^((' + whitespace + re.escape(self.token) + \
                rest_of_line + ')+)'
+
+    def _build(self,mo,element_store, environ):
+        """Special build method to avoid recursion errors"""
+        
+        assert len(self.child_elements) == 1
+        wiki_element = self.child_elements[0]
+        mos = wiki_element.regexp.finditer(mo.group(1))
+        frags = []
+        for mo in mos:
+            frags.extend([wiki_element._build(mo, element_store, environ),'\n'])
+        return bldr.tag.__getattr__(self.tag)(frags)
 
 
 class TableRow(BlockElement):
