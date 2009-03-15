@@ -121,8 +121,8 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
         table = Table('table','|')
 
         li = ListItem('li',list_tokens='*#')
-        ol = RegularList('ol','#',stop_tokens='*')
-        ul = RegularList('ul','*',stop_tokens='#')
+        ol = List('ol','#',stop_tokens='*')
+        ul = List('ul','*',stop_tokens='#')
         nested_ol = NestedList('ol','#')
         nested_ul = NestedList('ul','*')
 

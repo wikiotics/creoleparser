@@ -102,6 +102,12 @@ class WikiElement(object):
         """
         pass
 
+        
+    def __repr__(self):
+        return "<"+self.__class__.__name__ + " " + str(self.tag)+">"
+
+
+
     def _process(self, mo, text, wiki_elements,element_store, environ):
         """Returns genshi Fragments (Elements and text)
 
@@ -109,25 +115,30 @@ class WikiElement(object):
         for the other method.
         """
         frags = []
-        # call again for leading text and extend the result list 
-        if mo.start():
-            frags.extend(fragmentize(text[:mo.start()],wiki_elements[1:],
-                                     element_store, environ))
-        # append the found wiki element to the result list
-        built = self._build(mo,element_store, environ)
-        if built is not None:
-            frags.append(built)
-        # make the source output easier to read
-        if self.append_newline:
-            frags.append('\n')
+        if not isinstance(wiki_elements[0],(list,tuple)):
+            mos = self.regexp.finditer(text)
+        else:
+            mos = [mo]
+        end = 0
+        for mo2 in mos:
+            if end != mo2.start():
+            # call again for leading text and extend the result list 
+                frags.extend(fragmentize(text[end:mo2.start()],wiki_elements[1:],
+                                         element_store, environ))
+            # append the found wiki element to the result list
+            built = self._build(mo2,element_store, environ)
+            if built is not None:
+                frags.append(built)
+            # make the source output easier to read
+            if self.append_newline:
+                frags.append('\n')
+            end = mo2.end()
         # call again for trailing text and extend the result list
-        if mo.end() < len(text):
-            frags.extend(fragmentize(text[mo.end():],wiki_elements,
-                                     element_store, environ))
+        if end < len(text):
+            frags.extend(fragmentize(text[end:],wiki_elements,
+                 element_store, environ))
+
         return frags
-        
-    def __repr__(self):
-        return "<"+self.__class__.__name__ + " " + str(self.tag)+">"
 
 
 class BlockElement(WikiElement):
@@ -683,29 +694,9 @@ class List(BlockElement):
         return leading_whitespace + only_one_token + rest_of_list + \
                look_ahead
 
-class RegularList(List):
-
-    """Finds list (ordered, unordered, and definition) wiki elements.
-
-    group(1) of the match object includes all lines from the list
-    including newline characters.
-        
-    """
-
-    def _build(self,mo,element_store, environ):
-        """Special build method to avoid recursion errors"""
-        
-        assert len(self.child_elements) == 1
-        wiki_element = self.child_elements[0]
-        mos = wiki_element.regexp.finditer(mo.group(1))
-        frags = []
-        for mo in mos:
-            frags.append(wiki_element._build(mo, element_store, environ))
-        
-        return bldr.tag.__getattr__(self.tag)(frags)
 
 
-class ListItem(BlockElement):#WikiElement):
+class ListItem(BlockElement):
     r"""Matches the current list item.
 
     Everything up to the next same-level list item is matched.
@@ -772,17 +763,6 @@ class NestedList(WikiElement):
         return look_behind + '^' + whitespace + re.escape(self.token) + \
                rest_of_list
 
-    def _build(self,mo,element_store, environ):
-        """Special build method to avoid recursion errors"""
-
-        assert len(self.child_elements) == 1
-        wiki_element = self.child_elements[0]
-        mos = wiki_element.regexp.finditer(mo.group(1))
-        frags = []
-        for mo in mos:
-            frags.append(wiki_element._build(mo, element_store, environ))
-        
-        return bldr.tag.__getattr__(self.tag)(frags)
 
 class DefinitionTerm(BlockElement):
 
@@ -937,16 +917,6 @@ class Table(BlockElement):
         return '^((' + whitespace + re.escape(self.token) + \
                rest_of_line + ')+)'
 
-    def _build(self,mo,element_store, environ):
-        """Special build method to avoid recursion errors"""
-        
-        assert len(self.child_elements) == 1
-        wiki_element = self.child_elements[0]
-        mos = wiki_element.regexp.finditer(mo.group(1))
-        frags = []
-        for mo in mos:
-            frags.extend([wiki_element._build(mo, element_store, environ),'\n'])
-        return bldr.tag.__getattr__(self.tag)(frags)
 
 
 class TableRow(BlockElement):
@@ -1154,10 +1124,37 @@ class BlankLine(WikiElement):
         self.regexp = re.compile(self.re_string(),re.MULTILINE)
 
     def re_string(self):
-        return r'^\s*(\n|\Z)' # r'^(\s*\n)+'
+        return r'^\s*(\Z|\n)' # r'^(\s*\n)+'
      
     def _build(self,mo,element_store, environ):
         return None
+
+    def _process(self, mo, text, wiki_elements,element_store, environ):
+        """Returns genshi Fragments (Elements and text)
+
+        Custom _process method here just to avoid unnecessary calling of
+        _build.
+        """
+        
+        frags = []
+        if not isinstance(wiki_elements[0],(list,tuple)):
+            mos = self.regexp.finditer(text)
+        else:
+            mos = [mo]
+        end = 0
+        for mo2 in mos:
+            if end != mo2.start():
+            # call again for leading text and extend the result list 
+                frags.extend(fragmentize(text[end:mo2.start()],wiki_elements[1:],
+                                         element_store, environ))
+            end = mo2.end()
+        # call again for trailing text and extend the result list
+        if end < len(text):
+            frags.extend(fragmentize(text[end:],wiki_elements,
+                 element_store, environ))
+
+        return frags
+
 
     
 class LineBreak(InlineElement):
