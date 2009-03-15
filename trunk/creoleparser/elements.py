@@ -108,35 +108,33 @@ class WikiElement(object):
 
 
 
-    def _process(self, mo, text, wiki_elements,element_store, environ):
+    def _process(self, mos, text, wiki_elements,element_store, environ):
         """Returns genshi Fragments (Elements and text)
 
         This is mainly for block level markup. See InlineElement
         for the other method.
         """
         frags = []
-        if not isinstance(wiki_elements[0],(list,tuple)):
-            mos = self.regexp.finditer(text)
-        else:
-            mos = [mo]
         end = 0
-        for mo2 in mos:
-            if end != mo2.start():
+        for mo in mos:
+            if end != mo.start():
             # call again for leading text and extend the result list 
-                frags.extend(fragmentize(text[end:mo2.start()],wiki_elements[1:],
+                frags.extend(fragmentize(text[end:mo.start()],wiki_elements[1:],
                                          element_store, environ))
             # append the found wiki element to the result list
-            built = self._build(mo2,element_store, environ)
+            built = self._build(mo,element_store, environ)
             if built is not None:
                 frags.append(built)
             # make the source output easier to read
             if self.append_newline:
                 frags.append('\n')
-            end = mo2.end()
+            end = mo.end()
         # call again for trailing text and extend the result list
         if end < len(text):
+            if not isinstance(wiki_elements[0],(list,tuple)):
+                wiki_elements = wiki_elements[1:]
             frags.extend(fragmentize(text[end:],wiki_elements,
-                 element_store, environ))
+                                         element_store, environ))
 
         return frags
 
@@ -188,15 +186,25 @@ class InlineElement(WikiElement):
             content = '(.+?)'
             return esc_neg_look + re.escape(self.token[0]) + content + esc_neg_look + re.escape(self.token[1])
 
-    def _process(self, mo, text, wiki_elements, element_store, environ):
+    def _process(self, mos, text, wiki_elements, element_store, environ):
         """Returns genshi Fragments (Elements and text)"""
-        processed = self._build(mo,element_store, environ)
-        store_id = str(id(processed)) 
-        element_store[store_id] = processed
-        text = ''.join([text[:mo.start()],'<<<',store_id,'>>>',
-                        text[mo.end():]])
-        frags = fragmentize(text,wiki_elements,element_store, environ)
+        bits = []
+        end = 0
+        for mo in mos:
+            processed = self._build(mo,element_store, environ)
+            store_id = str(id(processed)) 
+            element_store[store_id] = processed
+            bits.append(''.join([text[end:mo.start()],'<<<',store_id,'>>>']))
+            end = mo.end()
+        # call again for trailing text and extend the result list
+        if end < len(text):
+            bits.append(text[end:])
+        new_text = ''.join(bits)
+        if not isinstance(wiki_elements[0],(list,tuple)):
+            wiki_elements = wiki_elements[1:]
+        frags = fragmentize(new_text,wiki_elements,element_store, environ)
         return frags
+
 
 class SimpleElement(InlineElement):
 
@@ -240,8 +248,10 @@ class Macro(WikiElement):
         self.regexp = re.compile(self.re_string())
 
 
-    def _process(self, mo, text, wiki_elements,element_store, environ):
+    def _process(self, mos, text, wiki_elements,element_store, environ):
         """Returns genshi Fragments (Elements and text)"""
+        assert len(mos) == 1
+        mo = mos[0]
         processed = self._build(mo,element_store, environ)
         if isinstance(processed, list):
             tail = processed[1]
@@ -364,13 +374,14 @@ class BodiedBlockMacro(WikiElement):
         return start + '(' + MACRO_NAME + arg_string + ')' + re.escape(self.token[1]) + \
                r'\s*?\n' + body + end
 
-    def _process(self, mo, text, wiki_elements,element_store, environ):
+    def _process(self, mos, text, wiki_elements,element_store, environ):
         """Returns genshi Fragments (Elements and text)
 
         This is mainly for block level markup. See InlineElement
         for the other method.
         """
-
+        assert len(mos) == 1
+        mo = mos[0]
         processed = self._build(mo,element_store, environ)
         if isinstance(processed, list):
             tail = processed[1]
@@ -1129,7 +1140,7 @@ class BlankLine(WikiElement):
     def _build(self,mo,element_store, environ):
         return None
 
-    def _process(self, mo, text, wiki_elements,element_store, environ):
+    def _process(self, mos, text, wiki_elements,element_store, environ):
         """Returns genshi Fragments (Elements and text)
 
         Custom _process method here just to avoid unnecessary calling of
@@ -1137,19 +1148,17 @@ class BlankLine(WikiElement):
         """
         
         frags = []
-        if not isinstance(wiki_elements[0],(list,tuple)):
-            mos = self.regexp.finditer(text)
-        else:
-            mos = [mo]
         end = 0
-        for mo2 in mos:
-            if end != mo2.start():
+        for mo in mos:
+            if end != mo.start():
             # call again for leading text and extend the result list 
-                frags.extend(fragmentize(text[end:mo2.start()],wiki_elements[1:],
+                frags.extend(fragmentize(text[end:mo.start()],wiki_elements[1:],
                                          element_store, environ))
-            end = mo2.end()
+            end = mo.end()
         # call again for trailing text and extend the result list
         if end < len(text):
+            if not isinstance(wiki_elements[0],(list,tuple)):
+                wiki_elements = wiki_elements[1:]
             frags.extend(fragmentize(text[end:],wiki_elements,
                  element_store, environ))
 
