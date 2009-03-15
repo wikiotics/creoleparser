@@ -16,7 +16,6 @@ escape_char = '~'
 esc_neg_look = '(?<!' + re.escape(escape_char) + ')'
 esc_to_remove = re.compile(''.join([r'(?<!',re.escape(escape_char),')',re.escape(escape_char),r'(?!([ \n]|$))']))
 place_holder_re = re.compile(r'<<<(-?\d+?)>>>')
-max_blank_lines = 250
 
 
 class Parser(object):
@@ -75,11 +74,10 @@ class Parser(object):
             do_preprocess = False
 
         if do_preprocess:
-            chunks = preprocess(text,self.dialect)
-        else:
-            chunks = [text]
+            text = preprocess(text,self.dialect)
 
-        return bldr.tag(*[fragmentize(text,top_level_elements,element_store, environ) for text in chunks]).generate()
+        return bldr.tag(fragmentize(text,top_level_elements,element_store, environ)).generate()
+
 
     def render(self, text, element_store=None, context='block', environ=None, **kwargs):
         """Returns the final output string (e.g., xhtml). See
@@ -192,16 +190,13 @@ def preprocess(text, dialect):
     """
     text = text.replace("\r\n", "\n")
     text = text.replace("\r", "\n")
-    blank_lines = list(dialect.blank_line.regexp.finditer(text))
-    if len(blank_lines) > max_blank_lines:
-        return chunk(text,blank_lines,[dialect.pre,dialect.bodied_block_macro],max_blank_lines)
 
-    return [text]
+    return text
 
 
 def chunk(text, blank_lines, hard_elements, limit):
     """Safely breaks large Creole documents into a list of smaller
-    ones (strings)
+    ones (strings) - DEPRECIATED
     """
     hard_spans = []
     for e in hard_elements:
