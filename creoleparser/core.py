@@ -136,18 +136,18 @@ def fragmentize(text,wiki_elements, element_store, environ, remove_escapes=True)
         # search for all of them and match the closest one only.
         if isinstance(wiki_elements[0],(list,tuple)):
             x = None
-            mo = None
+            mos = None
             for element in wiki_elements[0]:
-                m = element.regexp.search(text)
-                if m:
-                    if x is None or m.start() < x:
-                        x,wiki_element,mo = m.start(),element,m
+                mo = element.regexp.search(text)
+                if mo:
+                    if x is None or mo.start() < x:
+                        x,wiki_element,mos = mo.start(),element,[mo]
         else:
             wiki_element = wiki_elements[0]
-            mo = wiki_element.regexp.search(text)
+            mos = [mo for mo in wiki_element.regexp.finditer(text)]
              
-        if mo:
-            frags = wiki_element._process(mo, text, wiki_elements, element_store, environ)
+        if mos:
+            frags = wiki_element._process(mos, text, wiki_elements, element_store, environ)
             break
         else:
             wiki_elements = wiki_elements[1:]
