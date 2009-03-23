@@ -106,6 +106,56 @@ class Parser(object):
         return self.render(text, **kwargs)
 
 
+class ArgParser(object):
+    
+    def __init__(self,dialect, force_strings=False):
+        """Constructor for ArgParser objects
+
+        :parameters:
+          dialect
+            Usually created using :class:`creoleparser.dialects.CreoleArgs`
+          force_strings
+            If True, all lists will be converted to strings using
+            ``' '.join(list)``. This guarentees returned values will be of
+            type string or unicode.
+            
+        """
+    
+        self.dialect = dialect
+        self.force_strings = force_strings
+
+
+    def __call__(self, arg_string, force_strings='default'):
+        """Parses the ``arg_string`` returning a two-tuple 
+
+        :parameters:
+          force_strings
+            The default value is taken from the corresponding instance
+            attribute. See the constructor (`__init__`) for a description.
+        
+        """
+
+        if force_strings == 'default':
+            force_strings = self.force_strings
+
+        frags = fragmentize(arg_string,self.dialect.top_elements,{},{})
+        assert len(frags) <= 2
+        positional_args = []
+        kw_args = {}
+        for arg_group in frags:
+           if isinstance(arg_group,list):
+               positional_args = arg_group
+           else:
+               kw_args = arg_group
+        if force_strings is True:
+          for i,v in enumerate(positional_args):
+             if isinstance(v,list):
+                positional_args[i] = ' '.join(v)
+          for k,v in kw_args.items():
+             if isinstance(v,list):
+                kw_args[k] = ' '.join(v)
+        return (positional_args, kw_args)
+
 
 def fragmentize(text,wiki_elements, element_store, environ, remove_escapes=True):
 

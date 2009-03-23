@@ -243,6 +243,29 @@ class Dialect(object):
     """Base class for dialect objects. Doesn't do anything."""
     pass
 
+class Creepy(object):
+
+   kw_args = KeywordArgs(token='=')
+   kw_arg = KeywordArg(token='=')
+   pos_args = PositionalArgs()
+   quoted_arg = QuotedArg(token='\'"')
+   list_arg = ListArg(token=['[',']'])
+   explicit_list_arg = ExplicitListArg(token=['[',']'])
+   spaces = WhiteSpace()
+
+   def __init__(self):
+      self.kw_args.child_elements = [self.kw_arg]
+      self.kw_arg.child_elements = [self.explicit_list_arg,self.spaces]
+      self.pos_args.child_elements = [self.list_arg,self.spaces]
+      self.quoted_arg.child_elements = []
+      self.list_arg.child_elements = [self.spaces]
+      self.explicit_list_arg.child_elements = [self.spaces]
+      self.spaces.child_elements = []
+
+   @property
+   def top_elements(self):
+      return [self.quoted_arg, self.kw_args, self.pos_args] 
+
 
 def Creole10(use_additions=False, **kwargs):
     warnings.warn("""

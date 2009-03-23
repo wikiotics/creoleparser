@@ -2,6 +2,7 @@ Version 0.6.1 (??? 2009)
 ------------------------
 
  * fixed recursion issue with long lists and tables (>400 rows)
+ * added ``parse_args`` function for macro arg_string parsing
 
 
 Version 0.6 (March 1 2009)
