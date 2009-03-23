@@ -23,6 +23,8 @@ BLOCK_ONLY_TAGS = ['h1','h2','h3','h4','h5','h6',
 
 BLOCK_TAGS = BLOCK_ONLY_TAGS + ['ins','del','script']
 
+MACRO_ARGS = ['macro_name','arg_string','body', 'isblock',   'environ']
+
 MACRO_NAME = r'(?P<name>[a-zA-Z]+([-.]?[a-zA-Z0-9]+)*)'
 """allows any number of non-repeating hyphens or periods.
 Underscore is not included because hyphen is"""
@@ -53,7 +55,7 @@ class WikiElement(object):
     Should only affect readability of source xml.
     """
     
-    def __init__(self, tag, token, child_elements=[]):
+    def __init__(self, tag, token, child_elements=None):
         """Constructor for WikiElement objects.
 
         Subclasses may have other keyword arguments.   
@@ -74,7 +76,10 @@ class WikiElement(object):
         """
         self.tag = tag
         self.token = token
-        self.child_elements = []
+        if child_elements is None:
+            child_elements = []
+        self.child_elements = child_elements
+
 
     def _build(self,mo,element_store, environ):
         """Returns a genshi Element that has ``self.tag`` as the
@@ -173,7 +178,7 @@ class InlineElement(WikiElement):
         
     """
 
-    def __init__(self, tag, token):
+    def __init__(self, tag='', token=''):
         super(InlineElement,self).__init__(tag,token)
         self.regexp = re.compile(self.re_string(),re.DOTALL)
 
@@ -303,9 +308,9 @@ class BodiedMacro(Macro):
         content = r'(?P<arg_string>[ \S]*?)'
         body = '(?P<body>.+)'
         return esc_neg_look + re.escape(self.token[0]) + MACRO_NAME + \
-               content + esc_neg_look + re.escape(self.token[1]) + \
+               content + '(?<!/)' + re.escape(self.token[1]) + \
                body + esc_neg_look + re.escape(self.token[0]) + \
-               r'/(?P=name)' + re.escape(self.token[1])
+               r'/(?P=name)' + '(?<!/)' + re.escape(self.token[1])
 
     def _build(self,mo,element_store, environ):
         start = ''.join([esc_neg_look, re.escape(self.token[0]), re.escape(mo.group('name')),
@@ -369,10 +374,10 @@ class BodiedBlockMacro(WikiElement):
         start = '^' + re.escape(self.token[0])
         body = r'(?P<body>.*\n)'
         end = re.escape(self.token[0]) + \
-               r'/(?P=name)' + re.escape(self.token[1]) + r'\s*?$'
+               r'/(?P=name)' + '(?<!/)' + re.escape(self.token[1]) + r'\s*?$'
         
-        return start + '(' + MACRO_NAME + arg_string + ')' + re.escape(self.token[1]) + \
-               r'\s*?\n' + body + end
+        return start + '(' + MACRO_NAME + arg_string + ')' + '(?<!/)' + \
+               re.escape(self.token[1]) + r'\s*?\n' + body + end
 
     def _process(self, mos, text, wiki_elements,element_store, environ):
         """Returns genshi Fragments (Elements and text)
@@ -886,7 +891,7 @@ class Heading(BlockElement):
     """
   
     def __init__(self, tag, token):
-        super(Heading,self).__init__('',token )
+        super(Heading,self).__init__('',token)
         self.tags = tag
         self.regexp = re.compile(self.re_string(),re.MULTILINE)
 
@@ -1182,6 +1187,109 @@ class LineBreak(InlineElement):
     
     def _build(self,mo,element_store, environ):
         return bldr.tag.__getattr__(self.tag)()
+
+
+class ArgString(WikiElement):
+    def __init__(self, tag='', token=''):
+        super(ArgString,self).__init__(tag,token)
+        self.regexp = re.compile(self.re_string(),re.DOTALL)
+
+
+class KeywordArgs(ArgString):
+
+   def re_string(self):
+      return r'(?P<body>\w+ *'+re.escape(self.token)+'.*)$'
+
+   def _build(self,mo,element_store, environ):
+      return self.dictify(fragmentize(mo.group('body'),self.child_elements, element_store, environ))
+
+   def dictify(self,l):
+      d = {}
+      for k,v in l:
+         if k in MACRO_ARGS:
+            k = k + "_"
+         if k in d:
+            if isinstance(v,list):
+               try:
+                  d[k].extend(v)
+               except AttributeError:
+                  v.insert(0,d[k])
+                  d[k] = v
+            elif isinstance(d[k],list):
+               d[k].append(v)
+            else:
+               d[k] = [d[k], v]
+         else:
+            d[k] = v
+      
+      return d
+
+class KeywordArg(ArgString):
+
+   def re_string(self):
+      return r'(?P<name>\w+) *'+re.escape(self.token) + \
+               r' *(?P<body>.*?) *(?=\w+ *' + re.escape(self.token) +'|$)'
+
+   def _build(self,mo,element_store, environ):
+      if mo.group('body') == '':
+         value = ''
+      else:
+         value = fragmentize(mo.group('body'),self.child_elements,element_store, environ)
+         if len(value) == 1:
+            value = value[0]
+
+      return (mo.group('name'), value)
+
+   
+class PositionalArgs(ArgString):
+
+   def re_string(self):
+      return r'^(?P<body>.*)$'
+
+   def _build(self,mo,element_store, environ):
+      if mo.group('body') == '':
+          frags = []
+      else:
+          frags = fragmentize(mo.group('body'),self.child_elements, element_store, environ)
+      return frags
+
+class QuotedArg(InlineElement):
+
+   def re_string(self):
+      return esc_neg_look + r'(?P<quote>['+ re.escape(self.token) \
+             +'])(?P<body>.*?)' + esc_neg_look + '(?P=quote)'
+
+   def _build(self,mo,element_store, environ):
+      frags = fragmentize(mo.group('body'),self.child_elements,element_store, environ)
+      assert len(frags) == 1
+      return frags[0]
+         
+class ListArg(ArgString):
+
+   def re_string(self):
+      return esc_neg_look + re.escape(self.token[0]) + r'(?P<body>.*?)' + esc_neg_look + re.escape(self.token[1])
+
+   def _build(self,mo,element_store, environ):
+      if mo.group('body') == '':
+         value = []
+      else:
+         value = fragmentize(mo.group('body'),self.child_elements,element_store, environ)
+      return value
+
+class ExplicitListArg(ListArg):
+
+   def re_string(self):
+      return '^' + esc_neg_look + re.escape(self.token[0]) +r'(?P<body>.*?)' \
+             + esc_neg_look+ re.escape(self.token[1]) + '$'
+
+
+class WhiteSpace(ArgString):
+
+   def re_string(self):
+      return r' +'
+
+   def _build(self,mo,element_store, environ):
+      return None
 
 
 

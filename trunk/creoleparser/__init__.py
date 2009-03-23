@@ -6,8 +6,9 @@
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 #
 
-from core import Parser
-from dialects import creole11_base, creole10_base, create_dialect, Creole10
+from core import Parser, ArgParser
+from dialects import (creole11_base, creole10_base,
+                    create_dialect, Creepy, Creole10)
 
 __docformat__ = 'restructuredtext en'
 
@@ -18,6 +19,9 @@ creole2html = Parser(dialect=create_dialect(creole10_base), method='html')
 
 text2html = Parser(dialect=create_dialect(creole11_base), method='html')
 """This is a Creole 1.0 parser (+ additions) created for convenience"""
+
+parse_args = ArgParser(Creepy(),force_strings=True)
+"""Function for parsing macro arg_strings using a relaxed xml style"""
 
 def _test():
     import doctest
