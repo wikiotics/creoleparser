@@ -217,19 +217,16 @@ def fragmentize(text,wiki_elements, element_store, environ, remove_escapes=True)
 
 def fill_from_store(text,element_store):
     frags = []
-    mo = place_holder_re.search(text)
-    while mo:
-        if mo.start():
-            frags.append(text[:mo.start()])
+    mos = place_holder_re.finditer(text)
+    start = 0
+    for mo in mos:
+        if mo.start() > start:
+            frags.append(text[start:mo.start()])
         frags.append(element_store.get(mo.group(1),
                        mo.group(1).join(['<<<','>>>'])))
-        if mo.end() < len(text):
-            text = text[mo.end():]
-        else:
-            break
-        mo = place_holder_re.search(text)
-    else:
-        frags.append(text)
+        start = mo.end()
+    if start < len(text):
+        frags.append(text[start:])
     return frags
 
 
