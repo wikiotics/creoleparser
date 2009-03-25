@@ -638,8 +638,8 @@ class MacroTest(unittest.TestCase, BaseTest):
             self.parse('<<footer2>>'),
             wrap_result('<span class="centered">\nThis is a footer.\n</span>'))
         self.assertEquals(
-            self.parse('<<luca foobar>>'),
-            wrap_result('<strong> foobar</strong>'))
+            self.parse('<<luca foobar />>'),
+            wrap_result('<strong> foobar </strong>'))
         self.assertEquals(
             self.parse("<<reverse-lines>>one<</reverse-lines>>"),
             wrap_result("one\n"))

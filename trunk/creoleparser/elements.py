@@ -280,9 +280,11 @@ class Macro(WikiElement):
         return esc_neg_look + re.escape(self.token[0]) + r'(' + MACRO_NAME + \
                content + ')' + esc_neg_look + re.escape(self.token[1])
 
+    trailing_slash = re.compile(r'(?<=[ "\'\]])/$')
     def _build(self,mo,element_store, environ):
         if self.func:
-            value = self.func(mo.group(2),mo.group(4),None,False,environ)
+            arg_string = re.sub(self.trailing_slash,'',mo.group(4))
+            value = self.func(mo.group(2),arg_string,None,False,environ)
         else:
             value = None
         if value is None:
