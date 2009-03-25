@@ -23,7 +23,7 @@ BLOCK_ONLY_TAGS = ['h1','h2','h3','h4','h5','h6',
 
 BLOCK_TAGS = BLOCK_ONLY_TAGS + ['ins','del','script']
 
-MACRO_ARGS = ['macro_name','arg_string','body', 'isblock',   'environ']
+MACRO_ARGS = ['name','arg_string','body', 'isblock',   'environ']
 
 MACRO_NAME = r'(?P<name>[a-zA-Z]+([-.]?[a-zA-Z0-9]+)*)'
 """allows any number of non-repeating hyphens or periods.
@@ -1226,6 +1226,10 @@ class KeywordArgs(ArgString):
 
 class KeywordArg(ArgString):
 
+   def __init__(self,token,name_func=None):
+       self.name_func = name_func
+       super(KeywordArg,self).__init__(token=token)
+
    def re_string(self):
       return r'(?P<name>\w+) *'+re.escape(self.token) + \
                r' *(?P<body>.*?) *(?=\w+ *' + re.escape(self.token) +'|$)'
@@ -1237,8 +1241,12 @@ class KeywordArg(ArgString):
          value = fragmentize(mo.group('body'),self.child_elements,element_store, environ)
          if len(value) == 1:
             value = value[0]
+      if self.name_func:
+          name = self.name_func(mo.group('name'))
+      else:
+          name = mo.group('name')
 
-      return (mo.group('name'), value)
+      return (name, value)
 
    
 class PositionalArgs(ArgString):

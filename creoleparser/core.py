@@ -36,7 +36,11 @@ class Parser(object):
             
         """
     
-        self.dialect = dialect
+        if isinstance(dialect,type):
+            self.dialect = dialect()
+        else:
+            # warning message here in next major version
+            self.dialect = dialect
         self.method = method
         self.strip_whitespace = strip_whitespace
         self.encoding=encoding
@@ -121,7 +125,7 @@ class ArgParser(object):
             
         """
     
-        self.dialect = dialect
+        self.dialect = dialect()
         self.force_strings = force_strings
 
 

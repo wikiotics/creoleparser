@@ -1,7 +1,9 @@
 import unittest
+from string import lower
+
 from __init__ import parse_args
 from core import ArgParser
-from dialects import Creepy
+from dialects import creepy_base
 
 
 class BaseTest(object):
@@ -27,15 +29,16 @@ class BaseTest(object):
         self.assertEquals(
             self.parse("""one = 'oneval' two = "twoval" """),
             ([],{'one': 'oneval','two': 'twoval'}))
-        self.assertEquals(
-            self.parse("""one 'two' "three" """),
-            (['one', 'two', "three"],{}))
+
     def test_mixed_args(self):
         self.assertEquals(
             self.parse("one one = oneval "),
             (['one'],{'one': 'oneval'}))
 
     def test_quoting(self):
+        self.assertEquals(
+            self.parse("""one 'two' "three" """),
+            (['one', 'two', "three"],{}))
         self.assertEquals(
             self.parse(""" "height = 54in" one = "don't try it" """),
             (['height = 54in'],{'one': "don't try it"}))
@@ -45,7 +48,7 @@ class ListTest(unittest.TestCase, BaseTest):
     """
     """
     def setUp(self):
-        self.parse = ArgParser(Creepy(),force_strings=False)
+        self.parse = ArgParser(creepy_base(),force_strings=False)
         
     def test_pos_args(self):
         super(ListTest, self).test_pos_args()
@@ -83,7 +86,7 @@ class NoListTest(unittest.TestCase, BaseTest):
     """
     """
     def setUp(self):
-        self.parse = ArgParser(Creepy(),force_strings=True)
+        self.parse = ArgParser(creepy_base(),force_strings=True)
         
     def test_pos_args(self):
         super(NoListTest, self).test_pos_args()
@@ -117,10 +120,30 @@ class NoListTest(unittest.TestCase, BaseTest):
             self.parse(" one  = 'oneval' foo "),
             ([],{'one':'oneval foo'}))  
 
+class NameFuncTest(unittest.TestCase, BaseTest):
+    """
+    """
+    def setUp(self):
+        self.parse = ArgParser(creepy_base(name_func=lower),force_strings=False)
+        
+    def test_kw_args(self):
+        super(NameFuncTest, self).test_kw_args()
+        self.assertEquals(
+            self.parse(" ONE  = [ oneval ] Two = twoval "),
+            ([],{'one':['oneval'],'two':'twoval'}))
+
+    def test_mixed_args(self):
+        super(NameFuncTest, self).test_mixed_args()
+        self.assertEquals(
+            self.parse(" [one] One  = [ oneval ] "),
+            ([['one']],{'one':['oneval']}))
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(ListTest),
         unittest.makeSuite(NoListTest),
+        unittest.makeSuite(NameFuncTest),
         ))
 
 
