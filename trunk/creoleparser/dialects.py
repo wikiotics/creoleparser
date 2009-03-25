@@ -7,6 +7,7 @@
 #
 
 import warnings
+import string
 
 from elements import *
 
@@ -71,7 +72,7 @@ def create_dialect(dialect_base, **kw_args):
         
     """
 
-    return dialect_base(**kw_args)()
+    return dialect_base(**kw_args)
 
 
 
@@ -240,31 +241,41 @@ def creole11_base(macro_func=None,**kwargs):
 
 
 class Dialect(object):
-    """Base class for dialect objects. Doesn't do anything."""
+    """Base class for dialect objects."""
     pass
 
-class Creepy(object):
 
-   kw_args = KeywordArgs(token='=')
-   kw_arg = KeywordArg(token='=')
-   pos_args = PositionalArgs()
-   quoted_arg = QuotedArg(token='\'"')
-   list_arg = ListArg(token=['[',']'])
-   explicit_list_arg = ExplicitListArg(token=['[',']'])
-   spaces = WhiteSpace()
+def creepy_base(name_func=None):
 
-   def __init__(self):
-      self.kw_args.child_elements = [self.kw_arg]
-      self.kw_arg.child_elements = [self.explicit_list_arg,self.spaces]
-      self.pos_args.child_elements = [self.list_arg,self.spaces]
-      self.quoted_arg.child_elements = []
-      self.list_arg.child_elements = [self.spaces]
-      self.explicit_list_arg.child_elements = [self.spaces]
-      self.spaces.child_elements = []
+    class Base(ArgDialect):
 
-   @property
-   def top_elements(self):
-      return [self.quoted_arg, self.kw_args, self.pos_args] 
+       kw_args = KeywordArgs(token='=')
+       kw_arg = KeywordArg(token='=', name_func=name_func)
+       pos_args = PositionalArgs()
+       quoted_arg = QuotedArg(token='\'"')
+       list_arg = ListArg(token=['[',']'])
+       explicit_list_arg = ExplicitListArg(token=['[',']'])
+       spaces = WhiteSpace()
+
+       def __init__(self):
+          self.kw_args.child_elements = [self.kw_arg]
+          self.kw_arg.child_elements = [self.explicit_list_arg,self.spaces]
+          self.pos_args.child_elements = [self.list_arg,self.spaces]
+          self.quoted_arg.child_elements = []
+          self.list_arg.child_elements = [self.spaces]
+          self.explicit_list_arg.child_elements = [self.spaces]
+          self.spaces.child_elements = []
+
+       @property
+       def top_elements(self):
+          return [self.quoted_arg, self.kw_args, self.pos_args]
+
+    return Base
+
+
+class ArgDialect(object):
+    """Base class for arguement string dialect objects."""
+    pass
 
 
 def Creole10(use_additions=False, **kwargs):
