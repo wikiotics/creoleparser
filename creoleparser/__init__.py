@@ -20,7 +20,7 @@ creole2html = Parser(dialect=create_dialect(creole10_base), method='html')
 text2html = Parser(dialect=create_dialect(creole11_base), method='html')
 """This is a Creole 1.0 parser (+ additions) created for convenience"""
 
-parse_args = ArgParser(dialect=creepy_base(name_func=lower), force_strings=True)
+parse_args = ArgParser(dialect=creepy_base(key_func=lower), force_strings=True)
 """Function for parsing macro arg_strings using a relaxed xml style"""
 
 def _test():
