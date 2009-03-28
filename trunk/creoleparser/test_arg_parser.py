@@ -42,7 +42,12 @@ class BaseTest(object):
         self.assertEquals(
             self.parse(""" "height = 54in" one = "don't try it" """),
             (['height = 54in'],{'one': "don't try it"}))
-   
+
+    def test_empty_strings(self):
+        self.assertEquals(
+            self.parse(""" '' '' foo='' boo = """),
+            (['', ''], {'foo': '', 'boo': ''}))
+  
 
 class ListTest(unittest.TestCase, BaseTest):
     """
@@ -78,6 +83,9 @@ class ListTest(unittest.TestCase, BaseTest):
         self.assertEquals(
             self.parse(" one  = oneval foo two = twoval"),
             ([],{'one':['oneval','foo'],'two':'twoval'}))
+        self.assertEquals(
+            self.parse(" one  = oneval foo one = twoval"),
+            ([],{'one':['oneval','foo', 'twoval']}))
         self.assertEquals(
             self.parse(" one  = 'oneval' foo "),
             ([],{'one':['oneval','foo']}))  
@@ -120,20 +128,20 @@ class NoListTest(unittest.TestCase, BaseTest):
             self.parse(" one  = 'oneval' foo "),
             ([],{'one':'oneval foo'}))  
 
-class NameFuncTest(unittest.TestCase, BaseTest):
+class KeyFuncTest(unittest.TestCase, BaseTest):
     """
     """
     def setUp(self):
-        self.parse = ArgParser(creepy_base(name_func=lower),force_strings=False)
+        self.parse = ArgParser(creepy_base(key_func=lower),force_strings=False)
         
     def test_kw_args(self):
-        super(NameFuncTest, self).test_kw_args()
+        super(KeyFuncTest, self).test_kw_args()
         self.assertEquals(
             self.parse(" ONE  = [ oneval ] Two = twoval "),
             ([],{'one':['oneval'],'two':'twoval'}))
 
     def test_mixed_args(self):
-        super(NameFuncTest, self).test_mixed_args()
+        super(KeyFuncTest, self).test_mixed_args()
         self.assertEquals(
             self.parse(" [one] One  = [ oneval ] "),
             ([['one']],{'one':['oneval']}))
@@ -143,7 +151,7 @@ def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(ListTest),
         unittest.makeSuite(NoListTest),
-        unittest.makeSuite(NameFuncTest),
+        unittest.makeSuite(KeyFuncTest),
         ))
 
 

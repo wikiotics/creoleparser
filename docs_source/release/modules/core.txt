@@ -5,3 +5,6 @@
 
    .. autoclass:: creoleparser.core.Parser
       :members: __init__, generate, render, __call__
+
+   .. autoclass:: creoleparser.core.ArgParser
+      :members: __init__, __call__

@@ -4,28 +4,30 @@
 {%- endblock %}
 {%- set reldelim1 = reldelim1 is not defined and ' &raquo;' or reldelim1 %}
 {%- set reldelim2 = reldelim2 is not defined and ' |' or reldelim2 %}
-{%- macro relbar %}
+
+{%- macro relbar() %}
     <div class="related">
       <h3>{{ _('Navigation') }}</h3>
       <ul>
         {%- for rellink in rellinks %}
         <li class="right" {% if loop.first %}style="margin-right: 10px"{% endif %}>
           <a href="{{ pathto(rellink[0]) }}" title="{{ rellink[1]|striptags }}"
-             accesskey="{{ rellink[2] }}">{{ rellink[3] }}</a>
+             {{ accesskey(rellink[2]) }}>{{ rellink[3] }}</a>
           {%- if not loop.first %}{{ reldelim2 }}{% endif %}</li>
         {%- endfor %}
         {%- block rootrellink %}
         <li><a href="{{ pathto(master_doc) }}">{{ shorttitle|e }}</a>{{ reldelim1 }}</li>
         {%- endblock %}
         {%- for parent in parents %}
-          <li><a href="{{ parent.link|e }}" accesskey="U">{{ parent.title }}</a>{{ reldelim1 }}</li>
+          <li><a href="{{ parent.link|e }}" {% if loop.last %}{{ accesskey("U") }}{% endif %}>{{ parent.title }}</a>{{ reldelim1 }}</li>
         {%- endfor %}
         {%- block relbaritems %} {% endblock %}
       </ul>
     </div>
 {%- endmacro %}
-{%- macro sidebar %}
-      {%- if builder != 'htmlhelp' %}
+
+{%- macro sidebar() %}
+      {%- if not embedded %}{% if not theme_nosidebar|tobool %}
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
           {%- block sidebarlogo %}
@@ -44,71 +46,69 @@
           {%- block sidebarrel %}
           {%- if prev %}
             <h4>{{ _('Previous topic') }}</h4>
-            <p class="topless"><a href="{{ prev.link|e }}" title="{{ _('previous chapter') }}">{{ prev.title }}</a></p>
+            <p class="topless"><a href="{{ prev.link|e }}"
+                                  title="{{ _('previous chapter') }}">{{ prev.title }}</a></p>
           {%- endif %}
           {%- if next %}
             <h4>{{ _('Next topic') }}</h4>
-            <p class="topless"><a href="{{ next.link|e }}" title="{{ _('next chapter') }}">{{ next.title }}</a></p>
+            <p class="topless"><a href="{{ next.link|e }}"
+                                  title="{{ _('next chapter') }}">{{ next.title }}</a></p>
           {%- endif %}
           {%- endblock %}
-          {%- if sourcename %}
+          {%- block sidebarsourcelink %}
+          {%- if show_source and has_source and sourcename %}
             <h3>{{ _('This Page') }}</h3>
             <ul class="this-page-menu">
-            {%- if builder == 'web' %}
-              <li><a href="#comments">Comments ({{ comments|length }} so far)</a></li>
-              <li><a href="{{ pathto('@edit/' + sourcename)|e }}">{{ _('Suggest Change') }}</a></li>
-              <li><a href="{{ pathto('@source/' + sourcename)|e }}">{{ _('Show Source') }}</a></li>
-            {%- elif builder == 'html' %}
-              <li><a href="{{ pathto('_sources/' + sourcename, true)|e }}">{{ _('Show Source') }}</a></li>
-            {%- endif %}
+              <li><a href="{{ pathto('_sources/' + sourcename, true)|e }}"
+                     rel="nofollow">{{ _('Show Source') }}</a></li>
             </ul>
           {%- endif %}
+          {%- endblock %}
           {%- if customsidebar %}
-          {{ rendertemplate(customsidebar) }}
+          {% include customsidebar %}
           {%- endif %}
           {%- block sidebarsearch %}
           {%- if pagename != "search" %}
-          <h3>{% if builder == 'web' %}{{ _('Keyword search')}}{% else %}{{ _('Quick search') }}{% endif %}</h3>
-            <form class="search" action="{{ pathto('search') }}" method="get">
-              <input type="text" name="q" size="18" /> <input type="submit" value="{{ _('Go') }}" />
-              <input type="hidden" name="check_keywords" value="yes" />
-              <input type="hidden" name="area" value="default" />
-            </form>
-            {%- if builder == 'web' %}
-            <p style="font-size: 90%">{{ _('Enter a module, class or function name.') }}</p>
-            {%- endif %}
+          <div id="searchbox" style="display: none">
+            <h3>{{ _('Quick search') }}</h3>
+              <form class="search" action="{{ pathto('search') }}" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="{{ _('Go') }}" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              {{ _('Enter search terms or a module, class or function name.') }}
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
           {%- endif %}
           {%- endblock %}
         </div>
       </div>
-      {%- endif %}
-{%- endmacro -%}
+      {%- endif %}{% endif %}
+{%- endmacro %}
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     {{ metatags }}
-    {%- if builder != 'htmlhelp' %}
-      {%- set titlesuffix = " &mdash; " + docstitle|e %}
+    {%- if not embedded %}
+      {%- set titlesuffix = " &mdash; "|safe + docstitle|e %}
+    {%- else %}
+      {%- set titlesuffix = "" %}
     {%- endif %}
     <title>{{ title|striptags }}{{ titlesuffix }}</title>
-    {%- if builder == 'web' %}
-    <link rel="stylesheet" href="{{ pathto('index') }}?do=stylesheet{%
-      if in_admin_panel %}&admin=yes{% endif %}" type="text/css" />
-    {%- for link, type, title in page_links %}
-    <link rel="alternate" type="{{ type|e(true) }}" title="{{ title|e(true) }}" href="{{ link|e(true) }}" />
-    {%- endfor %}
-    {%- else %}
     <link rel="stylesheet" href="{{ pathto('_static/' + style, 1) }}" type="text/css" />
     <link rel="stylesheet" href="{{ pathto('_static/pygments.css', 1) }}" type="text/css" />
-    {%- endif %}
-    {%- if builder != 'htmlhelp' %}
+    {%- if not embedded %}
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-          URL_ROOT:    '{{ pathto("", 1) }}',
-          VERSION:     '{{ release|e }}',
-          COLLAPSE_MODINDEX: false,
-          FILE_SUFFIX: '{{ file_suffix }}'
+        URL_ROOT:    '{{ pathto("", 1) }}',
+        VERSION:     '{{ release|e }}',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '{{ file_suffix }}',
+        HAS_SOURCE:  {{ has_source|lower }}
       };
     </script>
     {%- for scriptfile in script_files %}
@@ -127,8 +127,12 @@
     {%- if hasdoc('about') %}
     <link rel="author" title="{{ _('About these documents') }}" href="{{ pathto('about') }}" />
     {%- endif %}
+    {%- if hasdoc('genindex') %}
     <link rel="index" title="{{ _('Index') }}" href="{{ pathto('genindex') }}" />
+    {%- endif %}
+    {%- if hasdoc('search') %}
     <link rel="search" title="{{ _('Search') }}" href="{{ pathto('search') }}" />
+    {%- endif %}
     {%- if hasdoc('copyright') %}
     <link rel="copyright" title="{{ _('Copyright') }}" href="{{ pathto('copyright') }}" />
     {%- endif %}
@@ -146,23 +150,24 @@
 {%- block extrahead %} {% endblock %}
   </head>
   <body>
+{%- block header %}{% endblock %}
 
 {%- block relbar1 %}{{ relbar() }}{% endblock %}
 
 {%- block sidebar1 %} {# possible location for sidebar #} {% endblock %}
 
-{%- block document %}
     <div class="document">
+{%- block document %}
       <div class="documentwrapper">
-      {%- if builder != 'htmlhelp' %}
+      {%- if not embedded %}{% if not theme_nosidebar|tobool %}
         <div class="bodywrapper">
-      {%- endif %}
+      {%- endif %}{% endif %}
           <div class="body">
             {% block body %} {% endblock %}
           </div>
-      {%- if builder != 'htmlhelp' %}
+      {%- if not embedded %}{% if not theme_nosidebar|tobool %}
         </div>
-      {%- endif %}
+      {%- endif %}{% endif %}
       </div>
 {%- endblock %}
 
@@ -187,16 +192,5 @@
     {%- endif %}
     </div>
 {%- endblock %}
-
-<script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-<script type="text/javascript">
-try {
-var pageTracker = _gat._getTracker("UA-2934490-7");
-pageTracker._trackPageview();
-} catch(err) {}</script>
-
-  </body>
+<script type="text/javascript">var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script><script type="text/javascript">try {var pageTracker = _gat._getTracker("UA-2934490-7");pageTracker._trackPageview();} catch(err) {}</script>  </body>
 </html>

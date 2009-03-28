@@ -111,6 +111,18 @@ class Parser(object):
 
 
 class ArgParser(object):
+    """Create a callable object for parsing macro argument strings
+
+    >>> from dialects import creepy_base
+    >>> my_parser = ArgParser(dialect=creepy_base())
+    >>> my_parser(" one two foo='three' boo='four' ")
+    (['one', 'two'], {'foo': 'three', 'boo': 'four'})
+ 
+    A parser returns a two-tuple, the first item being a list of positional
+    arguments and the second a dictionary of keyword arguments. Argument
+    values are either strings or lists.
+    
+    """
     
     def __init__(self,dialect, force_strings=False):
         """Constructor for ArgParser objects
@@ -152,12 +164,12 @@ class ArgParser(object):
            else:
                kw_args = arg_group
         if force_strings is True:
-          for i,v in enumerate(positional_args):
-             if isinstance(v,list):
-                positional_args[i] = ' '.join(v)
-          for k,v in kw_args.items():
-             if isinstance(v,list):
-                kw_args[k] = ' '.join(v)
+            for i,v in enumerate(positional_args):
+                if isinstance(v,list):
+                    positional_args[i] = ' '.join(v)
+            for k,v in kw_args.items():
+                if isinstance(v,list):
+                    kw_args[k] = ' '.join(v)
         return (positional_args, kw_args)
 
 
@@ -271,7 +283,8 @@ def chunk(text, blank_lines, hard_elements, limit):
     
     return chunks
 
-
+class ExplicitList(list):
+    pass
 
 def _test():
     import doctest

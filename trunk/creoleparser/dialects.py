@@ -245,12 +245,93 @@ class Dialect(object):
     pass
 
 
-def creepy_base(name_func=None):
+def creepy_base(key_func=None):
+    """Returns a dialect object (a class) to be used by ArgParser
 
+    :parameters:
+      key_func
+        If supplied, this function will be used to transform the names of
+        keyword arguments. It must accept a single positional argument. This
+        can be used to make keywords case insensitive:
+        
+        >>> from string import lower
+        >>> from core import ArgParser
+        >>> my_parser = ArgParser(dialect=creepy_base(lower))
+        >>> my_parser(" Foo='one' ")
+        ([], {'foo': 'one'})
+
+    **How it Works**
+
+    The "Creepy" dialect uses a syntax that can look much like that of
+    attributes in xml. The most important differences are that positional
+    arguments are allowed and quoting is optional.
+
+    A Creepy dialect object is normally passed to :class:`~creoleparser.core.ArgParser`
+    to create a new parser object. When called, this outputs a two-tuple
+    (a list of positional arguments and a dictionary of keyword arguments).
+
+    >>> from core import ArgParser
+    >>> my_parser = ArgParser(dialect=creepy_base())
+    >>> my_parser(" foo='one' ")
+    ([], {'foo': 'one'})
+    >>> my_parser("  'one' ")
+    (['one'], {})
+    >>> my_parser("  'one' foo='two' ")
+    (['one'], {'foo': 'two'})
+
+    Positional arguments must come before keyword arguments. If they occur
+    after a keyword argument, they will be combined with that value as a list:
+    
+    >>> my_parser("  foo='one' 'two' ")
+    ([], {'foo': ['one', 'two']})
+
+    Similarly, if two or more keywords are the same, the values will be combined
+    into a list:
+
+    >>> my_parser("  foo='one' foo='two' ")
+    ([], {'foo': ['one', 'two']})
+    
+    Lists can also be created explicitly:
+
+    >>> my_parser("  foo=['one' 'two'] ")
+    ([], {'foo': ['one', 'two']})
+
+    You can test if a list is explicit by testing its class:
+
+    >>> from core import ExplicitList
+    >>> pos, kw = my_parser("  foo=['boo' 'poo'] ")
+    >>> isinstance(kw['foo'],ExplicitList)
+    True
+
+    Lists of length zero or one are **always** of type ExplicitList.
+
+    Quotes can be single or double:
+    
+    >>> my_parser(''' foo="it's okay" ''')
+    ([], {'foo': "it's okay"})
+
+    Tildes can be used for escaping:
+
+    >>> my_parser(''' foo='it~'s okay' ''')
+    ([], {'foo': "it's okay"})
+    
+    Quotes are optional if argument value don't contain spaces or unescaped
+    special characters (equals and square brackets):
+    
+    >>> my_parser("  one foo = two ")
+    (['one'], {'foo': 'two'})
+
+    Keyword arguments lacking a value will be interpreted as an empty string:
+
+    >>> my_parser(" '' foo=  boo= '' ")
+    ([''], {'foo': '', 'boo': ''})
+
+    """
+    
     class Base(ArgDialect):
 
        kw_args = KeywordArgs(token='=')
-       kw_arg = KeywordArg(token='=', name_func=name_func)
+       kw_arg = KeywordArg(token='=', key_func=key_func)
        pos_args = PositionalArgs()
        quoted_arg = QuotedArg(token='\'"')
        list_arg = ListArg(token=['[',']'])
@@ -274,7 +355,7 @@ def creepy_base(name_func=None):
 
 
 class ArgDialect(object):
-    """Base class for arguement string dialect objects."""
+    """Base class for argument string dialect objects."""
     pass
 
 

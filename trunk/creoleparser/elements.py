@@ -13,7 +13,7 @@ import urllib
 import genshi.builder as bldr
 from genshi.core import Stream, Markup
 
-from core import escape_char, esc_neg_look, fragmentize 
+from core import escape_char, esc_neg_look, fragmentize, ExplicitList
 
 BLOCK_ONLY_TAGS = ['h1','h2','h3','h4','h5','h6',
               'ul','ol','dl',
@@ -193,18 +193,18 @@ class InlineElement(WikiElement):
 
     def _process(self, mos, text, wiki_elements, element_store, environ):
         """Returns genshi Fragments (Elements and text)"""
-        bits = []
+        parts = []
         end = 0
         for mo in mos:
             processed = self._build(mo,element_store, environ)
             store_id = str(id(processed)) 
             element_store[store_id] = processed
-            bits.append(''.join([text[end:mo.start()],'<<<',store_id,'>>>']))
+            parts.append(''.join([text[end:mo.start()],'<<<',store_id,'>>>']))
             end = mo.end()
         # call again for trailing text and extend the result list
         if end < len(text):
-            bits.append(text[end:])
-        new_text = ''.join(bits)
+            parts.append(text[end:])
+        new_text = ''.join(parts)
         if not isinstance(wiki_elements[0],(list,tuple)):
             wiki_elements = wiki_elements[1:]
         frags = fragmentize(new_text,wiki_elements,element_store, environ)
@@ -1221,6 +1221,7 @@ class KeywordArgs(ArgString):
                d[k].append(v)
             else:
                d[k] = [d[k], v]
+            d[k] = list(d[k])
          else:
             d[k] = v
       
@@ -1228,8 +1229,8 @@ class KeywordArgs(ArgString):
 
 class KeywordArg(ArgString):
 
-   def __init__(self,token,name_func=None):
-       self.name_func = name_func
+   def __init__(self,token,key_func=None):
+       self.key_func = key_func
        super(KeywordArg,self).__init__(token=token)
 
    def re_string(self):
@@ -1243,8 +1244,8 @@ class KeywordArg(ArgString):
          value = fragmentize(mo.group('body'),self.child_elements,element_store, environ)
          if len(value) == 1:
             value = value[0]
-      if self.name_func:
-          name = self.name_func(mo.group('name'))
+      if self.key_func:
+          name = self.key_func(mo.group('name'))
       else:
           name = mo.group('name')
 
@@ -1270,9 +1271,13 @@ class QuotedArg(InlineElement):
              +'])(?P<body>.*?)' + esc_neg_look + '(?P=quote)'
 
    def _build(self,mo,element_store, environ):
-      frags = fragmentize(mo.group('body'),self.child_elements,element_store, environ)
-      assert len(frags) == 1
-      return frags[0]
+      if mo.group('body') == '':
+          value = ''
+      else:
+          frags = fragmentize(mo.group('body'),self.child_elements,element_store, environ)
+          assert len(frags) == 1
+          value = frags[0]
+      return value
          
 class ListArg(ArgString):
 
@@ -1284,7 +1289,7 @@ class ListArg(ArgString):
          value = []
       else:
          value = fragmentize(mo.group('body'),self.child_elements,element_store, environ)
-      return value
+      return ExplicitList(value)
 
 class ExplicitListArg(ListArg):
 
