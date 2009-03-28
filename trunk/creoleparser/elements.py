@@ -1208,6 +1208,7 @@ class KeywordArgs(ArgString):
    def dictify(self,l):
       d = {}
       for k,v in l:
+         k = str(k)
          if k in MACRO_ARGS:
             k = k + "_"
          if k in d:
