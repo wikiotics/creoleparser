@@ -12,16 +12,24 @@ The ``macro_func``
 ``macro_func`` is an optional argument used during instantiation of a dialect object.
 Most often, this function will act as a dispatcher and call other functions based
 on ``macro_name``'s that are encountered while a Parser is working. Using this method,
-the ``macro_func`` can be very simple, particularily if the actual macros have the
-same signature.
+the ``macro_func`` can be very simple, particularly if the actual macros have 
+compatible signatures.
 
-**A very simple macro_func:**
+**A simple macro_func:**
 
-.. code-block:: python
-
+.. testcode::
+   
+   from creoleparser import parse_args
+   
    def macro_dispatcher(macro_name,arg_string,body,isblock,environ):
        if macro_name in environ['macros']:
-           return environ['macros'][macro_name](arg_string,body,isblock,environ)
+          macro = {'name': macro_name,
+                   'arg_string': arg_string,
+                   'body': body,
+                   'isblock': isblock
+                   }
+          pos, kw = parse_args(arg_string)
+          return environ['macros'][macro_name](macro, environ, *pos, **kw)
 
 In the code above, ``eniviron['macros']`` is a dictionary of functions. Note that if ``macro_name`` is
 not in the dictionary, or if a macro returns `None`, creoleparser will treat the macro as

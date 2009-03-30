@@ -72,10 +72,10 @@ and non-repeating periods and hyphens.
 Macro Arguments and Delimiters
 ------------------------------
 
-Creoleparser does not specify or suggest the format of macro arguments. Internally,
-the entire string from the `macro_name` to the ``>>`` are passed as the `arg_string`.
-For this reason, an implementer should choose something other than legal macro name
-characters to delimit the arguments.
+Internally, the entire string from the `macro_name` to the ``>>`` is passed as
+the `arg_string`, so an implementation is free to choose the syntax. It is
+recommended, however, to use syntax of the
+:ref:`the built-in argument parser <arg_parser>`.
 
 
 
