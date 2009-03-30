@@ -110,8 +110,9 @@ class Parser(object):
         return self.render(text, **kwargs)
 
 
+
 class ArgParser(object):
-    """Create a callable object for parsing macro argument strings
+    """Creates a callable object for parsing macro argument strings
 
     >>> from dialects import creepy_base
     >>> my_parser = ArgParser(dialect=creepy_base())
@@ -124,53 +125,92 @@ class ArgParser(object):
     
     """
     
-    def __init__(self,dialect, force_strings=False):
+    def __init__(self,dialect, force_strings=False,
+                 key_func=None, illegal_keys=()):
         """Constructor for ArgParser objects
 
         :parameters:
           dialect
-            Usually created using :class:`creoleparser.dialects.CreoleArgs`
+            Usually created using :class:`creoleparser.dialects.creepy_base`
           force_strings
-            If True, all lists will be converted to strings using
-            ``' '.join(list)``. This guarentees returned values will be of
-            type string or unicode.
+            If *True*, all values that are lists will be converted to strings
+            using ``' '.join(list)``. This guarentees returned values will be
+            of type string or unicode.
+          illegal_keys
+            A tuple of keys that will be post-fixed with an underscore if found
+            during parsing. 
+          key_func
+            If supplied, this function will be used to transform the names of
+            keyword arguments. It must accept a single positional argument.
+            For example, this can be used to make keywords case insensitive:
+            
+            >>> from string import lower
+            >>> from dialects import creepy_base
+            >>> my_parser = ArgParser(dialect=creepy_base(),key_func=lower)
+            >>> my_parser(" Foo='one' ")
+            ([], {'foo': 'one'})
             
         """
     
         self.dialect = dialect()
         self.force_strings = force_strings
+        self.key_func = key_func
+        self.illegal_keys = illegal_keys
 
 
-    def __call__(self, arg_string, force_strings='default'):
+    def __call__(self, arg_string, **kwargs): 
         """Parses the ``arg_string`` returning a two-tuple 
 
-        :parameters:
-          force_strings
-            The default value is taken from the corresponding instance
-            attribute. See the constructor (`__init__`) for a description.
+        Keyword arguments (``kwargs``) can be used to override the corresponding
+        attributes of the ArgParser object (see above). ``dialect`` cannot
+        be overridden.
         
         """
+        
+        kwargs.setdefault('force_strings',self.force_strings)
+        kwargs.setdefault('key_func',self.key_func)
+        kwargs.setdefault('illegal_keys',self.illegal_keys)
 
-        if force_strings == 'default':
-            force_strings = self.force_strings
+        return self._parse(arg_string,**kwargs)
 
+
+    def _parse(self,arg_string, force_strings, key_func, illegal_keys):
+        
         frags = fragmentize(arg_string,self.dialect.top_elements,{},{})
-        assert len(frags) <= 2
         positional_args = []
         kw_args = {}
-        for arg_group in frags:
-           if isinstance(arg_group,list):
-               positional_args = arg_group
+        for arg in frags:
+           if isinstance(arg,tuple):
+             k, v  = arg
+             k = str(k)
+             if isinstance(v,list) and force_strings:
+                 v = ' ' .join(v)
+             if key_func:
+                 k =  key_func(k)
+             if k in illegal_keys:
+                 k = k + '_'
+             if k in kw_args:
+                if isinstance(v,list):
+                   try:
+                      kw_args[k].extend(v)
+                   except AttributeError:
+                      v.insert(0,kw_args[k])
+                      kw_args[k] = v
+                elif isinstance(kw_args[k],list):
+                   kw_args[k].append(v)
+                else:
+                   kw_args[k] = [kw_args[k], v]
+                kw_args[k] = list(kw_args[k])
+             else:
+                kw_args[k] = v
            else:
-               kw_args = arg_group
-        if force_strings is True:
-            for i,v in enumerate(positional_args):
-                if isinstance(v,list):
-                    positional_args[i] = ' '.join(v)
-            for k,v in kw_args.items():
-                if isinstance(v,list):
-                    kw_args[k] = ' '.join(v)
+               if isinstance(arg,list) and force_strings:
+                 arg = ' ' .join(arg)
+               positional_args.append(arg)
+
         return (positional_args, kw_args)
+        
+
 
 
 def fragmentize(text,wiki_elements, element_store, environ, remove_escapes=True):

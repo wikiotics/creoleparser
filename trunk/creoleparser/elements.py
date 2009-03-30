@@ -23,7 +23,6 @@ BLOCK_ONLY_TAGS = ['h1','h2','h3','h4','h5','h6',
 
 BLOCK_TAGS = BLOCK_ONLY_TAGS + ['ins','del','script']
 
-MACRO_ARGS = ['name','arg_string','body', 'isblock',   'environ']
 
 MACRO_NAME = r'(?P<name>[a-zA-Z]+([-.]?[a-zA-Z0-9]+)*)'
 """allows any number of non-repeating hyphens or periods.
@@ -1190,82 +1189,38 @@ class LineBreak(InlineElement):
     def _build(self,mo,element_store, environ):
         return bldr.tag.__getattr__(self.tag)()
 
+#############################################################################
+# The WikeElement classes below are used for parsing macro argument strings # 
+#############################################################################
 
 class ArgString(WikiElement):
+    """Base class for elements used on argument strings"""
     def __init__(self, tag='', token=''):
         super(ArgString,self).__init__(tag,token)
         self.regexp = re.compile(self.re_string(),re.DOTALL)
 
 
-class KeywordArgs(ArgString):
-
-   def re_string(self):
-      return r'(?P<body>\w+ *'+re.escape(self.token)+'.*)$'
-
-   def _build(self,mo,element_store, environ):
-      return self.dictify(fragmentize(mo.group('body'),self.child_elements, element_store, environ))
-
-   def dictify(self,l):
-      d = {}
-      for k,v in l:
-         k = str(k)
-         if k in MACRO_ARGS:
-            k = k + "_"
-         if k in d:
-            if isinstance(v,list):
-               try:
-                  d[k].extend(v)
-               except AttributeError:
-                  v.insert(0,d[k])
-                  d[k] = v
-            elif isinstance(d[k],list):
-               d[k].append(v)
-            else:
-               d[k] = [d[k], v]
-            d[k] = list(d[k])
-         else:
-            d[k] = v
-      
-      return d
-
 class KeywordArg(ArgString):
-
-   def __init__(self,token,key_func=None):
-       self.key_func = key_func
-       super(KeywordArg,self).__init__(token=token)
+   """Finds keyword arguments"""
 
    def re_string(self):
-      return r'(?P<name>\w+) *'+re.escape(self.token) + \
-               r' *(?P<body>.*?) *(?=\w+ *' + re.escape(self.token) +'|$)'
+      return r'(?P<key>\w[\w0-9]*) *'+re.escape(self.token) + \
+               r' *(?P<body>.*?) *(?=\w[\w0-9]* *' + re.escape(self.token) +'|$)'
 
    def _build(self,mo,element_store, environ):
       if mo.group('body') == '':
          value = ''
       else:
-         value = fragmentize(mo.group('body'),self.child_elements,element_store, environ)
+         value = fragmentize(mo.group('body'),self.child_elements,
+                             element_store, environ)
          if len(value) == 1:
             value = value[0]
-      if self.key_func:
-          name = self.key_func(mo.group('name'))
-      else:
-          name = mo.group('name')
-
+      name = mo.group('key')
       return (name, value)
 
-   
-class PositionalArgs(ArgString):
-
-   def re_string(self):
-      return r'^(?P<body>.*)$'
-
-   def _build(self,mo,element_store, environ):
-      if mo.group('body') == '':
-          frags = []
-      else:
-          frags = fragmentize(mo.group('body'),self.child_elements, element_store, environ)
-      return frags
 
 class QuotedArg(InlineElement):
+   """Finds quoted arguments"""
 
    def re_string(self):
       return esc_neg_look + r'(?P<quote>['+ re.escape(self.token) \
@@ -1281,7 +1236,12 @@ class QuotedArg(InlineElement):
       return value
          
 class ListArg(ArgString):
+   """Finds lists in argument strings 
 
+   This is used for positional arguments only.
+    
+   """
+    
    def re_string(self):
       return esc_neg_look + re.escape(self.token[0]) + r'(?P<body>.*?)' + esc_neg_look + re.escape(self.token[1])
 
@@ -1293,16 +1253,22 @@ class ListArg(ArgString):
       return ExplicitList(value)
 
 class ExplicitListArg(ListArg):
+    """Only finds lists where the string to be searched is fully enclosed
 
-   def re_string(self):
-      return '^' + esc_neg_look + re.escape(self.token[0]) +r'(?P<body>.*?)' \
+    This is used for keyword values in argument strings.
+    
+    """
+
+    def re_string(self):
+       return '^' + esc_neg_look + re.escape(self.token[0]) +r'(?P<body>.*?)' \
              + esc_neg_look+ re.escape(self.token[1]) + '$'
 
 
 class WhiteSpace(ArgString):
+   """Breaks up elements but doesn't add any output"""
 
    def re_string(self):
-      return r' +'
+      return r'[ \n]+'
 
    def _build(self,mo,element_store, environ):
       return None

@@ -9,15 +9,16 @@ except ImportError:
 
 
 setup(name='Creoleparser',
-      version='0.6',
+      version='0.6.1',
       install_requires=['Genshi>=0.4'],
       description='Parser for the Creole common wiki markup language',
       author='Stephen Day',
       author_email='stephen.h.day@gm**l.com',
-      url='http://purl.oclc.org/creoleparser',
+      url='http://code.google.com/p/creoleparser/',
+      download_url='http://pypi.python.org/pypi/Creoleparser',
       packages=['creoleparser'],
       license = 'MIT',
-      zip_safe = False,
+      #zip_safe = False,
       classifiers = [
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',

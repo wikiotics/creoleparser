@@ -90,14 +90,14 @@ class ListTest(unittest.TestCase, BaseTest):
             self.parse(" one  = 'oneval' foo "),
             ([],{'one':['oneval','foo']}))  
 
-class NoListTest(unittest.TestCase, BaseTest):
+class ForceStringsTest(unittest.TestCase, BaseTest):
     """
     """
     def setUp(self):
         self.parse = ArgParser(creepy_base(),force_strings=True)
         
     def test_pos_args(self):
-        super(NoListTest, self).test_pos_args()
+        super(ForceStringsTest, self).test_pos_args()
         self.assertEquals(
             self.parse(" one [ two ] "),
             (['one','two'],{}))
@@ -109,13 +109,13 @@ class NoListTest(unittest.TestCase, BaseTest):
             (['one two'],{}))
 
     def test_kw_args(self):
-        super(NoListTest, self).test_kw_args()
+        super(ForceStringsTest, self).test_kw_args()
         self.assertEquals(
             self.parse(" one  = [ oneval ] "),
             ([],{'one':'oneval'}))
 
     def test_mixed_args(self):
-        super(NoListTest, self).test_mixed_args()
+        super(ForceStringsTest, self).test_mixed_args()
         self.assertEquals(
             self.parse(" [one] one  = [ oneval ] "),
             (['one'],{'one':'oneval'}))
@@ -132,7 +132,7 @@ class KeyFuncTest(unittest.TestCase, BaseTest):
     """
     """
     def setUp(self):
-        self.parse = ArgParser(creepy_base(key_func=lower),force_strings=False)
+        self.parse = ArgParser(creepy_base(),key_func=lower,force_strings=False)
         
     def test_kw_args(self):
         super(KeyFuncTest, self).test_kw_args()
@@ -146,12 +146,25 @@ class KeyFuncTest(unittest.TestCase, BaseTest):
             self.parse(" [one] One  = [ oneval ] "),
             ([['one']],{'one':['oneval']}))
 
+class IllegalKeysTest(unittest.TestCase, BaseTest):
+    """
+    """
+    def setUp(self):
+        self.parse = ArgParser(creepy_base(),illegal_keys=['onety','twoty'])
+        
+    def test_kw_args(self):
+        super(IllegalKeysTest, self).test_kw_args()
+        self.assertEquals(
+            self.parse(" onety  = [ oneval ] twoty = twoval "),
+            ([],{'onety_':['oneval'],'twoty_':'twoval'}))
+
 
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(ListTest),
-        unittest.makeSuite(NoListTest),
+        unittest.makeSuite(ForceStringsTest),
         unittest.makeSuite(KeyFuncTest),
+        unittest.makeSuite(IllegalKeysTest),
         ))
 
 
