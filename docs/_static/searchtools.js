@@ -221,7 +221,7 @@ var Search = {
       var params = $.getQueryParameters();
       if (params.q) {
           var query = params.q[0];
-          $('input[@name="q"]')[0].value = query;
+          $('input[name="q"]')[0].value = query;
           this.performSearch(query);
       }
   },
@@ -239,7 +239,7 @@ var Search = {
   },
 
   hasIndex : function() {
-      return self._index !== null;
+      return this._index !== null;
   },
 
   deferQuery : function(query) {
@@ -283,7 +283,7 @@ var Search = {
     if (this.hasIndex())
       this.query(query);
     else
-      this.setQuery(query);
+      this.deferQuery(query);
   },
 
   query : function(query) {
@@ -431,13 +431,19 @@ var Search = {
           listItem.slideDown(5, function() {
             displayNextItem();
           });
-        } else {
+        } else if (DOCUMENTATION_OPTIONS.HAS_SOURCE) {
           $.get('_sources/' + item[0] + '.txt', function(data) {
             listItem.append($.makeSearchSummary(data, searchterms, hlterms));
             Search.output.append(listItem);
             listItem.slideDown(5, function() {
               displayNextItem();
             });
+          });
+        } else {
+          // no source available, just display title
+          Search.output.append(listItem);
+          listItem.slideDown(5, function() {
+            displayNextItem();
           });
         }
       }

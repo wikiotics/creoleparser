@@ -189,7 +189,7 @@ def creole11_base(macro_func=None,**kwargs):
        ...                                                  '--':'del',
        ...                                                  '##':'code'})
        >>> from core import Parser
-       >>> parser = Parser(MyDialect) # for verion 6.0 use Parser(MyDialect())
+       >>> parser = Parser(MyDialect) # for verion 6.0, use Parser(MyDialect())
        >>> print parser.render("delete --this-- but don't underline __this__"),
        <p>delete <del>this</del> but don't underline __this__</p>
            
@@ -246,23 +246,23 @@ class Dialect(object):
 
 
 
-def creepy_base():
+def creepy10_base():
     """Returns a dialect object (a class) to be used by :class:`~creoleparser.core.ArgParser`
 
 
     **How it Works**
 
     The "Creepy" dialect uses a syntax that can look much like that of
-    attributes in xml. The most important differences are that positional
-    arguments are allowed and quoting is optional.
+    attribute definition in xml. The most important differences are that
+    positional arguments are allowed and quoting is optional.
 
     A Creepy dialect object is normally passed to
     :class:`~creoleparser.core.ArgParser` to create a new parser object.
     When called with a single argument, this outputs a two-tuple
-    (a list of positional arguments and a dictionary of keyword arguments).
+    (a list of positional arguments and a dictionary of keyword arguments):
 
     >>> from core import ArgParser
-    >>> my_parser = ArgParser(dialect=creepy_base())
+    >>> my_parser = ArgParser(dialect=creepy10_base(), convert_implicit_lists=False)
     >>> my_parser(" foo='one' ")
     ([], {'foo': 'one'})
     >>> my_parser("  'one' ")
@@ -281,20 +281,10 @@ def creepy_base():
 
     >>> my_parser("  foo='one' foo='two' ")
     ([], {'foo': ['one', 'two']})
-    
-    Lists can also be created explicitly:
 
-    >>> my_parser("  foo=['one' 'two'] ")
-    ([], {'foo': ['one', 'two']})
-
-    You can test if a list is explicit by testing its class:
-
-    >>> from core import ExplicitList
-    >>> pos, kw = my_parser("  foo=['boo' 'poo'] ")
-    >>> isinstance(kw['foo'],ExplicitList)
-    True
-
-    Lists of length zero or one are **always** of type ExplicitList.
+    The lists above are known as "Implicit" lists. They can automatically be
+    converted to strings by setting ``convert_implicit_lists=True`` in the
+    parser.
 
     Quotes can be single or double:
     
@@ -317,27 +307,67 @@ def creepy_base():
     >>> my_parser(" '' foo=  boo= '' ")
     ([''], {'foo': '', 'boo': ''})
 
-    """    
+    """
+    
     class Base(ArgDialect):
 
        kw_arg = KeywordArg(token='=')
        quoted_arg = QuotedArg(token='\'"')
-       list_arg = ListArg(token=['[',']'])
-       explicit_list_arg = ExplicitListArg(token=['[',']'])
        spaces = WhiteSpace()
 
        def __init__(self):
-          self.kw_arg.child_elements = [self.explicit_list_arg,self.spaces]
+          self.kw_arg.child_elements = [self.spaces]
           self.quoted_arg.child_elements = []
+          self.spaces.child_elements = []
+
+       @property
+       def top_elements(self):
+          return [self.quoted_arg, self.kw_arg, self.spaces]
+
+    return Base
+
+
+def creepy20_base():
+    """Extends creepy10_base to support an explicit list argument syntax.
+
+    >>> from core import ArgParser
+    >>> my_parser = ArgParser(dialect=creepy20_base(),convert_implicit_lists=False)
+    >>> my_parser(" one [two three] foo=['four' 'five'] ")
+    (['one', ['two', 'three']], {'foo': ['four', 'five']})
+
+    You can test if a list is explicit by testing its class:
+
+    >>> from core import ImplicitList
+    >>> pos, kw = my_parser("  foo=['one' 'two'] boo = 'three' 'four'")
+    >>> print kw
+    {'foo': ['one', 'two'], 'boo': ['three', 'four']}
+    >>> isinstance(kw['foo'], ImplicitList)
+    False
+    >>> isinstance(kw['boo'], ImplicitList)
+    True
+    
+    Lists of length zero or one are **never** of type ImplicitList.
+
+    """
+
+    Creepy10Base = creepy10_base()
+    class Base(Creepy10Base):
+
+       list_arg = ListArg(token=['[',']'])
+       explicit_list_arg = ExplicitListArg(token=['[',']'])
+
+       def __init__(self):
+          super(Base,self).__init__()
+          self.kw_arg.child_elements = [self.explicit_list_arg,self.spaces]
           self.list_arg.child_elements = [self.spaces]
           self.explicit_list_arg.child_elements = [self.spaces]
-          self.spaces.child_elements = []
 
        @property
        def top_elements(self):
           return [self.quoted_arg, self.kw_arg, self.list_arg,self.spaces]
 
     return Base
+
 
 
 class ArgDialect(object):

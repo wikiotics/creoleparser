@@ -13,7 +13,7 @@ import urllib
 import genshi.builder as bldr
 from genshi.core import Stream, Markup
 
-from core import escape_char, esc_neg_look, fragmentize, ExplicitList
+from core import (escape_char, esc_neg_look, fragmentize, ImplicitList) 
 
 BLOCK_ONLY_TAGS = ['h1','h2','h3','h4','h5','h6',
               'ul','ol','dl',
@@ -1214,7 +1214,9 @@ class KeywordArg(ArgString):
          value = fragmentize(mo.group('body'),self.child_elements,
                              element_store, environ)
          if len(value) == 1:
-            value = value[0]
+             value = value[0]
+         else:
+             value = ImplicitList(value)
       name = mo.group('key')
       return (name, value)
 
@@ -1250,7 +1252,7 @@ class ListArg(ArgString):
          value = []
       else:
          value = fragmentize(mo.group('body'),self.child_elements,element_store, environ)
-      return ExplicitList(value)
+      return value
 
 class ExplicitListArg(ListArg):
     """Only finds lists where the string to be searched is fully enclosed

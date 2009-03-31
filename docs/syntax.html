@@ -1,24 +1,25 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Syntax &mdash; creoleparser v0.6 documentation</title>
+    <title>Syntax &mdash; creoleparser v0.6.x documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-          URL_ROOT:    '',
-          VERSION:     '0.6',
-          COLLAPSE_MODINDEX: false,
-          FILE_SUFFIX: '.html'
+        URL_ROOT:    '',
+        VERSION:     '0.6.x',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="creoleparser v0.6 documentation" href="index.html" />
+    <link rel="top" title="creoleparser v0.6.x documentation" href="index.html" />
     <link rel="next" title="Basic Usage" href="usage.html" />
     <link rel="prev" title="Creoleparser: for parsing Creole wiki markup" href="index.html" /> 
   </head>
@@ -38,17 +39,17 @@
         <li class="right" >
           <a href="index.html" title="Creoleparser: for parsing Creole wiki markup"
              accesskey="P">previous</a> |</li>
-        <li><a href="contents.html">creoleparser v0.6 documentation</a> &raquo;</li> 
+        <li><a href="contents.html">creoleparser v0.6.x documentation</a> &raquo;</li> 
       </ul>
     </div>  
+
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body">
             
-  
-  <div class="section" id="id1">
-<span id="syntax"></span><h1>Syntax<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="syntax">
+<span id="id1"></span><h1>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p>For a quick glance at what creoleparser implements, see the
@@ -107,10 +108,10 @@ and non-repeating periods and hyphens.</p>
 </div>
 <div class="section" id="macro-arguments-and-delimiters">
 <h3>Macro Arguments and Delimiters<a class="headerlink" href="#macro-arguments-and-delimiters" title="Permalink to this headline">¶</a></h3>
-<p>Creoleparser does not specify or suggest the format of macro arguments. Internally,
-the entire string from the <cite>macro_name</cite> to the <tt class="docutils literal"><span class="pre">&gt;&gt;</span></tt> are passed as the <cite>arg_string</cite>.
-For this reason, an implementer should choose something other than legal macro name
-characters to delimit the arguments.</p>
+<p>Internally, the entire string from the <cite>macro_name</cite> to the <tt class="docutils literal"><span class="pre">&gt;&gt;</span></tt> is passed as
+the <cite>arg_string</cite>, so an implementation is free to choose the syntax. It is
+recommended, however, to use syntax of the
+<a class="reference" href="usage.html#arg-parser"><em>the built-in argument parser</em></a>.</p>
 </div>
 </div>
 </div>
@@ -136,19 +137,29 @@ characters to delimit the arguments.</p>
 </ul>
 
             <h4>Previous topic</h4>
-            <p class="topless"><a href="index.html" title="previous chapter">Creoleparser: for parsing Creole wiki markup</a></p>
+            <p class="topless"><a href="index.html"
+                                  title="previous chapter">Creoleparser: for parsing Creole wiki markup</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="usage.html" title="next chapter">Basic Usage</a></p>
+            <p class="topless"><a href="usage.html"
+                                  title="next chapter">Basic Usage</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
-              <li><a href="_sources/syntax.txt">Show Source</a></li>
+              <li><a href="_sources/syntax.txt"
+                     rel="nofollow">Show Source</a></li>
             </ul>
-          <h3>Quick search</h3>
-            <form class="search" action="search.html" method="get">
-              <input type="text" name="q" size="18" /> <input type="submit" value="Go" />
-              <input type="hidden" name="check_keywords" value="yes" />
-              <input type="hidden" name="area" value="default" />
-            </form>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -158,33 +169,22 @@ characters to delimit the arguments.</p>
       <ul>
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
+             >index</a></li>
         <li class="right" >
           <a href="modindex.html" title="Global Module Index"
-             accesskey="M">modules</a> |</li>
+             >modules</a> |</li>
         <li class="right" >
           <a href="usage.html" title="Basic Usage"
-             accesskey="N">next</a> |</li>
+             >next</a> |</li>
         <li class="right" >
           <a href="index.html" title="Creoleparser: for parsing Creole wiki markup"
-             accesskey="P">previous</a> |</li>
-        <li><a href="contents.html">creoleparser v0.6 documentation</a> &raquo;</li> 
+             >previous</a> |</li>
+        <li><a href="contents.html">creoleparser v0.6.x documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009, Stephen Day.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.1.
     </div>
-
-<script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-<script type="text/javascript">
-try {
-var pageTracker = _gat._getTracker("UA-2934490-7");
-pageTracker._trackPageview();
-} catch(err) {}</script>
-
-  </body>
+<script type="text/javascript">var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script><script type="text/javascript">try {var pageTracker = _gat._getTracker("UA-2934490-7");pageTracker._trackPageview();} catch(err) {}</script>  </body>
 </html>

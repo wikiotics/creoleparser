@@ -1,24 +1,25 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Implementing Macros &mdash; creoleparser v0.6 documentation</title>
+    <title>Implementing Macros &mdash; creoleparser v0.6.x documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-          URL_ROOT:    '',
-          VERSION:     '0.6',
-          COLLAPSE_MODINDEX: false,
-          FILE_SUFFIX: '.html'
+        URL_ROOT:    '',
+        VERSION:     '0.6.x',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="creoleparser v0.6 documentation" href="index.html" />
+    <link rel="top" title="creoleparser v0.6.x documentation" href="index.html" />
     <link rel="next" title="Changelog" href="changelog.html" />
     <link rel="prev" title="Basic Usage" href="usage.html" /> 
   </head>
@@ -38,15 +39,15 @@
         <li class="right" >
           <a href="usage.html" title="Basic Usage"
              accesskey="P">previous</a> |</li>
-        <li><a href="contents.html">creoleparser v0.6 documentation</a> &raquo;</li> 
+        <li><a href="contents.html">creoleparser v0.6.x documentation</a> &raquo;</li> 
       </ul>
     </div>  
+
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body">
             
-  
   <div class="section" id="implementing-macros">
 <span id="macros"></span><h1>Implementing Macros<a class="headerlink" href="#implementing-macros" title="Permalink to this headline">¶</a></h1>
 <p>This page describes how to implement macros (i.e, extensions) in a wiki engine.
@@ -56,12 +57,20 @@ For end user usage, please see <a class="reference" href="syntax.html#syntax"><e
 <p><tt class="docutils literal"><span class="pre">macro_func</span></tt> is an optional argument used during instantiation of a dialect object.
 Most often, this function will act as a dispatcher and call other functions based
 on <tt class="docutils literal"><span class="pre">macro_name</span></tt>&#8216;s that are encountered while a Parser is working. Using this method,
-the <tt class="docutils literal"><span class="pre">macro_func</span></tt> can be very simple, particularily if the actual macros have the
-same signature.</p>
-<p><strong>A very simple macro_func:</strong></p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">macro_dispatcher</span><span class="p">(</span><span class="n">macro_name</span><span class="p">,</span><span class="n">arg_string</span><span class="p">,</span><span class="n">body</span><span class="p">,</span><span class="n">isblock</span><span class="p">,</span><span class="n">environ</span><span class="p">):</span>
+the <tt class="docutils literal"><span class="pre">macro_func</span></tt> can be very simple, particularly if the actual macros have
+compatible signatures.</p>
+<p><strong>A simple macro_func:</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">from</span> <span class="nn">creoleparser</span> <span class="k">import</span> <span class="n">parse_args</span>
+
+<span class="k">def</span> <span class="nf">macro_dispatcher</span><span class="p">(</span><span class="n">macro_name</span><span class="p">,</span><span class="n">arg_string</span><span class="p">,</span><span class="n">body</span><span class="p">,</span><span class="n">isblock</span><span class="p">,</span><span class="n">environ</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">macro_name</span> <span class="ow">in</span> <span class="n">environ</span><span class="p">[</span><span class="s">&#39;macros&#39;</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="n">environ</span><span class="p">[</span><span class="s">&#39;macros&#39;</span><span class="p">][</span><span class="n">macro_name</span><span class="p">](</span><span class="n">arg_string</span><span class="p">,</span><span class="n">body</span><span class="p">,</span><span class="n">isblock</span><span class="p">,</span><span class="n">environ</span><span class="p">)</span>
+       <span class="n">macro</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="n">macro_name</span><span class="p">,</span>
+                <span class="s">&#39;arg_string&#39;</span><span class="p">:</span> <span class="n">arg_string</span><span class="p">,</span>
+                <span class="s">&#39;body&#39;</span><span class="p">:</span> <span class="n">body</span><span class="p">,</span>
+                <span class="s">&#39;isblock&#39;</span><span class="p">:</span> <span class="n">isblock</span>
+                <span class="p">}</span>
+       <span class="n">pos</span><span class="p">,</span> <span class="n">kw</span> <span class="o">=</span> <span class="n">parse_args</span><span class="p">(</span><span class="n">arg_string</span><span class="p">)</span>
+       <span class="k">return</span> <span class="n">environ</span><span class="p">[</span><span class="s">&#39;macros&#39;</span><span class="p">][</span><span class="n">macro_name</span><span class="p">](</span><span class="n">macro</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="o">*</span><span class="n">pos</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>In the code above, <tt class="docutils literal"><span class="pre">eniviron['macros']</span></tt> is a dictionary of functions. Note that if <tt class="docutils literal"><span class="pre">macro_name</span></tt> is
@@ -146,19 +155,29 @@ help validate any changes made to the library code.</li>
 </ul>
 
             <h4>Previous topic</h4>
-            <p class="topless"><a href="usage.html" title="previous chapter">Basic Usage</a></p>
+            <p class="topless"><a href="usage.html"
+                                  title="previous chapter">Basic Usage</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="changelog.html" title="next chapter">Changelog</a></p>
+            <p class="topless"><a href="changelog.html"
+                                  title="next chapter">Changelog</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
-              <li><a href="_sources/macros.txt">Show Source</a></li>
+              <li><a href="_sources/macros.txt"
+                     rel="nofollow">Show Source</a></li>
             </ul>
-          <h3>Quick search</h3>
-            <form class="search" action="search.html" method="get">
-              <input type="text" name="q" size="18" /> <input type="submit" value="Go" />
-              <input type="hidden" name="check_keywords" value="yes" />
-              <input type="hidden" name="area" value="default" />
-            </form>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -168,33 +187,22 @@ help validate any changes made to the library code.</li>
       <ul>
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
+             >index</a></li>
         <li class="right" >
           <a href="modindex.html" title="Global Module Index"
-             accesskey="M">modules</a> |</li>
+             >modules</a> |</li>
         <li class="right" >
           <a href="changelog.html" title="Changelog"
-             accesskey="N">next</a> |</li>
+             >next</a> |</li>
         <li class="right" >
           <a href="usage.html" title="Basic Usage"
-             accesskey="P">previous</a> |</li>
-        <li><a href="contents.html">creoleparser v0.6 documentation</a> &raquo;</li> 
+             >previous</a> |</li>
+        <li><a href="contents.html">creoleparser v0.6.x documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009, Stephen Day.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.1.
     </div>
-
-<script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-<script type="text/javascript">
-try {
-var pageTracker = _gat._getTracker("UA-2934490-7");
-pageTracker._trackPageview();
-} catch(err) {}</script>
-
-  </body>
+<script type="text/javascript">var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script><script type="text/javascript">try {var pageTracker = _gat._getTracker("UA-2934490-7");pageTracker._trackPageview();} catch(err) {}</script>  </body>
 </html>

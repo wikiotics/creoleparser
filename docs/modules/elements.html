@@ -1,24 +1,25 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>creoleparser.elements &mdash; creoleparser v0.6 documentation</title>
+    <title>creoleparser.elements &mdash; creoleparser v0.6.x documentation</title>
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-          URL_ROOT:    '../',
-          VERSION:     '0.6',
-          COLLAPSE_MODINDEX: false,
-          FILE_SUFFIX: '.html'
+        URL_ROOT:    '../',
+        VERSION:     '0.6.x',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="top" title="creoleparser v0.6 documentation" href="../index.html" />
+    <link rel="top" title="creoleparser v0.6.x documentation" href="../index.html" />
     <link rel="up" title="Generated API documentation" href="../modules.html" />
     <link rel="prev" title="creoleparser.core" href="core.html" /> 
   </head>
@@ -35,26 +36,34 @@
         <li class="right" >
           <a href="core.html" title="creoleparser.core"
              accesskey="P">previous</a> |</li>
-        <li><a href="../contents.html">creoleparser v0.6 documentation</a> &raquo;</li>
+        <li><a href="../contents.html">creoleparser v0.6.x documentation</a> &raquo;</li>
           <li><a href="../modules.html" accesskey="U">Generated API documentation</a> &raquo;</li> 
       </ul>
     </div>  
+
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body">
             
-  
   <div class="section" id="module-creoleparser.elements">
 <h1><tt class="xref docutils literal"><span class="pre">creoleparser.elements</span></tt><a class="headerlink" href="#module-creoleparser.elements" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
+<dt id="creoleparser.elements.ArgString">
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">ArgString</tt><big>(</big><em>tag=''</em>, <em>token=''</em><big>)</big><a class="headerlink" href="#creoleparser.elements.ArgString" title="Permalink to this definition">¶</a></dt>
+<dd>Base class for elements used on argument strings</dd></dl>
+
+<dl class="class">
 <dt id="creoleparser.elements.BlankLine">
-<!--[creoleparser.elements.BlankLine]-->class <tt class="descclassname">creoleparser.elements.</tt><tt class="descname">BlankLine</tt><a class="headerlink" href="#creoleparser.elements.BlankLine" title="Permalink to this definition">¶</a></dt>
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">BlankLine</tt><a class="headerlink" href="#creoleparser.elements.BlankLine" title="Permalink to this definition">¶</a></dt>
 <dd>Blank lines divide elements but don&#8217;t add any output.</dd></dl>
 
 <dl class="class">
 <dt id="creoleparser.elements.BlockElement">
-<!--[creoleparser.elements.BlockElement]-->class <tt class="descclassname">creoleparser.elements.</tt><tt class="descname">BlockElement</tt><big>(</big><em>tag</em>, <em>token</em>, <em>child_elements=</em><span class="optional">[</span><span class="optional">]</span><big>)</big><a class="headerlink" href="#creoleparser.elements.BlockElement" title="Permalink to this definition">¶</a></dt>
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">BlockElement</tt><big>(</big><em>tag</em>, <em>token</em>, <em>child_elements=None</em><big>)</big><a class="headerlink" href="#creoleparser.elements.BlockElement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Block elements inherit form this class</p>
 <p>Wiki elements wanting <tt class="docutils literal"><span class="pre">append_newline</span> <span class="pre">=</span> <span class="pre">True</span></tt> should use this
 as the base also.</p>
@@ -62,7 +71,8 @@ as the base also.</p>
 
 <dl class="class">
 <dt id="creoleparser.elements.BodiedBlockMacro">
-<!--[creoleparser.elements.BodiedBlockMacro]-->class <tt class="descclassname">creoleparser.elements.</tt><tt class="descname">BodiedBlockMacro</tt><big>(</big><em>tag</em>, <em>token</em>, <em>func</em><big>)</big><a class="headerlink" href="#creoleparser.elements.BodiedBlockMacro" title="Permalink to this definition">¶</a></dt>
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">BodiedBlockMacro</tt><big>(</big><em>tag</em>, <em>token</em>, <em>func</em><big>)</big><a class="headerlink" href="#creoleparser.elements.BodiedBlockMacro" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds and processes block macros with bodies.</p>
 <p>The opening and closing tokens must be are each on a line alone without
 leading spaces. These macros can enclose other block level markup
@@ -71,7 +81,8 @@ including pre blocks and other BodiedBlockMacro&#8217;s.</p>
 
 <dl class="class">
 <dt id="creoleparser.elements.BodiedMacro">
-<!--[creoleparser.elements.BodiedMacro]-->class <tt class="descclassname">creoleparser.elements.</tt><tt class="descname">BodiedMacro</tt><big>(</big><em>tag</em>, <em>token</em>, <em>func</em><big>)</big><a class="headerlink" href="#creoleparser.elements.BodiedMacro" title="Permalink to this definition">¶</a></dt>
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">BodiedMacro</tt><big>(</big><em>tag</em>, <em>token</em>, <em>func</em><big>)</big><a class="headerlink" href="#creoleparser.elements.BodiedMacro" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds and processes macros with bodies.</p>
 <p>Does not span across top level block markup
 (see BodiedBlockMacro&#8217;s for that).</p>
@@ -79,7 +90,8 @@ including pre blocks and other BodiedBlockMacro&#8217;s.</p>
 
 <dl class="class">
 <dt id="creoleparser.elements.DefinitionDef">
-<!--[creoleparser.elements.DefinitionDef]-->class <tt class="descclassname">creoleparser.elements.</tt><tt class="descname">DefinitionDef</tt><big>(</big><em>tag</em>, <em>token</em><big>)</big><a class="headerlink" href="#creoleparser.elements.DefinitionDef" title="Permalink to this definition">¶</a></dt>
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">DefinitionDef</tt><big>(</big><em>tag</em>, <em>token</em><big>)</big><a class="headerlink" href="#creoleparser.elements.DefinitionDef" title="Permalink to this definition">¶</a></dt>
 <dd><p>Processes definitions.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">definition</span> <span class="o">=</span> <span class="n">DefinitionDef</span><span class="p">(</span><span class="s">&#39;dd&#39;</span><span class="p">,</span><span class="s">&#39;:&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mo1</span><span class="p">,</span><span class="n">mo2</span> <span class="o">=</span> <span class="n">definition</span><span class="o">.</span><span class="n">regexp</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="s">&quot;:def1a</span><span class="se">\n</span><span class="s">def1b</span><span class="se">\n</span><span class="s">:def2</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
@@ -95,7 +107,8 @@ up to the next definition.</p>
 
 <dl class="class">
 <dt id="creoleparser.elements.DefinitionTerm">
-<!--[creoleparser.elements.DefinitionTerm]-->class <tt class="descclassname">creoleparser.elements.</tt><tt class="descname">DefinitionTerm</tt><big>(</big><em>tag</em>, <em>token</em>, <em>stop_token</em><big>)</big><a class="headerlink" href="#creoleparser.elements.DefinitionTerm" title="Permalink to this definition">¶</a></dt>
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">DefinitionTerm</tt><big>(</big><em>tag</em>, <em>token</em>, <em>stop_token</em><big>)</big><a class="headerlink" href="#creoleparser.elements.DefinitionTerm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Processes definition terms.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">term</span> <span class="o">=</span> <span class="n">DefinitionTerm</span><span class="p">(</span><span class="s">&#39;dt&#39;</span><span class="p">,</span><span class="s">&#39;;&#39;</span><span class="p">,</span><span class="n">stop_token</span><span class="o">=</span><span class="s">&#39;:&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mo1</span><span class="p">,</span><span class="n">mo2</span> <span class="o">=</span> <span class="n">term</span><span class="o">.</span><span class="n">regexp</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="s">&quot;;term1</span><span class="se">\n</span><span class="s">:def1</span><span class="se">\n</span><span class="s">;term2:def2</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
@@ -109,8 +122,17 @@ up to the next definition.</p>
 </dd></dl>
 
 <dl class="class">
+<dt id="creoleparser.elements.ExplicitListArg">
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">ExplicitListArg</tt><big>(</big><em>tag=''</em>, <em>token=''</em><big>)</big><a class="headerlink" href="#creoleparser.elements.ExplicitListArg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Only finds lists where the string to be searched is fully enclosed</p>
+<p>This is used for keyword values in argument strings.</p>
+</dd></dl>
+
+<dl class="class">
 <dt id="creoleparser.elements.Heading">
-<!--[creoleparser.elements.Heading]-->class <tt class="descclassname">creoleparser.elements.</tt><tt class="descname">Heading</tt><big>(</big><em>tag</em>, <em>token</em><big>)</big><a class="headerlink" href="#creoleparser.elements.Heading" title="Permalink to this definition">¶</a></dt>
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">Heading</tt><big>(</big><em>tag</em>, <em>token</em><big>)</big><a class="headerlink" href="#creoleparser.elements.Heading" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds heading wiki elements.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">h1</span> <span class="o">=</span> <span class="n">Heading</span><span class="p">([</span><span class="s">&#39;h1&#39;</span><span class="p">,</span><span class="s">&#39;h2&#39;</span><span class="p">],</span><span class="s">&#39;=&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mo</span> <span class="o">=</span> <span class="n">h1</span><span class="o">.</span><span class="n">regexp</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">&#39;before</span><span class="se">\n</span><span class="s"> = An important thing = </span><span class="se">\n</span><span class="s"> after&#39;</span><span class="p">)</span>
@@ -124,7 +146,8 @@ up to the next definition.</p>
 
 <dl class="class">
 <dt id="creoleparser.elements.Image">
-<!--[creoleparser.elements.Image]-->class <tt class="descclassname">creoleparser.elements.</tt><tt class="descname">Image</tt><big>(</big><em>tag</em>, <em>token</em>, <em>delimiter</em><big>)</big><a class="headerlink" href="#creoleparser.elements.Image" title="Permalink to this definition">¶</a></dt>
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">Image</tt><big>(</big><em>tag</em>, <em>token</em>, <em>delimiter</em><big>)</big><a class="headerlink" href="#creoleparser.elements.Image" title="Permalink to this definition">¶</a></dt>
 <dd><p>Processes image elements.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="p">(</span><span class="s">&#39;img&#39;</span><span class="p">,(</span><span class="s">&#39;{{&#39;</span><span class="p">,</span><span class="s">&#39;}}&#39;</span><span class="p">),</span> <span class="n">delimiter</span><span class="o">=</span><span class="s">&#39;|&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mo</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">regexp</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">&#39;{{ picture.jpg | An image of a house }}&#39;</span><span class="p">)</span>
@@ -136,8 +159,9 @@ up to the next definition.</p>
 
 <dl class="class">
 <dt id="creoleparser.elements.InlineElement">
-<!--[creoleparser.elements.InlineElement]-->class <tt class="descclassname">creoleparser.elements.</tt><tt class="descname">InlineElement</tt><big>(</big><em>tag</em>, <em>token</em><big>)</big><a class="headerlink" href="#creoleparser.elements.InlineElement" title="Permalink to this definition">¶</a></dt>
-<dd><p>For finding generic inline elements like <tt class="docutils literal"><span class="pre">strong</span></tt> and <tt class="docutils literal"><span class="pre">em</span></tt>.</p>
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">InlineElement</tt><big>(</big><em>tag=''</em>, <em>token=''</em><big>)</big><a class="headerlink" href="#creoleparser.elements.InlineElement" title="Permalink to this definition">¶</a></dt>
+<dd><p>For finding generic inline elements</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">em</span> <span class="o">=</span> <span class="n">InlineElement</span><span class="p">(</span><span class="s">&#39;em&#39;</span><span class="p">,</span><span class="s">&#39;//&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mo1</span> <span class="o">=</span> <span class="n">em</span><span class="o">.</span><span class="n">regexp</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">&#39;a //word// in a line&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mo2</span> <span class="o">=</span> <span class="n">em</span><span class="o">.</span><span class="n">regexp</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">&#39;a //word in a line</span><span class="se">\n</span><span class="s"> or two</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
@@ -159,7 +183,8 @@ and end strings. These must be closed.</p>
 
 <dl class="class">
 <dt id="creoleparser.elements.InterWikiLink">
-<!--[creoleparser.elements.InterWikiLink]-->class <tt class="descclassname">creoleparser.elements.</tt><tt class="descname">InterWikiLink</tt><big>(</big><em>tag</em>, <em>delimiter1</em>, <em>delimiter2</em>, <em>base_urls</em>, <em>links_funcs</em>, <em>default_space_char</em>, <em>space_chars</em><big>)</big><a class="headerlink" href="#creoleparser.elements.InterWikiLink" title="Permalink to this definition">¶</a></dt>
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">InterWikiLink</tt><big>(</big><em>tag</em>, <em>delimiter1</em>, <em>delimiter2</em>, <em>base_urls</em>, <em>links_funcs</em>, <em>default_space_char</em>, <em>space_chars</em><big>)</big><a class="headerlink" href="#creoleparser.elements.InterWikiLink" title="Permalink to this definition">¶</a></dt>
 <dd><p>Used to match interwiki links inside a link.</p>
 <p>The search scope for these is only inside links.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">interwiki_link</span> <span class="o">=</span> <span class="n">InterWikiLink</span><span class="p">(</span><span class="s">&#39;a&#39;</span><span class="p">,</span>
@@ -177,30 +202,39 @@ and end strings. These must be closed.</p>
 </div>
 <dl class="method">
 <dt id="creoleparser.elements.InterWikiLink.alias">
-<!--[creoleparser.elements.InterWikiLink.alias]--><tt class="descname">alias</tt><big>(</big><em>mo</em>, <em>element_store</em>, <em>environ</em><big>)</big><a class="headerlink" href="#creoleparser.elements.InterWikiLink.alias" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">alias</tt><big>(</big><em>mo</em>, <em>element_store</em>, <em>environ</em><big>)</big><a class="headerlink" href="#creoleparser.elements.InterWikiLink.alias" title="Permalink to this definition">¶</a></dt>
 <dd>Returns the string for the content of the Element.</dd></dl>
 
 </dd></dl>
 
 <dl class="class">
+<dt id="creoleparser.elements.KeywordArg">
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">KeywordArg</tt><big>(</big><em>tag=''</em>, <em>token=''</em><big>)</big><a class="headerlink" href="#creoleparser.elements.KeywordArg" title="Permalink to this definition">¶</a></dt>
+<dd>Finds keyword arguments</dd></dl>
+
+<dl class="class">
 <dt id="creoleparser.elements.LineBreak">
-<!--[creoleparser.elements.LineBreak]-->class <tt class="descclassname">creoleparser.elements.</tt><tt class="descname">LineBreak</tt><big>(</big><em>tag</em>, <em>token</em>, <em>blog_style=False</em><big>)</big><a class="headerlink" href="#creoleparser.elements.LineBreak" title="Permalink to this definition">¶</a></dt>
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">LineBreak</tt><big>(</big><em>tag</em>, <em>token</em>, <em>blog_style=False</em><big>)</big><a class="headerlink" href="#creoleparser.elements.LineBreak" title="Permalink to this definition">¶</a></dt>
 <dd>An inline line break.</dd></dl>
 
 <dl class="class">
 <dt id="creoleparser.elements.Link">
-<!--[creoleparser.elements.Link]-->class <tt class="descclassname">creoleparser.elements.</tt><tt class="descname">Link</tt><big>(</big><em>tag</em>, <em>token</em><big>)</big><a class="headerlink" href="#creoleparser.elements.Link" title="Permalink to this definition">¶</a></dt>
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">Link</tt><big>(</big><em>tag</em>, <em>token</em><big>)</big><a class="headerlink" href="#creoleparser.elements.Link" title="Permalink to this definition">¶</a></dt>
 <dd>Finds and builds links.</dd></dl>
 
 <dl class="class">
 <dt id="creoleparser.elements.List">
-<!--[creoleparser.elements.List]-->class <tt class="descclassname">creoleparser.elements.</tt><tt class="descname">List</tt><big>(</big><em>tag</em>, <em>token</em>, <em>stop_tokens</em><big>)</big><a class="headerlink" href="#creoleparser.elements.List" title="Permalink to this definition">¶</a></dt>
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">List</tt><big>(</big><em>tag</em>, <em>token</em>, <em>stop_tokens=None</em><big>)</big><a class="headerlink" href="#creoleparser.elements.List" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds list (ordered, unordered, and definition) wiki elements.</p>
 <p>group(1) of the match object includes all lines from the list
 including newline characters.</p>
 <dl class="method">
 <dt id="creoleparser.elements.List.re_string">
-<!--[creoleparser.elements.List.re_string]--><tt class="descname">re_string</tt><big>(</big><big>)</big><a class="headerlink" href="#creoleparser.elements.List.re_string" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">re_string</tt><big>(</big><big>)</big><a class="headerlink" href="#creoleparser.elements.List.re_string" title="Permalink to this definition">¶</a></dt>
 <dd>This re_string is for finding generic block elements like
 lists (ordered, unordered, and definition) that start with a
 single token.</dd></dl>
@@ -208,8 +242,17 @@ single token.</dd></dl>
 </dd></dl>
 
 <dl class="class">
+<dt id="creoleparser.elements.ListArg">
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">ListArg</tt><big>(</big><em>tag=''</em>, <em>token=''</em><big>)</big><a class="headerlink" href="#creoleparser.elements.ListArg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds lists in argument strings</p>
+<p>This is used for positional arguments only.</p>
+</dd></dl>
+
+<dl class="class">
 <dt id="creoleparser.elements.ListItem">
-<!--[creoleparser.elements.ListItem]-->class <tt class="descclassname">creoleparser.elements.</tt><tt class="descname">ListItem</tt><big>(</big><em>tag</em>, <em>list_tokens</em><big>)</big><a class="headerlink" href="#creoleparser.elements.ListItem" title="Permalink to this definition">¶</a></dt>
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">ListItem</tt><big>(</big><em>tag</em>, <em>list_tokens</em><big>)</big><a class="headerlink" href="#creoleparser.elements.ListItem" title="Permalink to this definition">¶</a></dt>
 <dd><p>Matches the current list item.</p>
 <p>Everything up to the next same-level list item is matched.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">list_item</span> <span class="o">=</span> <span class="n">ListItem</span><span class="p">(</span><span class="s">&#39;li&#39;</span><span class="p">,</span><span class="s">&#39;#*&#39;</span><span class="p">)</span>
@@ -224,17 +267,26 @@ single token.</dd></dl>
 
 <dl class="class">
 <dt id="creoleparser.elements.LoneElement">
-<!--[creoleparser.elements.LoneElement]-->class <tt class="descclassname">creoleparser.elements.</tt><tt class="descname">LoneElement</tt><big>(</big><em>tag</em>, <em>token</em><big>)</big><a class="headerlink" href="#creoleparser.elements.LoneElement" title="Permalink to this definition">¶</a></dt>
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">LoneElement</tt><big>(</big><em>tag</em>, <em>token</em><big>)</big><a class="headerlink" href="#creoleparser.elements.LoneElement" title="Permalink to this definition">¶</a></dt>
 <dd>Element on a line by itself with no content (e.g., &lt;hr/&gt;)</dd></dl>
+
+<dl class="data">
+<dt id="creoleparser.elements.MACRO_NAME">
+<tt class="descclassname">creoleparser.elements.</tt><tt class="descname">MACRO_NAME</tt><a class="headerlink" href="#creoleparser.elements.MACRO_NAME" title="Permalink to this definition">¶</a></dt>
+<dd>allows any number of non-repeating hyphens or periods.
+Underscore is not included because hyphen is</dd></dl>
 
 <dl class="class">
 <dt id="creoleparser.elements.Macro">
-<!--[creoleparser.elements.Macro]-->class <tt class="descclassname">creoleparser.elements.</tt><tt class="descname">Macro</tt><big>(</big><em>tag</em>, <em>token</em>, <em>func</em><big>)</big><a class="headerlink" href="#creoleparser.elements.Macro" title="Permalink to this definition">¶</a></dt>
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">Macro</tt><big>(</big><em>tag</em>, <em>token</em>, <em>func</em><big>)</big><a class="headerlink" href="#creoleparser.elements.Macro" title="Permalink to this definition">¶</a></dt>
 <dd>Finds and processes inline macro elements.</dd></dl>
 
 <dl class="class">
 <dt id="creoleparser.elements.NestedList">
-<!--[creoleparser.elements.NestedList]-->class <tt class="descclassname">creoleparser.elements.</tt><tt class="descname">NestedList</tt><big>(</big><em>tag</em>, <em>token</em><big>)</big><a class="headerlink" href="#creoleparser.elements.NestedList" title="Permalink to this definition">¶</a></dt>
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">NestedList</tt><big>(</big><em>tag</em>, <em>token</em><big>)</big><a class="headerlink" href="#creoleparser.elements.NestedList" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds a list in the current list item.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">nested_ul</span> <span class="o">=</span> <span class="n">NestedList</span><span class="p">(</span><span class="s">&#39;ul&#39;</span><span class="p">,</span><span class="s">&#39;*&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mo</span> <span class="o">=</span> <span class="n">nested_ul</span><span class="o">.</span><span class="n">regexp</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">&#39;one</span><span class="se">\n</span><span class="s">**one.1</span><span class="se">\n</span><span class="s">**one.2</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
@@ -248,7 +300,8 @@ single token.</dd></dl>
 
 <dl class="class">
 <dt id="creoleparser.elements.NoWikiElement">
-<!--[creoleparser.elements.NoWikiElement]-->class <tt class="descclassname">creoleparser.elements.</tt><tt class="descname">NoWikiElement</tt><big>(</big><em>tag</em>, <em>token</em><big>)</big><a class="headerlink" href="#creoleparser.elements.NoWikiElement" title="Permalink to this definition">¶</a></dt>
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">NoWikiElement</tt><big>(</big><em>tag</em>, <em>token</em><big>)</big><a class="headerlink" href="#creoleparser.elements.NoWikiElement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Inline no-wiki.</p>
 <p>When two or more end tokens are found together, only last marks
 the end of the element.</p>
@@ -257,7 +310,8 @@ the end of the element.</p>
 
 <dl class="class">
 <dt id="creoleparser.elements.Paragraph">
-<!--[creoleparser.elements.Paragraph]-->class <tt class="descclassname">creoleparser.elements.</tt><tt class="descname">Paragraph</tt><big>(</big><em>tag</em><big>)</big><a class="headerlink" href="#creoleparser.elements.Paragraph" title="Permalink to this definition">¶</a></dt>
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">Paragraph</tt><big>(</big><em>tag</em><big>)</big><a class="headerlink" href="#creoleparser.elements.Paragraph" title="Permalink to this definition">¶</a></dt>
 <dd><p>&#8220;This should be the last outer level wiki element to be searched.</p>
 <p>Anything that is left over will be placed in a paragraphs unless it looks
 like block content according to xhtml1 strict. Block content is defined
@@ -268,20 +322,28 @@ are treated as inline while Streams are block content.</p>
 
 <dl class="class">
 <dt id="creoleparser.elements.PreBlock">
-<!--[creoleparser.elements.PreBlock]-->class <tt class="descclassname">creoleparser.elements.</tt><tt class="descname">PreBlock</tt><big>(</big><em>tag</em>, <em>token</em><big>)</big><a class="headerlink" href="#creoleparser.elements.PreBlock" title="Permalink to this definition">¶</a></dt>
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">PreBlock</tt><big>(</big><em>tag</em>, <em>token</em><big>)</big><a class="headerlink" href="#creoleparser.elements.PreBlock" title="Permalink to this definition">¶</a></dt>
 <dd><p>A preformatted block.</p>
 <p>If a closing token is found on a line with a space as the first
 character, the space will be removed from the output.</p>
 <dl class="method">
 <dt id="creoleparser.elements.PreBlock.re_string2">
-<!--[creoleparser.elements.PreBlock.re_string2]--><tt class="descname">re_string2</tt><big>(</big><big>)</big><a class="headerlink" href="#creoleparser.elements.PreBlock.re_string2" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">re_string2</tt><big>(</big><big>)</big><a class="headerlink" href="#creoleparser.elements.PreBlock.re_string2" title="Permalink to this definition">¶</a></dt>
 <dd>Finds a closing token with a space at the start of the line.</dd></dl>
 
 </dd></dl>
 
 <dl class="class">
+<dt id="creoleparser.elements.QuotedArg">
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">QuotedArg</tt><big>(</big><em>tag=''</em>, <em>token=''</em><big>)</big><a class="headerlink" href="#creoleparser.elements.QuotedArg" title="Permalink to this definition">¶</a></dt>
+<dd>Finds quoted arguments</dd></dl>
+
+<dl class="class">
 <dt id="creoleparser.elements.RawLink">
-<!--[creoleparser.elements.RawLink]-->class <tt class="descclassname">creoleparser.elements.</tt><tt class="descname">RawLink</tt><big>(</big><em>tag</em><big>)</big><a class="headerlink" href="#creoleparser.elements.RawLink" title="Permalink to this definition">¶</a></dt>
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">RawLink</tt><big>(</big><em>tag</em><big>)</big><a class="headerlink" href="#creoleparser.elements.RawLink" title="Permalink to this definition">¶</a></dt>
 <dd><p>Used to find raw urls in wiki text and build xml from them.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">raw_link</span> <span class="o">=</span> <span class="n">RawLink</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s">&#39;a&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mo</span> <span class="o">=</span> <span class="n">raw_link</span><span class="o">.</span><span class="n">regexp</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">&quot; a http://www.google.com url &quot;</span><span class="p">)</span>
@@ -293,19 +355,20 @@ character, the space will be removed from the output.</p>
 </div>
 <dl class="method">
 <dt id="creoleparser.elements.RawLink.alias">
-<!--[creoleparser.elements.RawLink.alias]--><tt class="descname">alias</tt><big>(</big><em>mo</em>, <em>element_store</em><big>)</big><a class="headerlink" href="#creoleparser.elements.RawLink.alias" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">alias</tt><big>(</big><em>mo</em>, <em>element_store</em><big>)</big><a class="headerlink" href="#creoleparser.elements.RawLink.alias" title="Permalink to this definition">¶</a></dt>
 <dd>Returns the string for the content of the Element.</dd></dl>
 
 <dl class="method">
 <dt id="creoleparser.elements.RawLink.href">
-<!--[creoleparser.elements.RawLink.href]--><tt class="descname">href</tt><big>(</big><em>mo</em><big>)</big><a class="headerlink" href="#creoleparser.elements.RawLink.href" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">href</tt><big>(</big><em>mo</em><big>)</big><a class="headerlink" href="#creoleparser.elements.RawLink.href" title="Permalink to this definition">¶</a></dt>
 <dd>Returns the string for the href attribute of the Element.</dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="creoleparser.elements.SimpleElement">
-<!--[creoleparser.elements.SimpleElement]-->class <tt class="descclassname">creoleparser.elements.</tt><tt class="descname">SimpleElement</tt><big>(</big><em>token_dict={}</em><big>)</big><a class="headerlink" href="#creoleparser.elements.SimpleElement" title="Permalink to this definition">¶</a></dt>
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">SimpleElement</tt><big>(</big><em>token_dict={}</em><big>)</big><a class="headerlink" href="#creoleparser.elements.SimpleElement" title="Permalink to this definition">¶</a></dt>
 <dd><p>For finding generic inline elements like <tt class="docutils literal"><span class="pre">strong</span></tt> and <tt class="docutils literal"><span class="pre">em</span></tt>.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">em</span> <span class="o">=</span> <span class="n">SimpleElement</span><span class="p">({</span><span class="s">&#39;//&#39;</span><span class="p">:</span><span class="s">&#39;em&#39;</span><span class="p">})</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mo1</span> <span class="o">=</span> <span class="n">em</span><span class="o">.</span><span class="n">regexp</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">&#39;a //word// in a line&#39;</span><span class="p">)</span>
@@ -320,7 +383,8 @@ character, the space will be removed from the output.</p>
 
 <dl class="class">
 <dt id="creoleparser.elements.Table">
-<!--[creoleparser.elements.Table]-->class <tt class="descclassname">creoleparser.elements.</tt><tt class="descname">Table</tt><big>(</big><em>tag</em>, <em>token</em><big>)</big><a class="headerlink" href="#creoleparser.elements.Table" title="Permalink to this definition">¶</a></dt>
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">Table</tt><big>(</big><em>tag</em>, <em>token</em><big>)</big><a class="headerlink" href="#creoleparser.elements.Table" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find tables.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="s">&#39;table&#39;</span><span class="p">,</span><span class="s">&#39;|&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mo</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">regexp</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">&quot;before</span><span class="se">\n</span><span class="s"> | one | two |</span><span class="se">\n</span><span class="s">|one|two </span><span class="se">\n</span><span class="s"> hi&quot;</span><span class="p">)</span>
@@ -334,7 +398,8 @@ character, the space will be removed from the output.</p>
 
 <dl class="class">
 <dt id="creoleparser.elements.TableCell">
-<!--[creoleparser.elements.TableCell]-->class <tt class="descclassname">creoleparser.elements.</tt><tt class="descname">TableCell</tt><big>(</big><em>tag</em>, <em>token</em><big>)</big><a class="headerlink" href="#creoleparser.elements.TableCell" title="Permalink to this definition">¶</a></dt>
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">TableCell</tt><big>(</big><em>tag</em>, <em>token</em><big>)</big><a class="headerlink" href="#creoleparser.elements.TableCell" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds cells in a table row.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cell</span> <span class="o">=</span> <span class="n">TableCell</span><span class="p">(</span><span class="s">&#39;td&#39;</span><span class="p">,</span><span class="s">&#39;|&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mo</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">regexp</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">&#39;| one | two &#39;</span><span class="p">)</span>
@@ -348,7 +413,8 @@ character, the space will be removed from the output.</p>
 
 <dl class="class">
 <dt id="creoleparser.elements.TableRow">
-<!--[creoleparser.elements.TableRow]-->class <tt class="descclassname">creoleparser.elements.</tt><tt class="descname">TableRow</tt><big>(</big><em>tag</em>, <em>token</em><big>)</big><a class="headerlink" href="#creoleparser.elements.TableRow" title="Permalink to this definition">¶</a></dt>
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">TableRow</tt><big>(</big><em>tag</em>, <em>token</em><big>)</big><a class="headerlink" href="#creoleparser.elements.TableRow" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds rows in a table.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">row</span> <span class="o">=</span> <span class="n">TableRow</span><span class="p">(</span><span class="s">&#39;tr&#39;</span><span class="p">,</span><span class="s">&#39;|&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mo</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">regexp</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">&#39; | one | two |</span><span class="se">\n</span><span class="s">|one|two </span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
@@ -362,7 +428,8 @@ character, the space will be removed from the output.</p>
 
 <dl class="class">
 <dt id="creoleparser.elements.URLLink">
-<!--[creoleparser.elements.URLLink]-->class <tt class="descclassname">creoleparser.elements.</tt><tt class="descname">URLLink</tt><big>(</big><em>tag</em>, <em>delimiter</em><big>)</big><a class="headerlink" href="#creoleparser.elements.URLLink" title="Permalink to this definition">¶</a></dt>
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">URLLink</tt><big>(</big><em>tag</em>, <em>delimiter</em><big>)</big><a class="headerlink" href="#creoleparser.elements.URLLink" title="Permalink to this definition">¶</a></dt>
 <dd><p>Used to find url type links inside a link.</p>
 <p>The scope of these is within link markup only (i.e., [[url]]</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">url_link</span> <span class="o">=</span> <span class="n">URLLink</span><span class="p">(</span><span class="s">&#39;a&#39;</span><span class="p">,</span><span class="s">&#39;|&#39;</span><span class="p">)</span>
@@ -375,23 +442,36 @@ character, the space will be removed from the output.</p>
 </div>
 <dl class="method">
 <dt id="creoleparser.elements.URLLink.alias">
-<!--[creoleparser.elements.URLLink.alias]--><tt class="descname">alias</tt><big>(</big><em>mo</em>, <em>element_store</em>, <em>environ</em><big>)</big><a class="headerlink" href="#creoleparser.elements.URLLink.alias" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">alias</tt><big>(</big><em>mo</em>, <em>element_store</em>, <em>environ</em><big>)</big><a class="headerlink" href="#creoleparser.elements.URLLink.alias" title="Permalink to this definition">¶</a></dt>
 <dd>Returns the string for the content of the Element.</dd></dl>
 
 <dl class="method">
 <dt id="creoleparser.elements.URLLink.href">
-<!--[creoleparser.elements.URLLink.href]--><tt class="descname">href</tt><big>(</big><em>mo</em><big>)</big><a class="headerlink" href="#creoleparser.elements.URLLink.href" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">href</tt><big>(</big><em>mo</em><big>)</big><a class="headerlink" href="#creoleparser.elements.URLLink.href" title="Permalink to this definition">¶</a></dt>
 <dd>Returns the string for the href attribute of the Element.</dd></dl>
 
 </dd></dl>
 
 <dl class="class">
+<dt id="creoleparser.elements.WhiteSpace">
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">WhiteSpace</tt><big>(</big><em>tag=''</em>, <em>token=''</em><big>)</big><a class="headerlink" href="#creoleparser.elements.WhiteSpace" title="Permalink to this definition">¶</a></dt>
+<dd>Breaks up elements but doesn&#8217;t add any output</dd></dl>
+
+<dl class="class">
 <dt id="creoleparser.elements.WikiElement">
-<!--[creoleparser.elements.WikiElement]-->class <tt class="descclassname">creoleparser.elements.</tt><tt class="descname">WikiElement</tt><big>(</big><em>tag</em>, <em>token</em>, <em>child_elements=</em><span class="optional">[</span><span class="optional">]</span><big>)</big><a class="headerlink" href="#creoleparser.elements.WikiElement" title="Permalink to this definition">¶</a></dt>
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">WikiElement</tt><big>(</big><em>tag</em>, <em>token</em>, <em>child_elements=None</em><big>)</big><a class="headerlink" href="#creoleparser.elements.WikiElement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Baseclass for all wiki elements.</p>
+<dl class="attribute">
+<dt id="creoleparser.elements.WikiElement.append_newline">
+<tt class="descname">append_newline</tt><a class="headerlink" href="#creoleparser.elements.WikiElement.append_newline" title="Permalink to this definition">¶</a></dt>
+<dd>Determines if newlines are appended to Element(s) during processing.
+Should only affect readability of source xml.</dd></dl>
+
 <dl class="method">
 <dt id="creoleparser.elements.WikiElement.re_string">
-<!--[creoleparser.elements.WikiElement.re_string]--><tt class="descname">re_string</tt><big>(</big><big>)</big><a class="headerlink" href="#creoleparser.elements.WikiElement.re_string" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">re_string</tt><big>(</big><big>)</big><a class="headerlink" href="#creoleparser.elements.WikiElement.re_string" title="Permalink to this definition">¶</a></dt>
 <dd><p>The regular expression pattern that is compiled into <tt class="docutils literal"><span class="pre">self.regexp</span></tt>.</p>
 <p>The regular expression must consume the entire wiki element,
 including the tokens. For block elements, the newline on the last
@@ -404,7 +484,8 @@ method will be needed.</p>
 
 <dl class="class">
 <dt id="creoleparser.elements.WikiLink">
-<!--[creoleparser.elements.WikiLink]-->class <tt class="descclassname">creoleparser.elements.</tt><tt class="descname">WikiLink</tt><big>(</big><em>tag</em>, <em>delimiter</em>, <em>base_url</em>, <em>space_char</em>, <em>class_func</em>, <em>path_func</em><big>)</big><a class="headerlink" href="#creoleparser.elements.WikiLink" title="Permalink to this definition">¶</a></dt>
+<em class="property">
+class </em><tt class="descclassname">creoleparser.elements.</tt><tt class="descname">WikiLink</tt><big>(</big><em>tag</em>, <em>delimiter</em>, <em>base_url</em>, <em>space_char</em>, <em>class_func</em>, <em>path_func</em><big>)</big><a class="headerlink" href="#creoleparser.elements.WikiLink" title="Permalink to this definition">¶</a></dt>
 <dd><p>Used to match wiki links inside a link.</p>
 <p>The search scope for these is only inside links.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">wiki_link</span> <span class="o">=</span> <span class="n">WikiLink</span><span class="p">(</span><span class="s">&#39;a&#39;</span><span class="p">,</span><span class="s">&#39;|&#39;</span><span class="p">,</span><span class="n">base_url</span><span class="o">=</span><span class="s">&#39;http://somewiki.org/&#39;</span><span class="p">,</span>
@@ -418,7 +499,7 @@ method will be needed.</p>
 </div>
 <dl class="method">
 <dt id="creoleparser.elements.WikiLink.alias">
-<!--[creoleparser.elements.WikiLink.alias]--><tt class="descname">alias</tt><big>(</big><em>mo</em>, <em>element_store</em>, <em>environ</em><big>)</big><a class="headerlink" href="#creoleparser.elements.WikiLink.alias" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">alias</tt><big>(</big><em>mo</em>, <em>element_store</em>, <em>environ</em><big>)</big><a class="headerlink" href="#creoleparser.elements.WikiLink.alias" title="Permalink to this definition">¶</a></dt>
 <dd>Returns the string for the content of the Element.</dd></dl>
 
 </dd></dl>
@@ -432,17 +513,26 @@ method will be needed.</p>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
             <h4>Previous topic</h4>
-            <p class="topless"><a href="core.html" title="previous chapter"><tt class="docutils literal docutils literal docutils literal"><span class="pre">creoleparser.core</span></tt></a></p>
+            <p class="topless"><a href="core.html"
+                                  title="previous chapter"><tt class="docutils literal docutils literal docutils literal"><span class="pre">creoleparser.core</span></tt></a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
-              <li><a href="../_sources/modules/elements.txt">Show Source</a></li>
+              <li><a href="../_sources/modules/elements.txt"
+                     rel="nofollow">Show Source</a></li>
             </ul>
-          <h3>Quick search</h3>
-            <form class="search" action="../search.html" method="get">
-              <input type="text" name="q" size="18" /> <input type="submit" value="Go" />
-              <input type="hidden" name="check_keywords" value="yes" />
-              <input type="hidden" name="area" value="default" />
-            </form>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -452,31 +542,20 @@ method will be needed.</p>
       <ul>
         <li class="right" style="margin-right: 10px">
           <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
+             >index</a></li>
         <li class="right" >
           <a href="../modindex.html" title="Global Module Index"
-             accesskey="M">modules</a> |</li>
+             >modules</a> |</li>
         <li class="right" >
           <a href="core.html" title="creoleparser.core"
-             accesskey="P">previous</a> |</li>
-        <li><a href="../contents.html">creoleparser v0.6 documentation</a> &raquo;</li>
-          <li><a href="../modules.html" accesskey="U">Generated API documentation</a> &raquo;</li> 
+             >previous</a> |</li>
+        <li><a href="../contents.html">creoleparser v0.6.x documentation</a> &raquo;</li>
+          <li><a href="../modules.html" >Generated API documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009, Stephen Day.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.1.
     </div>
-
-<script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-<script type="text/javascript">
-try {
-var pageTracker = _gat._getTracker("UA-2934490-7");
-pageTracker._trackPageview();
-} catch(err) {}</script>
-
-  </body>
+<script type="text/javascript">var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script><script type="text/javascript">try {var pageTracker = _gat._getTracker("UA-2934490-7");pageTracker._trackPageview();} catch(err) {}</script>  </body>
 </html>

@@ -114,8 +114,8 @@ class Parser(object):
 class ArgParser(object):
     """Creates a callable object for parsing macro argument strings
 
-    >>> from dialects import creepy_base
-    >>> my_parser = ArgParser(dialect=creepy_base())
+    >>> from dialects import creepy20_base
+    >>> my_parser = ArgParser(dialect=creepy20_base())
     >>> my_parser(" one two foo='three' boo='four' ")
     (['one', 'two'], {'foo': 'three', 'boo': 'four'})
  
@@ -125,17 +125,24 @@ class ArgParser(object):
     
     """
     
-    def __init__(self,dialect, force_strings=False,
-                 key_func=None, illegal_keys=()):
+    def __init__(self,dialect, convert_implicit_lists=True,
+                 key_func=None, illegal_keys=(), convert_unicode_keys=True):
         """Constructor for ArgParser objects
 
         :parameters:
+          convert_unicode_keys
+            If *True*, keys will be converted using ``str(key)`` before being
+            added to the output dictionary. This allows the dictionary to be
+            safely passed to functions using the special ``**`` form (i.e.,
+            ``func(**kwargs)``).
           dialect
-            Usually created using :class:`creoleparser.dialects.creepy_base`
-          force_strings
-            If *True*, all values that are lists will be converted to strings
-            using ``' '.join(list)``. This guarentees returned values will be
-            of type string or unicode.
+            Usually created using :func:`~creoleparser.dialects.creepy10_base`
+            or :func:`~creoleparser.dialects.creepy20_base`
+          convert_implicit_lists
+            If *True*, all implicit lists will be converted to strings
+            using ``' '.join(list)``. "Implicit" lists are created when
+            positional arguments follow keyword arguments
+            (see :func:`~creoleparser.dialects.creepy10_base`). 
           illegal_keys
             A tuple of keys that will be post-fixed with an underscore if found
             during parsing. 
@@ -145,36 +152,39 @@ class ArgParser(object):
             For example, this can be used to make keywords case insensitive:
             
             >>> from string import lower
-            >>> from dialects import creepy_base
-            >>> my_parser = ArgParser(dialect=creepy_base(),key_func=lower)
+            >>> from dialects import creepy20_base
+            >>> my_parser = ArgParser(dialect=creepy20_base(),key_func=lower)
             >>> my_parser(" Foo='one' ")
             ([], {'foo': 'one'})
             
         """
     
         self.dialect = dialect()
-        self.force_strings = force_strings
+        self.convert_implicit_lists = convert_implicit_lists
         self.key_func = key_func
         self.illegal_keys = illegal_keys
+        self.convert_unicode_keys = convert_unicode_keys
 
 
     def __call__(self, arg_string, **kwargs): 
         """Parses the ``arg_string`` returning a two-tuple 
 
         Keyword arguments (``kwargs``) can be used to override the corresponding
-        attributes of the ArgParser object (see above). ``dialect`` cannot
-        be overridden.
+        attributes of the ArgParser object (see above). However, the
+        ``dialect`` attribute **cannot** be overridden.
         
         """
         
-        kwargs.setdefault('force_strings',self.force_strings)
+        kwargs.setdefault('convert_implicit_lists',self.convert_implicit_lists)
         kwargs.setdefault('key_func',self.key_func)
         kwargs.setdefault('illegal_keys',self.illegal_keys)
+        kwargs.setdefault('convert_unicode_keys',self.convert_unicode_keys)
 
         return self._parse(arg_string,**kwargs)
 
 
-    def _parse(self,arg_string, force_strings, key_func, illegal_keys):
+    def _parse(self,arg_string, convert_implicit_lists, key_func, illegal_keys,
+               convert_unicode_keys):
         
         frags = fragmentize(arg_string,self.dialect.top_elements,{},{})
         positional_args = []
@@ -182,9 +192,8 @@ class ArgParser(object):
         for arg in frags:
            if isinstance(arg,tuple):
              k, v  = arg
-             k = str(k)
-             if isinstance(v,list) and force_strings:
-                 v = ' ' .join(v)
+             if convert_unicode_keys:
+                 k = str(k)
              if key_func:
                  k =  key_func(k)
              if k in illegal_keys:
@@ -200,13 +209,13 @@ class ArgParser(object):
                    kw_args[k].append(v)
                 else:
                    kw_args[k] = [kw_args[k], v]
-                kw_args[k] = list(kw_args[k])
+                kw_args[k] = ImplicitList(kw_args[k])
              else:
                 kw_args[k] = v
+             if isinstance(kw_args[k],ImplicitList) and convert_implicit_lists:
+                 kw_args[k] = ' ' .join(kw_args[k])
            else:
-               if isinstance(arg,list) and force_strings:
-                 arg = ' ' .join(arg)
-               positional_args.append(arg)
+             positional_args.append(arg)
 
         return (positional_args, kw_args)
         
@@ -323,7 +332,9 @@ def chunk(text, blank_lines, hard_elements, limit):
     
     return chunks
 
-class ExplicitList(list):
+
+class ImplicitList(list):
+    """This class marks argument lists as implicit"""
     pass
 
 def _test():

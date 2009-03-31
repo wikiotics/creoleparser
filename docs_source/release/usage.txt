@@ -96,7 +96,7 @@ arguments to be parsed:
 An argument parser can be customized using a pattern similar to a normal
 parser. Further information is documented with
 :class:`~creoleparser.core.ArgParser` and 
-:class:`~creoleparser.dialects.creepy_base`.
+:func:`~creoleparser.dialects.creepy10_base`.
 
 
 

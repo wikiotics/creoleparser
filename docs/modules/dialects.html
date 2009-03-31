@@ -1,24 +1,25 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>creoleparser.dialects &mdash; creoleparser v0.6 documentation</title>
+    <title>creoleparser.dialects &mdash; creoleparser v0.6.x documentation</title>
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-          URL_ROOT:    '../',
-          VERSION:     '0.6',
-          COLLAPSE_MODINDEX: false,
-          FILE_SUFFIX: '.html'
+        URL_ROOT:    '../',
+        VERSION:     '0.6.x',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="top" title="creoleparser v0.6 documentation" href="../index.html" />
+    <link rel="top" title="creoleparser v0.6.x documentation" href="../index.html" />
     <link rel="up" title="Generated API documentation" href="../modules.html" />
     <link rel="next" title="creoleparser.core" href="core.html" />
     <link rel="prev" title="Generated API documentation" href="../modules.html" /> 
@@ -39,21 +40,21 @@
         <li class="right" >
           <a href="../modules.html" title="Generated API documentation"
              accesskey="P">previous</a> |</li>
-        <li><a href="../contents.html">creoleparser v0.6 documentation</a> &raquo;</li>
+        <li><a href="../contents.html">creoleparser v0.6.x documentation</a> &raquo;</li>
           <li><a href="../modules.html" accesskey="U">Generated API documentation</a> &raquo;</li> 
       </ul>
     </div>  
+
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body">
             
-  
   <div class="section" id="module-creoleparser.dialects">
 <h1><tt class="xref docutils literal"><span class="pre">creoleparser.dialects</span></tt><a class="headerlink" href="#module-creoleparser.dialects" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="creoleparser.dialects.create_dialect">
-<!--[creoleparser.dialects.create_dialect]--><tt class="descclassname">creoleparser.dialects.</tt><tt class="descname">create_dialect</tt><big>(</big><em>dialect_base</em>, <em>**kw_args</em><big>)</big><a class="headerlink" href="#creoleparser.dialects.create_dialect" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">creoleparser.dialects.</tt><tt class="descname">create_dialect</tt><big>(</big><em>dialect_base</em>, <em>**kw_args</em><big>)</big><a class="headerlink" href="#creoleparser.dialects.create_dialect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Factory function for dialect objects (for parameter defaults,
 see <a title="creoleparser.dialects.creole10_base" class="reference" href="#creoleparser.dialects.creole10_base"><tt class="xref docutils literal"><span class="pre">creole10_base()</span></tt></a>)</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -74,21 +75,6 @@ the href.</p>
 <dd><p class="first last">When wiki_links have spaces, this character replaces those spaces in
 the url.</p>
 </dd>
-<dt>interwiki_links_base_urls</dt>
-<dd><p class="first last">Dictionary of urls for interwiki links.</p>
-</dd>
-<dt>interwiki_links_space_chars</dt>
-<dd><p class="first last">Dictionary of characters that that will be used to replace spaces
-that occur in interwiki_links. If no key is present for an interwiki
-name, the wiki_links_space_char will be used.</p>
-</dd>
-<dt>interwiki_links_funcs</dt>
-<dd><p class="first last">Dictionary of functions that will be called for interwiki link
-names. Works like wiki_links_path_func</p>
-</dd>
-<dt>no_wiki_monospace</dt>
-<dd><p class="first last">If <cite>True</cite>, inline no_wiki will be rendered as &lt;code&gt; not &lt;span&gt;</p>
-</dd>
 <dt>wiki_links_class_func</dt>
 <dd><p class="first last">If supplied, this fuction will be called when a wiki link is found and
 the return value (should be a string) will be added as a class attribute
@@ -102,6 +88,21 @@ the return value (should be a string) will be joined to the base_url
 to form the url for href. The function must accept the page name (any
 spaces will have been replaced) as it&#8217;s only argument. Returning the
 unaltered page name is equivalent to not supplying this function at all.</p>
+</dd>
+<dt>interwiki_links_base_urls</dt>
+<dd><p class="first last">Dictionary of urls for interwiki links.</p>
+</dd>
+<dt>interwiki_links_space_chars</dt>
+<dd><p class="first last">Dictionary of characters that that will be used to replace spaces
+that occur in interwiki_links. If no key is present for an interwiki
+name, the wiki_links_space_char will be used.</p>
+</dd>
+<dt>interwiki_links_funcs</dt>
+<dd><p class="first last">Dictionary of functions that will be called for interwiki link
+names. Works like wiki_links_path_func</p>
+</dd>
+<dt>no_wiki_monospace</dt>
+<dd><p class="first last">If <cite>False</cite>, inline no_wiki will be rendered as &lt;span&gt; not &lt;code&gt;</p>
 </dd>
 <dt>macro_func</dt>
 <dd><p class="first">If supplied, this fuction will be called when macro markup is found. The
@@ -132,7 +133,7 @@ for newlines.</p>
 
 <dl class="function">
 <dt id="creoleparser.dialects.creole10_base">
-<!--[creoleparser.dialects.creole10_base]--><tt class="descclassname">creoleparser.dialects.</tt><tt class="descname">creole10_base</tt><big>(</big><em>wiki_links_base_url=''</em>, <em>wiki_links_space_char='_'</em>, <em>interwiki_links_base_urls={}</em>, <em>no_wiki_monospace=True</em>, <em>wiki_links_class_func=None</em>, <em>wiki_links_path_func=None</em>, <em>interwiki_links_funcs={}</em>, <em>interwiki_links_space_chars={}</em>, <em>blog_style_endings=False</em><big>)</big><a class="headerlink" href="#creoleparser.dialects.creole10_base" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">creoleparser.dialects.</tt><tt class="descname">creole10_base</tt><big>(</big><em>wiki_links_base_url=''</em>, <em>wiki_links_space_char='_'</em>, <em>interwiki_links_base_urls={}</em>, <em>no_wiki_monospace=True</em>, <em>wiki_links_class_func=None</em>, <em>wiki_links_path_func=None</em>, <em>interwiki_links_funcs={}</em>, <em>interwiki_links_space_chars={}</em>, <em>blog_style_endings=False</em><big>)</big><a class="headerlink" href="#creoleparser.dialects.creole10_base" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a base class for extending
 (for parameter descriptions, see <a title="creoleparser.dialects.create_dialect" class="reference" href="#creoleparser.dialects.create_dialect"><tt class="xref docutils literal"><span class="pre">create_dialect()</span></tt></a>)</p>
 <p>The returned class does not implement any of the proposed additions to
@@ -141,7 +142,7 @@ to Creole 1.0 specification.</p>
 
 <dl class="function">
 <dt id="creoleparser.dialects.creole11_base">
-<!--[creoleparser.dialects.creole11_base]--><tt class="descclassname">creoleparser.dialects.</tt><tt class="descname">creole11_base</tt><big>(</big><em>macro_func=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#creoleparser.dialects.creole11_base" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">creoleparser.dialects.</tt><tt class="descname">creole11_base</tt><big>(</big><em>macro_func=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#creoleparser.dialects.creole11_base" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a base class for extending (for parameter descriptions, see <a title="creoleparser.dialects.create_dialect" class="reference" href="#creoleparser.dialects.create_dialect"><tt class="xref docutils literal"><span class="pre">create_dialect()</span></tt></a>)</p>
 <blockquote>
 <p>The returned class implements most of the <em>officially</em> proposed additions to
@@ -167,7 +168,7 @@ removing underline and adding strike-though:</p>
 <span class="gp">... </span>                                                 <span class="s">&#39;--&#39;</span><span class="p">:</span><span class="s">&#39;del&#39;</span><span class="p">,</span>
 <span class="gp">... </span>                                                 <span class="s">&#39;##&#39;</span><span class="p">:</span><span class="s">&#39;code&#39;</span><span class="p">})</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">from</span> <span class="nn">core</span> <span class="k">import</span> <span class="n">Parser</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">parser</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">MyDialect</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parser</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">MyDialect</span><span class="p">)</span> <span class="c"># for verion 6.0, use Parser(MyDialect())</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">parser</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="s">&quot;delete --this-- but don&#39;t underline __this__&quot;</span><span class="p">),</span>
 <span class="go">&lt;p&gt;delete &lt;del&gt;this&lt;/del&gt; but don&#39;t underline __this__&lt;/p&gt;</span>
 </pre></div>
@@ -183,6 +184,90 @@ which could lead to unexpected behaviour.</p>
 </div>
 </dd></dl>
 
+<dl class="function">
+<dt id="creoleparser.dialects.creepy10_base">
+<tt class="descclassname">creoleparser.dialects.</tt><tt class="descname">creepy10_base</tt><big>(</big><big>)</big><a class="headerlink" href="#creoleparser.dialects.creepy10_base" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dialect object (a class) to be used by <a title="creoleparser.core.ArgParser" class="reference" href="core.html#creoleparser.core.ArgParser"><tt class="xref docutils literal"><span class="pre">ArgParser</span></tt></a></p>
+<p><strong>How it Works</strong></p>
+<p>The &#8220;Creepy&#8221; dialect uses a syntax that can look much like that of
+attribute definition in xml. The most important differences are that
+positional arguments are allowed and quoting is optional.</p>
+<p>A Creepy dialect object is normally passed to
+<a title="creoleparser.core.ArgParser" class="reference" href="core.html#creoleparser.core.ArgParser"><tt class="xref docutils literal"><span class="pre">ArgParser</span></tt></a> to create a new parser object.
+When called with a single argument, this outputs a two-tuple
+(a list of positional arguments and a dictionary of keyword arguments):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">from</span> <span class="nn">core</span> <span class="k">import</span> <span class="n">ArgParser</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_parser</span> <span class="o">=</span> <span class="n">ArgParser</span><span class="p">(</span><span class="n">dialect</span><span class="o">=</span><span class="n">creepy10_base</span><span class="p">(),</span> <span class="n">convert_implicit_lists</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_parser</span><span class="p">(</span><span class="s">&quot; foo=&#39;one&#39; &quot;</span><span class="p">)</span>
+<span class="go">([], {&#39;foo&#39;: &#39;one&#39;})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_parser</span><span class="p">(</span><span class="s">&quot;  &#39;one&#39; &quot;</span><span class="p">)</span>
+<span class="go">([&#39;one&#39;], {})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_parser</span><span class="p">(</span><span class="s">&quot;  &#39;one&#39; foo=&#39;two&#39; &quot;</span><span class="p">)</span>
+<span class="go">([&#39;one&#39;], {&#39;foo&#39;: &#39;two&#39;})</span>
+</pre></div>
+</div>
+<p>Positional arguments must come before keyword arguments. If they occur
+after a keyword argument, they will be combined with that value as a list:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">my_parser</span><span class="p">(</span><span class="s">&quot;  foo=&#39;one&#39; &#39;two&#39; &quot;</span><span class="p">)</span>
+<span class="go">([], {&#39;foo&#39;: [&#39;one&#39;, &#39;two&#39;]})</span>
+</pre></div>
+</div>
+<p>Similarly, if two or more keywords are the same, the values will be combined
+into a list:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">my_parser</span><span class="p">(</span><span class="s">&quot;  foo=&#39;one&#39; foo=&#39;two&#39; &quot;</span><span class="p">)</span>
+<span class="go">([], {&#39;foo&#39;: [&#39;one&#39;, &#39;two&#39;]})</span>
+</pre></div>
+</div>
+<p>The lists above are known as &#8220;Implicit&#8221; lists. They can automatically be
+converted to strings by setting <tt class="docutils literal"><span class="pre">convert_implicit_lists=True</span></tt> in the
+parser.</p>
+<p>Quotes can be single or double:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">my_parser</span><span class="p">(</span><span class="s">&#39;&#39;&#39; foo=&quot;it&#39;s okay&quot; &#39;&#39;&#39;</span><span class="p">)</span>
+<span class="go">([], {&#39;foo&#39;: &quot;it&#39;s okay&quot;})</span>
+</pre></div>
+</div>
+<p>Tildes can be used for escaping:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">my_parser</span><span class="p">(</span><span class="s">&#39;&#39;&#39; foo=&#39;it~&#39;s okay&#39; &#39;&#39;&#39;</span><span class="p">)</span>
+<span class="go">([], {&#39;foo&#39;: &quot;it&#39;s okay&quot;})</span>
+</pre></div>
+</div>
+<p>Quotes are optional if an argument value doesn&#8217;t contain spaces or
+unescaped special characters:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">my_parser</span><span class="p">(</span><span class="s">&quot;  one foo = two &quot;</span><span class="p">)</span>
+<span class="go">([&#39;one&#39;], {&#39;foo&#39;: &#39;two&#39;})</span>
+</pre></div>
+</div>
+<p>Keyword arguments lacking a value will be interpreted as an empty string:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">my_parser</span><span class="p">(</span><span class="s">&quot; &#39;&#39; foo=  boo= &#39;&#39; &quot;</span><span class="p">)</span>
+<span class="go">([&#39;&#39;], {&#39;foo&#39;: &#39;&#39;, &#39;boo&#39;: &#39;&#39;})</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="creoleparser.dialects.creepy20_base">
+<tt class="descclassname">creoleparser.dialects.</tt><tt class="descname">creepy20_base</tt><big>(</big><big>)</big><a class="headerlink" href="#creoleparser.dialects.creepy20_base" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extends creepy10_base to support an explicit list argument syntax.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">from</span> <span class="nn">core</span> <span class="k">import</span> <span class="n">ArgParser</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_parser</span> <span class="o">=</span> <span class="n">ArgParser</span><span class="p">(</span><span class="n">dialect</span><span class="o">=</span><span class="n">creepy20_base</span><span class="p">(),</span><span class="n">convert_implicit_lists</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_parser</span><span class="p">(</span><span class="s">&quot; one [two three] foo=[&#39;four&#39; &#39;five&#39;] &quot;</span><span class="p">)</span>
+<span class="go">([&#39;one&#39;, [&#39;two&#39;, &#39;three&#39;]], {&#39;foo&#39;: [&#39;four&#39;, &#39;five&#39;]})</span>
+</pre></div>
+</div>
+<p>You can test if a list is explicit by testing its class:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">from</span> <span class="nn">core</span> <span class="k">import</span> <span class="n">ImplicitList</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pos</span><span class="p">,</span> <span class="n">kw</span> <span class="o">=</span> <span class="n">my_parser</span><span class="p">(</span><span class="s">&quot;  foo=[&#39;one&#39; &#39;two&#39;] boo = &#39;three&#39; &#39;four&#39;&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">kw</span>
+<span class="go">{&#39;foo&#39;: [&#39;one&#39;, &#39;two&#39;], &#39;boo&#39;: [&#39;three&#39;, &#39;four&#39;]}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">kw</span><span class="p">[</span><span class="s">&#39;foo&#39;</span><span class="p">],</span> <span class="n">ImplicitList</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">kw</span><span class="p">[</span><span class="s">&#39;boo&#39;</span><span class="p">],</span> <span class="n">ImplicitList</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>Lists of length zero or one are <strong>never</strong> of type ImplicitList.</p>
+</dd></dl>
+
 </div>
 
 
@@ -192,19 +277,29 @@ which could lead to unexpected behaviour.</p>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
             <h4>Previous topic</h4>
-            <p class="topless"><a href="../modules.html" title="previous chapter">Generated API documentation</a></p>
+            <p class="topless"><a href="../modules.html"
+                                  title="previous chapter">Generated API documentation</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="core.html" title="next chapter"><tt class="docutils literal docutils literal"><span class="pre">creoleparser.core</span></tt></a></p>
+            <p class="topless"><a href="core.html"
+                                  title="next chapter"><tt class="docutils literal docutils literal"><span class="pre">creoleparser.core</span></tt></a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
-              <li><a href="../_sources/modules/dialects.txt">Show Source</a></li>
+              <li><a href="../_sources/modules/dialects.txt"
+                     rel="nofollow">Show Source</a></li>
             </ul>
-          <h3>Quick search</h3>
-            <form class="search" action="../search.html" method="get">
-              <input type="text" name="q" size="18" /> <input type="submit" value="Go" />
-              <input type="hidden" name="check_keywords" value="yes" />
-              <input type="hidden" name="area" value="default" />
-            </form>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -214,34 +309,23 @@ which could lead to unexpected behaviour.</p>
       <ul>
         <li class="right" style="margin-right: 10px">
           <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
+             >index</a></li>
         <li class="right" >
           <a href="../modindex.html" title="Global Module Index"
-             accesskey="M">modules</a> |</li>
+             >modules</a> |</li>
         <li class="right" >
           <a href="core.html" title="creoleparser.core"
-             accesskey="N">next</a> |</li>
+             >next</a> |</li>
         <li class="right" >
           <a href="../modules.html" title="Generated API documentation"
-             accesskey="P">previous</a> |</li>
-        <li><a href="../contents.html">creoleparser v0.6 documentation</a> &raquo;</li>
-          <li><a href="../modules.html" accesskey="U">Generated API documentation</a> &raquo;</li> 
+             >previous</a> |</li>
+        <li><a href="../contents.html">creoleparser v0.6.x documentation</a> &raquo;</li>
+          <li><a href="../modules.html" >Generated API documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009, Stephen Day.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.1.
     </div>
-
-<script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-<script type="text/javascript">
-try {
-var pageTracker = _gat._getTracker("UA-2934490-7");
-pageTracker._trackPageview();
-} catch(err) {}</script>
-
-  </body>
+<script type="text/javascript">var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script><script type="text/javascript">try {var pageTracker = _gat._getTracker("UA-2934490-7");pageTracker._trackPageview();} catch(err) {}</script>  </body>
 </html>

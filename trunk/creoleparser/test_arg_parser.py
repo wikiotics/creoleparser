@@ -3,7 +3,7 @@ from string import lower
 
 from __init__ import parse_args
 from core import ArgParser
-from dialects import creepy_base
+from dialects import creepy10_base, creepy20_base
 
 
 class BaseTest(object):
@@ -53,7 +53,7 @@ class ListTest(unittest.TestCase, BaseTest):
     """
     """
     def setUp(self):
-        self.parse = ArgParser(creepy_base(),force_strings=False)
+        self.parse = ArgParser(creepy20_base(), convert_implicit_lists=False)
         
     def test_pos_args(self):
         super(ListTest, self).test_pos_args()
@@ -94,69 +94,62 @@ class ForceStringsTest(unittest.TestCase, BaseTest):
     """
     """
     def setUp(self):
-        self.parse = ArgParser(creepy_base(),force_strings=True)
+        self.parse = ArgParser(creepy20_base(),convert_implicit_lists=True)
         
     def test_pos_args(self):
         super(ForceStringsTest, self).test_pos_args()
         self.assertEquals(
             self.parse(" one [ two ] "),
-            (['one','two'],{}))
+            (['one',['two']],{}))
         self.assertEquals(
             self.parse(" one [two three ] "),
-            (['one', 'two three'],{}))
-        self.assertEquals(
-            self.parse(" [one two] "),
-            (['one two'],{}))
+            (['one', ['two', 'three']],{}))
 
     def test_kw_args(self):
         super(ForceStringsTest, self).test_kw_args()
         self.assertEquals(
             self.parse(" one  = [ oneval ] "),
-            ([],{'one':'oneval'}))
+            ([],{'one': ['oneval']}))
+        self.assertEquals(
+            self.parse(" one  = oneval one = twoval "),
+            ([],{'one':'oneval twoval'}))
 
     def test_mixed_args(self):
         super(ForceStringsTest, self).test_mixed_args()
         self.assertEquals(
-            self.parse(" [one] one  = [ oneval ] "),
-            (['one'],{'one':'oneval'}))
+            self.parse(" [one] one  = 'oneval' foo "),
+            ([['one']],{'one':'oneval foo'}))
         
-    def test_implicit_list(self):
-        self.assertEquals(
-            self.parse(" one  = oneval foo "),
-            ([],{'one':'oneval foo'}))
-        self.assertEquals(
-            self.parse(" one  = 'oneval' foo "),
-            ([],{'one':'oneval foo'}))  
 
 class KeyFuncTest(unittest.TestCase, BaseTest):
     """
     """
     def setUp(self):
-        self.parse = ArgParser(creepy_base(),key_func=lower,force_strings=False)
+        self.parse = ArgParser(creepy10_base(),key_func=lower,convert_implicit_lists=False)
         
     def test_kw_args(self):
         super(KeyFuncTest, self).test_kw_args()
         self.assertEquals(
-            self.parse(" ONE  = [ oneval ] Two = twoval "),
-            ([],{'one':['oneval'],'two':'twoval'}))
+            self.parse(" ONE  = oneval  Two = twoval "),
+            ([],{'one':'oneval','two':'twoval'}))
 
     def test_mixed_args(self):
         super(KeyFuncTest, self).test_mixed_args()
         self.assertEquals(
-            self.parse(" [one] One  = [ oneval ] "),
-            ([['one']],{'one':['oneval']}))
+            self.parse(" one One  =  oneval  "),
+            (['one'],{'one':'oneval'}))
 
 class IllegalKeysTest(unittest.TestCase, BaseTest):
     """
     """
     def setUp(self):
-        self.parse = ArgParser(creepy_base(),illegal_keys=['onety','twoty'])
+        self.parse = ArgParser(creepy10_base(),illegal_keys=['onety','twoty'])
         
     def test_kw_args(self):
         super(IllegalKeysTest, self).test_kw_args()
         self.assertEquals(
-            self.parse(" onety  = [ oneval ] twoty = twoval "),
-            ([],{'onety_':['oneval'],'twoty_':'twoval'}))
+            self.parse(" onety  =  oneval  twoty = twoval "),
+            ([],{'onety_':'oneval','twoty_':'twoval'}))
 
 
 def test_suite():
