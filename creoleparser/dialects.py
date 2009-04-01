@@ -213,6 +213,8 @@ def creole11_base(macro_func=None,**kwargs):
         
         simple_element = SimpleElement(token_dict={'**':'strong','//':'em',',,':'sub',
                                                   '^^':'sup','__':'u','##':'code'})
+        indented = IndentedBlock('div','>', class_=None, style="margin-left:2em")
+        
         dd = DefinitionDef('dd',':')
         dt = DefinitionTerm('dt',';',stop_token=':')
         dl = List('dl',';',stop_tokens='*#')
@@ -227,6 +229,7 @@ def creole11_base(macro_func=None,**kwargs):
             self.dd.child_elements = [self.br, self.raw_link, self.simple_element]
             self.dt.child_elements = [self.br, self.raw_link, self.simple_element]
             self.dl.child_elements = [(self.no_wiki,self.bodiedmacro,self.macro),self.img,self.link,self.dt,self.dd]
+            self.indented.child_elements = self.block_elements[1:]
         
         @property 
         def inline_elements(self):
@@ -234,7 +237,7 @@ def creole11_base(macro_func=None,**kwargs):
 
         @property 
         def block_elements(self):
-            return [(self.bodied_block_macro,self.pre),self.blank_line,self.table,self.headings,
+            return [(self.bodied_block_macro,self.pre),self.blank_line,self.indented,self.table,self.headings,
                            self.hr,self.dl,self.ul,self.ol,self.p]
     return Base
 

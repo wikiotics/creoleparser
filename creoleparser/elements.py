@@ -1118,6 +1118,39 @@ class PreBlock(BlockElement):
                         element_store, environ,remove_escapes=False))
 
 
+class IndentedBlock(BlockElement):
+    """An indented block.
+
+    """
+
+    def __init__(self, tag, token, class_ , style ):
+        super(IndentedBlock,self).__init__(tag,token )
+        self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
+        self.regexp2 = re.compile(self.re_string2(),re.MULTILINE)
+        self.regexp3 = re.compile(self.re_string3(),re.MULTILINE)
+        self.class_ = class_
+        self.style = style
+
+    def re_string(self):
+        return r'^[ \t]*' + re.escape(self.token) + '(?!'+ re.escape(self.token) +')' \
+               + r'(.+)\Z'
+
+    def re_string2(self):
+        """Finds a single token only at the start of a line"""
+        return r'^[ \t]*'+ re.escape(self.token) +'(?!'+ re.escape(self.token) +')'
+
+    def re_string3(self):
+        """Finds a token at the start of the line."""
+        return r'^[ \t]*' + re.escape(self.token)
+
+    def _build(self,mo,element_store, environ):
+        match = self.regexp2.sub(r'\n',mo.group(1)) #inserts blank lines during processing
+        match = self.regexp3.sub(r'',match) # removes tokens during processing
+        
+        return bldr.tag.__getattr__(self.tag)(
+            fragmentize(match,self.child_elements,
+                        element_store, environ),class_=self.class_,style=self.style)
+
 class LoneElement(BlockElement):
     """Element on a line by itself with no content (e.g., <hr/>)"""
 
