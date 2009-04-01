@@ -1,3 +1,9 @@
+Version 0.6.2 (April ?? 2009)
+-----------------------------
+
+ * added syntax for indented regions
+
+
 Version 0.6.1 (March 31 2009)
 -----------------------------
 
