@@ -13,8 +13,8 @@ from genshi import builder
 from genshi.core import Markup
 
 from core import Parser
-from dialects import creole10_base, create_dialect, Creole10
-from elements import SimpleElement
+from dialects import creole10_base, creole11_base, create_dialect, Creole10
+from elements import SimpleElement, IndentedBlock
 
 create_dialect = Creole10
 
@@ -815,7 +815,42 @@ class TaintingTest(unittest.TestCase):
             self.parse("[[javascript:alert(document.cookie)]]"),
             wrap_result("[[javascript:alert(document.cookie)]]"))
 
+class IndentTest(unittest.TestCase):
+    """
+    """
+    def setUp(self):
+        Base = creole11_base()
+        class MyDialect(Base):
+            indented = IndentedBlock('div','>', class_=None, style=None)
+        self.parse = Parser(MyDialect)#text2html
 
+    def test_simple(self):
+        self.assertEquals(
+            self.parse("""\
+Foo
+>Boo
+Poo
+>Boo2
+"""),
+            """<p>Foo</p>\n<div><p>Boo\nPoo</p>\n<p>Boo2</p>\n</div>\n""")
+        self.assertEquals(
+            self.parse("""\
+Foo
+ >Boo
+ Too
+>>Poo
+>>>Foo
+"""),
+            """<p>Foo</p>\n<div><p>Boo\n Too</p>\n<div><p>Poo</p>\n<div><p>Foo</p>\n</div>\n</div>\n</div>\n""")
+        self.assertEquals(
+            self.parse("""\
+Foo
+>Boo
+ Too
+>>Poo
+>Foo
+"""),
+            """<p>Foo</p>\n<div><p>Boo\n Too</p>\n<div><p>Poo</p>\n</div>\n<p>Foo</p>\n</div>\n""")        
 class LongDocumentTest(unittest.TestCase):
     """
     """
@@ -844,7 +879,7 @@ class LongDocumentTest(unittest.TestCase):
         self.assertEquals(text2html(doc), expected)
 
     def test_very_long_list(self):
-        lines = ['* blaa blaa' for x in range(2000)]
+        lines = ['* blaa blaa' for x in range(1000)]
         doc = '\n'.join(lines) + '\n'
         expected_lines = ['<ul>']
         for line in lines:
@@ -855,7 +890,7 @@ class LongDocumentTest(unittest.TestCase):
         self.assertEquals(text2html(doc), expected)
 
     def test_very_long_table(self):
-        lines = ['| blaa blaa' for x in range(2000)]
+        lines = ['| blaa blaa' for x in range(1000)]
         doc = '\n'.join(lines) + '\n'
         expected_lines = ['<table>']
         for line in lines:
@@ -903,6 +938,7 @@ def test_suite():
         unittest.makeSuite(LongDocumentTest),
         unittest.makeSuite(ContextTest),
         unittest.makeSuite(ExtendingTest),
+        unittest.makeSuite(IndentTest),
         ))
 
 
