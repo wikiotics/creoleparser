@@ -14,7 +14,7 @@ from genshi.core import Markup
 
 from core import Parser
 from dialects import creole10_base, creole11_base, create_dialect, Creole10
-from elements import SimpleElement, IndentedBlock
+from elements import SimpleElement, IndentedBlock#, NestedIndentedBlock
 
 create_dialect = Creole10
 
@@ -822,6 +822,7 @@ class IndentTest(unittest.TestCase):
         Base = creole11_base()
         class MyDialect(Base):
             indented = IndentedBlock('div','>', class_=None, style=None)
+            #nested_indented = NestedIndentedBlock('div','>', class_=None, style=None)
         self.parse = Parser(MyDialect)#text2html
 
     def test_simple(self):
@@ -829,28 +830,30 @@ class IndentTest(unittest.TestCase):
             self.parse("""\
 Foo
 >Boo
-Poo
+>
 >Boo2
 """),
-            """<p>Foo</p>\n<div><p>Boo\nPoo</p>\n<p>Boo2</p>\n</div>\n""")
-        self.assertEquals(
-            self.parse("""\
-Foo
- >Boo
- Too
->>Poo
->>>Foo
-"""),
-            """<p>Foo</p>\n<div><p>Boo\n Too</p>\n<div><p>Poo</p>\n<div><p>Foo</p>\n</div>\n</div>\n</div>\n""")
+            """<p>Foo</p>\n<div><p>Boo</p>\n<p>Boo2</p>\n</div>\n""")
         self.assertEquals(
             self.parse("""\
 Foo
 >Boo
- Too
+>Too
+>>Poo
+>>>Foo
+"""),
+            """<p>Foo</p>\n<div><p>Boo\nToo</p>\n<div><p>Poo</p>\n<div><p>Foo</p>\n</div>\n</div>\n</div>\n""")
+        self.assertEquals(
+            self.parse("""\
+Foo
+>Boo
+>Too
 >>Poo
 >Foo
+
+>>Blaa
 """),
-            """<p>Foo</p>\n<div><p>Boo\n Too</p>\n<div><p>Poo</p>\n</div>\n<p>Foo</p>\n</div>\n""")        
+            """<p>Foo</p>\n<div><p>Boo\nToo</p>\n<div><p>Poo</p>\n</div>\n<p>Foo</p>\n</div>\n<div><div><p>Blaa</p>\n</div>\n</div>\n""")        
 class LongDocumentTest(unittest.TestCase):
     """
     """

@@ -122,8 +122,8 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
         table = Table('table','|')
 
         li = ListItem('li',list_tokens='*#')
-        ol = List('ol','#',stop_tokens='*')
-        ul = List('ul','*',stop_tokens='#')
+        ol = List('ol','#',stop_tokens='*>')
+        ul = List('ul','*',stop_tokens='#>')
         nested_ol = NestedList('ol','#')
         nested_ul = NestedList('ul','*')
 
@@ -171,6 +171,7 @@ def creole11_base(macro_func=None,**kwargs):
 
         * superscript, subscript, underline, and monospace
         * definition lists
+        * indentation
         * macros
             
         (see http://purl.oclc.org/creoleparser/cheatsheet)
@@ -217,7 +218,7 @@ def creole11_base(macro_func=None,**kwargs):
         
         dd = DefinitionDef('dd',':')
         dt = DefinitionTerm('dt',';',stop_token=':')
-        dl = List('dl',';',stop_tokens='*#')
+        dl = List('dl',';',stop_tokens='*#>')
 
         macro = Macro('',('<<','>>'),func=macro_func)
         bodiedmacro = BodiedMacro('',('<<','>>'),func=macro_func)
@@ -229,16 +230,16 @@ def creole11_base(macro_func=None,**kwargs):
             self.dd.child_elements = [self.br, self.raw_link, self.simple_element]
             self.dt.child_elements = [self.br, self.raw_link, self.simple_element]
             self.dl.child_elements = [(self.no_wiki,self.bodiedmacro,self.macro),self.img,self.link,self.dt,self.dd]
-            self.indented.child_elements = self.block_elements[1:]
-        
+            self.indented.child_elements = self.block_elements
+            
         @property 
         def inline_elements(self):
             return [(self.no_wiki,self.bodiedmacro,self.macro), self.img, self.link, self.br, self.raw_link, self.simple_element]
 
         @property 
         def block_elements(self):
-            return [(self.bodied_block_macro,self.pre),self.blank_line,self.indented,self.table,self.headings,
-                           self.hr,self.dl,self.ul,self.ol,self.p]
+            return [(self.bodied_block_macro,self.pre),self.blank_line,self.table,self.headings,
+                           self.hr,self.dl,self.ul,self.ol,self.indented,self.p]
     return Base
 
 
