@@ -1048,8 +1048,6 @@ class NoWikiElement(InlineElement):
 
     When two or more end tokens are found together, only last marks
     the end of the element.
-
-    This element must be on a single line.
     
     """
 

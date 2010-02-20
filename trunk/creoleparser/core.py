@@ -46,7 +46,7 @@ class Parser(object):
         self.strip_whitespace = strip_whitespace
         self.encoding=encoding
 
-    def generate(self,text,element_store=None,context='block', environ=None):
+    def generate(self,text,element_store=None,context='block', environ=None, preprocess=True):
         """Returns a Genshi Stream.
 
         :parameters:
@@ -70,21 +70,21 @@ class Parser(object):
         if not isinstance(context,list):
             if context == 'block':
                 top_level_elements = self.dialect.block_elements
-                do_preprocess = True
+                #do_preprocess = True
             elif context == 'inline':
                 top_level_elements = self.dialect.inline_elements
-                do_preprocess = False
+                #do_preprocess = False
         else:
             top_level_elements = context
-            do_preprocess = False
+            #do_preprocess = False
 
-        if do_preprocess:
-            text = preprocess(text,self.dialect)
+        if preprocess:
+            text = self.preprocess(text)
 
         return bldr.tag(fragmentize(text,top_level_elements,element_store, environ)).generate()
 
 
-    def render(self, text, element_store=None, context='block', environ=None, **kwargs):
+    def render(self, text, element_store=None, context='block', environ=None, preprocess=True, **kwargs):
         """Returns the final output string (e.g., xhtml). See
         :meth:`~creoleparser.core.Parser.generate` for named parameter descriptions.
 
@@ -100,7 +100,7 @@ class Parser(object):
         kwargs.setdefault('encoding',self.encoding)
         if kwargs['method'] != "text":
             kwargs.setdefault('strip_whitespace',self.strip_whitespace)
-        stream = self.generate(text, element_store, context, environ)
+        stream = self.generate(text, element_store, context, environ, preprocess)
         return stream.render(**kwargs)
 
     def __call__(self,text, **kwargs):
@@ -109,6 +109,19 @@ class Parser(object):
         """
 
         return self.render(text, **kwargs)
+
+    def preprocess(self,text):
+        """This should generally be called before fragmentize().
+
+        :parameters:
+          text
+            text to be processsed.
+
+        """
+        text = text.replace("\r\n", "\n")
+        text = text.replace("\r", "\n")
+
+        return text    
 
 
 
@@ -291,20 +304,6 @@ def fill_from_store(text,element_store):
         frags.append(text[start:])
     return frags
 
-
-def preprocess(text, dialect):
-    """This should generally be called before fragmentize().
-
-    :parameters:
-      text
-        text to be processsed.
-      dialect
-        a ``Dialect`` object.
-    """
-    text = text.replace("\r\n", "\n")
-    text = text.replace("\r", "\n")
-
-    return text
 
 
 def chunk(text, blank_lines, hard_elements, limit):
