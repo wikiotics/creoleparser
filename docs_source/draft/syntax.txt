@@ -11,7 +11,7 @@ For a quick glance at what creoleparser implements, see the
 
 Creoleparser adhers very closely to the basic `Creole 1.0 specification <http://wikicreole.org/wiki/Creole1.0>`_
 and optionally implements most `additions <http://wiki.wikicreole.org/Creole%201.0/additions>`_ (not including
-alternate link sytax and indented paragraphs). These pages should be
+alternate link sytax). These pages should be
 refered to for full details on the syntax. 
 
 Below find extra syntax features of creoleparser.
