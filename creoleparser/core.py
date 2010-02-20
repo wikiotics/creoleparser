@@ -32,7 +32,8 @@ class Parser(object):
           strip_whitespace
             This value is passed to Genshies Steam.render().
           encoding
-            This value is passed to Genshies Steam.render().
+            This value is passed to Genshies Steam.render(). If ``None``, the ouput
+            will be a unicode object.
             
         """
     
