@@ -170,7 +170,7 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
             wrap_result("""<a href="mailto:someone@example.com">mailto:someone@example.com</a>"""))
         self.assertEquals(
             self.parse("[[http://www.google.com| <<luca Google>>]]"),
-            wrap_result("""<a href="http://www.google.com"><code class="unknown_macro">&lt;&lt;luca Google&gt;&gt;</code></a>"""))
+            wrap_result("""<a href="http://www.google.com"><code class="unknown_macro">&lt;&lt;<span class="macro_name">luca</span><span class="macro_arg_string"> Google</span>&gt;&gt;</code></a>"""))
 
     def test_bold(self):
         self.assertEquals(
@@ -197,22 +197,22 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
     def test_macro_markers(self):
         self.assertEquals(
             self.parse("This is the <<sue sue macro!>>"),
-            wrap_result("""This is the <code class="unknown_macro">&lt;&lt;sue sue macro!&gt;&gt;</code>"""))
+            wrap_result('This is the <code class="unknown_macro">&lt;&lt;<span class="macro_name">sue</span><span class="macro_arg_string"> sue macro!</span>&gt;&gt;</code>'))
         self.assertEquals(
             self.parse('<<bad name>>foo<</bad>>'),
-            wrap_result('<code class="unknown_macro">&lt;&lt;bad name&gt;&gt;foo&lt;&lt;/bad&gt;&gt;</code>'))
+            wrap_result('<code class="unknown_macro" style="white-space:pre-wrap">&lt;&lt;<span class="macro_name">bad</span><span class="macro_arg_string"> name</span>&gt;&gt;<span class="macro_body">foo</span>&lt;&lt;/bad&gt;&gt;</code>'))
         self.assertEquals(
             self.parse('<<unknown>>foo<</unknown>>'),
-            wrap_result('<code class="unknown_macro">&lt;&lt;unknown&gt;&gt;foo&lt;&lt;/unknown&gt;&gt;</code>'))
+            wrap_result('<code class="unknown_macro" style="white-space:pre-wrap">&lt;&lt;<span class="macro_name">unknown</span><span class="macro_arg_string"></span>&gt;&gt;<span class="macro_body">foo</span>&lt;&lt;/unknown&gt;&gt;</code>'))
         self.assertEquals(
             self.parse('<<unknown>>foo with\na line break<</unknown>>'),
-            wrap_result('<code class="unknown_macro">&lt;&lt;unknown&gt;&gt;foo with<br />a line break&lt;&lt;/unknown&gt;&gt;</code>'))
+            wrap_result('<code class="unknown_macro" style="white-space:pre-wrap">&lt;&lt;<span class="macro_name">unknown</span><span class="macro_arg_string"></span>&gt;&gt;<span class="macro_body">foo with\na line break</span>&lt;&lt;/unknown&gt;&gt;</code>'))
         self.assertEquals(
             self.parse('<<unknown>>\nfoo\n<</unknown>>'),
-            '<pre class="unknown_macro">&lt;&lt;unknown&gt;&gt;\nfoo\n&lt;&lt;/unknown&gt;&gt;</pre>')
+            '<pre class="unknown_macro">&lt;&lt;<span class="macro_name">unknown</span><span class="macro_arg_string"></span>&gt;&gt;\n<span class="macro_body">foo\n</span>&lt;&lt;/unknown&gt;&gt;</pre>')
         self.assertEquals(
             self.parse('start\n\n<<unknown>>\n\nend'),
-            wrap_result('start</p>\n<p><code class="unknown_macro">&lt;&lt;unknown&gt;&gt;</code></p>\n<p>end'))
+            wrap_result('start</p>\n<p><code class="unknown_macro">&lt;&lt;<span class="macro_name">unknown</span><span class="macro_arg_string"></span>&gt;&gt;</code></p>\n<p>end'))
 
     def test_monotype(self):
         pass

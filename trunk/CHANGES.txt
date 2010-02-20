@@ -2,6 +2,7 @@ Version 0.7.0 ( ?? 2010)
 -----------------------------
 
  * added syntax for indented regions
+ * changed rendering of unknown macros
 
 
 Version 0.6.1 (March 31 2009)

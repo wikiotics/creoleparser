@@ -281,13 +281,15 @@ class Macro(WikiElement):
 
     trailing_slash = re.compile(r'(?<=[ "\'\]])/$')
     def _build(self,mo,element_store, environ):
+        arg_string = re.sub(self.trailing_slash,'',mo.group(4))
         if self.func:
-            arg_string = re.sub(self.trailing_slash,'',mo.group(4))
-            value = self.func(mo.group(2),arg_string,None,False,environ)
+            value = self.func(mo.group('name'),arg_string,None,False,environ)
         else:
             value = None
         if value is None:
-            return bldr.tag.code(self.token[0] + mo.group(1) + self.token[1],class_="unknown_macro")
+            return bldr.tag.code(self.token[0],bldr.tag.span(mo.group('name'),class_="macro_name"),
+                           bldr.tag.span(arg_string,class_="macro_arg_string"),
+                           self.token[1],class_="unknown_macro")
         elif isinstance(value, (basestring,bldr.Fragment,bldr.Element, Stream)):
             return value
         else:
@@ -340,16 +342,12 @@ class BodiedMacro(Macro):
         else:
             value = None
         if value is None:
-            content_lines = body.splitlines()
-            if len(content_lines) > 1:
-                content_out = [content_lines[0]]
-                for line in content_lines[1:]:
-                    content_out.extend([bldr.tag.br(),line])
-            else:
-                content_out = content_lines
-            return [bldr.tag.code(self.token[0] + mo.group('name') + mo.group('arg_string')+ self.token[1],
-                            content_out , self.token[0] + '/'
-                            + mo.group('name') + self.token[1],class_="unknown_macro"),tail]
+            content_out = [self.token[0],bldr.tag.span(mo.group('name'),class_="macro_name"),
+                           bldr.tag.span(mo.group('arg_string'),class_="macro_arg_string"),
+                           self.token[1],bldr.tag.span(mo.group('body'),class_="macro_body"),
+                           self.token[0] + '/' + mo.group('name') + self.token[1]]
+            return [bldr.tag.code(content_out,class_="unknown_macro", style="white-space:pre-wrap"),tail]
+            
         elif isinstance(value, (basestring,bldr.Fragment, Stream)):
             return [value,tail]
         else:
@@ -442,9 +440,11 @@ class BodiedBlockMacro(WikiElement):
         else:
             value = None
         if value is None:
-            return [bldr.tag.pre(self.token[0] + mo.group(1) + self.token[1]
-                            + '\n' + body + self.token[0] + '/'
-                            + mo.group('name') + self.token[1] ,class_="unknown_macro"), tail]
+            return [bldr.tag.pre(self.token[0],bldr.tag.span(mo.group('name'),class_="macro_name"),
+                           bldr.tag.span(mo.group('arg_string'),class_="macro_arg_string"),
+                           self.token[1],'\n',bldr.tag.span(mo.group('body'),class_="macro_body"),
+                           self.token[0] + '/' + mo.group('name') + self.token[1],
+                           class_="unknown_macro"), tail]
         elif (isinstance(value, (Stream, basestring)) or
              (isinstance(value,bldr.Element) and value.tag in BLOCK_TAGS)):
             return [value, tail]
@@ -704,7 +704,7 @@ class List(BlockElement):
         single token.
         """
         leading_whitespace = r'^([ \t]*'
-        only_one_token = re.escape(self.token)+'[^'+ re.escape(self.token) + ']'
+        only_one_token = re.escape(self.token)+ '(?!' + re.escape(self.token) + ')'
         rest_of_list = r'.*?(?:\n|\Z))'
         only_one_stop_token = '([' + re.escape(self.stop_tokens) + r'])(?!\3)'        
         look_ahead = '(?=([ \t]*' + only_one_stop_token + '|$))'
@@ -738,7 +738,6 @@ class ListItem(BlockElement):
         """
         self.list_tokens = list_tokens
         super(ListItem,self).__init__(tag, None)
-        #self.list_tokens = list_tokens
         self.regexp = re.compile(self.re_string(),re.DOTALL)
 
     def re_string(self):
