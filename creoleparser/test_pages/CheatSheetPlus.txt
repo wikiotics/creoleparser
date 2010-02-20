@@ -15,8 +15,9 @@
 |##Force~\\linebreak##                  |Force\\linebreak            |<<source>>Force\\linebreak<</source>>
 |<<include-raw HorizontalLine>>         |<<include HorizontalLine>>  |<<include-source HorizontalLine>>
 |##{{{{{Image.jpg|title}}}}}##          |{{Image.jpg|title}}         |<<source>>{{Image.jpg|title}}<</source>>
- |<<include-raw RenderedTable>>          |<<include RenderedTable>>   |<<include-source RenderedTable>>
+|<<include-raw RenderedTable>>          |<<include RenderedTable>>   |<<include-source RenderedTable>>
 |<<include-raw RenderedPre>>            |<<include RenderedPre>>     |<<include-source RenderedPre>>
+|<<include-raw Indented>>               |<<include Indented>>        |<<include-source Indented>>
 |{{{use a tilde to ~**escape}}}         |use a tilde to ~**escape    |<<source>>use a tilde to ~**escape<</source>>
 |##{{{<<source>>a //simple// macro<</source>>}}}##|<<source>>a //simple// macro<</source>>|<<pre>><pre><p>a <em>simple</em> macro</p></pre><</pre>>
 
