@@ -7,6 +7,7 @@
 #
 
 import re
+import warnings
 
 import genshi.builder as bldr
 
@@ -40,14 +41,18 @@ class Parser(object):
         if isinstance(dialect,type):
             self.dialect = dialect()
         else:
-            # warning message here in next major version
+            warnings.warn("""
+'dialect' should be a type object, not an instance. 
+"""
+                  )
             self.dialect = dialect
         self.method = method
         self.strip_whitespace = strip_whitespace
         self.encoding=encoding
 
-    def generate(self,text,element_store=None,context='block', environ=None, preprocess=True):
-        """Returns a Genshi Stream.
+
+    def parse(self,text,element_store=None,context='block', environ=None, preprocess=True):
+        """Returns a Genshi Fragment (basically a list of Elements and text nodes).
 
         :parameters:
           text
@@ -70,23 +75,30 @@ class Parser(object):
         if not isinstance(context,list):
             if context == 'block':
                 top_level_elements = self.dialect.block_elements
-                #do_preprocess = True
             elif context == 'inline':
                 top_level_elements = self.dialect.inline_elements
-                #do_preprocess = False
         else:
             top_level_elements = context
-            #do_preprocess = False
 
         if preprocess:
             text = self.preprocess(text)
 
-        return bldr.tag(fragmentize(text,top_level_elements,element_store, environ)).generate()
+        return bldr.tag(fragmentize(text,top_level_elements,element_store, environ))
+
+
+
+    def generate(self,text,element_store=None,context='block', environ=None, preprocess=True):
+        """Returns a Genshi Stream.
+        :meth:`~creoleparser.core.Parser.parse` for named parameter descriptions.
+
+        """
+
+        return self.parse(text, element_store, context, environ, preprocess).generate()
 
 
     def render(self, text, element_store=None, context='block', environ=None, preprocess=True, **kwargs):
         """Returns the final output string (e.g., xhtml). See
-        :meth:`~creoleparser.core.Parser.generate` for named parameter descriptions.
+        :meth:`~creoleparser.core.Parser.parse` for named parameter descriptions.
 
         Left over keyword arguments (``kwargs``) will be passed to Genshi's Stream.render() method,
         overriding the corresponding attributes of the Parser object. For more infomation on Streams,
@@ -94,8 +106,6 @@ class Parser(object):
         
         """
 
-        if element_store is None:
-            element_store = {}
         kwargs.setdefault('method',self.method)
         kwargs.setdefault('encoding',self.encoding)
         if kwargs['method'] != "text":
