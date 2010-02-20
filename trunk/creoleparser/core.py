@@ -42,7 +42,7 @@ class Parser(object):
             self.dialect = dialect()
         else:
             warnings.warn("""
-'dialect' should be a type object, not an instance. 
+'dialect' should be a type object.
 """
                   )
             self.dialect = dialect
@@ -313,34 +313,6 @@ def fill_from_store(text,element_store):
     if start < len(text):
         frags.append(text[start:])
     return frags
-
-
-
-def chunk(text, blank_lines, hard_elements, limit):
-    """Safely breaks large Creole documents into a list of smaller
-    ones (strings) - DEPRECIATED
-    """
-    hard_spans = []
-    for e in hard_elements:
-        for mo in e.regexp.finditer(text):
-            hard_spans.append(mo.span())
-
-    hard_chars = []
-    for x,y in hard_spans:
-        hard_chars.extend(range(x,y))
-    hard_chars = set(hard_chars)
-
-    chunks = []
-    start = 0
-    for i in range(len(blank_lines)/limit):
-        for mo in blank_lines[limit/2 + i*limit:limit*3/2+i*limit:10]:
-            if mo.start() not in hard_chars:
-                chunks.append(text[start:mo.start()])
-                start = mo.end()
-                break
-    chunks.append(text[start:])
-    
-    return chunks
 
 
 class ImplicitList(list):

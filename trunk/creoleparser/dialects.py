@@ -379,19 +379,6 @@ class ArgDialect(object):
     pass
 
 
-def Creole10(use_additions=False, **kwargs):
-    warnings.warn("""
-Use of Creole10 is depreciated, use create_dialect() instead. 
-"""
-                  )
-
-    if use_additions:
-        dialect_base = creole11_base
-    else:
-        dialect_base = creole10_base
-        
-    return create_dialect(dialect_base=dialect_base,**kwargs)
-
  
 def _test():
     import doctest
