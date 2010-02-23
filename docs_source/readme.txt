@@ -4,8 +4,8 @@ Project Documentation
 Work on Documentation for an Upcoming Releases
 ==============================================
 
-Work on documentation for upcoming releases should be done in the `draft`
-folder. These docs are configured to use the trunk source code (see `conf.py`).
+When working on documentation for an upcoming releases, make sure `draft/conf.py`
+is configured to use the trunk source code.
 
 To build these docs run the following from the `docs_source` folder::
 
@@ -22,23 +22,22 @@ To run the doctect blocks::
 Maintenance of Documentation for Current Release
 ================================================
 
-Corrections, improvements, and additions to the current live documentation
-should be done in the `release` folder. These docs are configured to use
-the relevant tagged source code folder (verify in `conf.py`).
+To build docs for a tagged release, configure `draft/conf.py` to point to the
+correct tagged source code folder.
+
 To build these docs, run the following from the `docs_source` folder::
 
-   sphinx-build release ../docs
+   sphinx-build draft ../docs
 
-This will update the versioned live documentation. Please make sure that
-the source files (in `release`) are in sync with the built files (in `docs`)
-before checking in. Note that the project's documentation is served
-directly from subversion, so the check-in will be instantly published.
+This will update the versioned live documentation. Note that the project's
+documentation is served directly from subversion, so the check-in will be
+instantly published.
 
 Notes
 =====
 
-* The trunk versions of CHANGES.txt and INSTALL.txt are used by both `release`
-  and `draft`.
+* The trunk versions of CHANGES.txt and INSTALL.txt are used regardless of
+the conf.py setting.
 
 
 

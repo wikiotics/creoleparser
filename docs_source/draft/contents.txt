@@ -6,7 +6,7 @@ Creoleparser documentation contents
 .. toctree::
    :maxdepth: 2
 
-   introduction <index>
+   Introduction <index>
    syntax
    usage
    macros

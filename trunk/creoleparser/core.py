@@ -1,6 +1,7 @@
 # core.py
+# -*- coding: utf-8 -*-
 #
-# Copyright (c) 2009 Stephen Day
+# Copyright © Stephen Day
 #
 # This module is part of Creoleparser and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -67,6 +68,9 @@ class Parser(object):
             This can be any type of object. It will be passed to ``macro_func``
             unchanged (for a description of ``macro_func``, see
             :func:`~creoleparser.dialects.create_dialect`).
+          preprocess
+            Passes text through preprocess method that replaces Windows style
+            line breaks.
             
         """
         
@@ -88,7 +92,7 @@ class Parser(object):
 
 
     def generate(self,text,element_store=None,context='block', environ=None, preprocess=True):
-        """Returns a Genshi Stream.
+        """Returns a Genshi Stream. See
         :meth:`~creoleparser.core.Parser.parse` for named parameter descriptions.
 
         """

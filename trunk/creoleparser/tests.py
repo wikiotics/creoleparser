@@ -1,7 +1,7 @@
 # tests.py
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2007 Stephen Day
+# Copyright © Stephen Day
 #
 # This module is part of Creoleparser and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php

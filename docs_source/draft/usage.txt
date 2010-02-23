@@ -76,5 +76,28 @@ For a full list of parameters, see :func:`~creoleparser.dialects.create_dialect`
 
 Further customization of a dialect is possible though sub-classing. For more
 information see the :func:`creoleparser.dialects.creole11_base` class factory.
+
+.. _arg_parser:
    
+Parsing macro argument strings
+------------------------------
+
+Creoleparser comes with a function for parsing macro argument
+strings. Simply call the builtin ``parse_args`` with the string of
+arguments to be parsed:
+
+.. doctest::
+  
+   >>> from creoleparser import parse_args
+
+   >>> print parse_args(" val1 'val 2' foo=val3 boo='val 4' ")
+   (['val1', 'val 2'], {'foo': 'val3', 'boo': 'val 4'})
+
+An argument parser can be customized using a pattern similar to a normal
+parser. Further information is documented with
+:class:`~creoleparser.core.ArgParser` and 
+:func:`~creoleparser.dialects.creepy10_base`.
+
+
+
 
