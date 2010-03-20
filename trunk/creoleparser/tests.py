@@ -16,8 +16,6 @@ from core import Parser
 from dialects import creole10_base, creole11_base, create_dialect#, Creole10
 from elements import SimpleElement, IndentedBlock#, NestedIndentedBlock
 
-#create_dialect = Creole10
-
 base_url = 'http://www.wikicreole.org/wiki/'
 inter_wiki_url = 'http://wikiohana.net/cgi-bin/wiki.pl/'
 
@@ -40,7 +38,6 @@ text2html = Parser(
     dialect=create_dialect(creole11_base,
         wiki_links_base_url=base_url,
         interwiki_links_base_urls={'Ohana': inter_wiki_url},
-        #use_additions=True,
         no_wiki_monospace=False
         )
     )
@@ -466,13 +463,7 @@ class ExtendingTest(unittest.TestCase):
             parse("This block of #text *should* be monospace# now"),
             wrap_result("This block of <code>text <strong>should</strong> be monospace</code> now"))
 
-##    def test_simple_tokens_option2(self):
-##        dialect = create_dialect(simple_tokens=[('--','del')])
-##        parse = Parser(dialect)
-##        self.assertEquals(
-##            parse("This block of --text **should** be monospace-- now"),
-##            wrap_result("This block of <del>text <strong>should</strong> be monospace</del> now"))
-        
+       
 class NoSpaceDialectTest(unittest.TestCase, BaseTest):
 
     def setUp(self):
@@ -512,7 +503,6 @@ class MacroTest(unittest.TestCase, BaseTest):
         dialect = create_dialect(creole11_base,
             wiki_links_base_url='http://creoleparser.x10hosting.com/cgi-bin/creolepiki/',
             wiki_links_space_char='',
-            #use_additions=True,
             no_wiki_monospace=False,
             macro_func=self.macroFactory)
         self.parse = Parser(dialect)
