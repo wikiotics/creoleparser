@@ -1,8 +1,9 @@
-Version 0.7.0 ( ?? 2010)
+Version 0.7.0 (March 20 2010)
 -----------------------------
 
  * added syntax for indented regions
- * added Parser.parse() method to expose parse_tree (a Genshi Fragment object)
+ * added Parser.parse() method to expose the parse tree (a Genshi Fragment object)
+ * improved output of passed through macros to better support post-processing
  * removed depreciated Creole10 class support
 
 
