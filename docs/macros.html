@@ -1,27 +1,26 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-
-    <title>Implementing Macros &mdash; creoleparser v0.6.x documentation</title>
+    
+    <title>Implementing Macros &amp;mdash; creoleparser v0.7.x documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
-        VERSION:     '0.6.x',
-        COLLAPSE_MODINDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+          URL_ROOT:    '#',
+          VERSION:     '0.7.x',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="creoleparser v0.6.x documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="creoleparser v0.7.x documentation" href="index.html" />
     <link rel="next" title="Changelog" href="changelog.html" />
-    <link rel="prev" title="Basic Usage" href="usage.html" />
+    <link rel="prev" title="Basic Usage" href="usage.html" /> 
   </head>
   <body>
     <div class="related">
@@ -39,19 +38,18 @@
         <li class="right" >
           <a href="usage.html" title="Basic Usage"
              accesskey="P">previous</a> |</li>
-        <li><a href="contents.html">creoleparser v0.6.x documentation</a> &raquo;</li>
+        <li><a href="contents.html">creoleparser v0.7.x documentation</a> &raquo;</li> 
       </ul>
-    </div>
-
+    </div>  
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body">
-
+            
   <div class="section" id="implementing-macros">
 <span id="macros"></span><h1>Implementing Macros<a class="headerlink" href="#implementing-macros" title="Permalink to this headline">¶</a></h1>
 <p>This page describes how to implement macros (i.e, extensions) in a wiki engine.
-For end user usage, please see <a class="reference" href="syntax.html#syntax"><em>Syntax</em></a>.</p>
+For end user usage, please see <a class="reference external" href="syntax.html#syntax"><em>Syntax</em></a>.</p>
 <div class="section" id="the-macro-func">
 <h2>The <tt class="docutils literal"><span class="pre">macro_func</span></tt><a class="headerlink" href="#the-macro-func" title="Permalink to this headline">¶</a></h2>
 <p><tt class="docutils literal"><span class="pre">macro_func</span></tt> is an optional argument used during instantiation of a dialect object.
@@ -60,7 +58,7 @@ on <tt class="docutils literal"><span class="pre">macro_name</span></tt>&#8216;s
 the <tt class="docutils literal"><span class="pre">macro_func</span></tt> can be very simple, particularly if the actual macros have
 compatible signatures.</p>
 <p><strong>A simple macro_func:</strong></p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">from</span> <span class="nn">creoleparser</span> <span class="k">import</span> <span class="n">parse_args</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">creoleparser</span> <span class="kn">import</span> <span class="n">parse_args</span>
 
 <span class="k">def</span> <span class="nf">macro_dispatcher</span><span class="p">(</span><span class="n">macro_name</span><span class="p">,</span><span class="n">arg_string</span><span class="p">,</span><span class="n">body</span><span class="p">,</span><span class="n">isblock</span><span class="p">,</span><span class="n">environ</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">macro_name</span> <span class="ow">in</span> <span class="n">environ</span><span class="p">[</span><span class="s">&#39;macros&#39;</span><span class="p">]:</span>
@@ -76,12 +74,12 @@ compatible signatures.</p>
 <p>In the code above, <tt class="docutils literal"><span class="pre">eniviron['macros']</span></tt> is a dictionary of functions. Note that if <tt class="docutils literal"><span class="pre">macro_name</span></tt> is
 not in the dictionary, or if a macro returns <cite>None</cite>, creoleparser will treat the macro as
 unknown and render the raw wikitext unaltered.</p>
-<p>Additional information about <tt class="docutils literal"><span class="pre">macro_func</span></tt> is documented with the <a title="creoleparser.dialects.create_dialect" class="reference" href="modules/dialects.html#creoleparser.dialects.create_dialect"><tt class="xref docutils literal"><span class="pre">create_dialect()</span></tt></a> factory function.</p>
+<p>Additional information about <tt class="docutils literal"><span class="pre">macro_func</span></tt> is documented with the <a title="creoleparser.dialects.create_dialect" class="reference external" href="modules/dialects.html#creoleparser.dialects.create_dialect"><tt class="xref docutils literal"><span class="pre">create_dialect()</span></tt></a> factory function.</p>
 </div>
 <div class="section" id="macros-returning-html">
 <h2>Macros Returning HTML<a class="headerlink" href="#macros-returning-html" title="Permalink to this headline">¶</a></h2>
 <p>In order for a macro to return raw HTML, the HTML must be wrapped in a genshi.Markup object. See
-an example <a class="reference" href="http://creoleparserwiki.appspot.com/pages/HTMLMacroExample">here</a></p>
+an example <a class="reference external" href="http://creoleparserwiki.appspot.com/pages/HTMLMacroExample">here</a></p>
 </div>
 <div class="section" id="macros-returning-creole">
 <h2>Macros Returning Creole<a class="headerlink" href="#macros-returning-creole" title="Permalink to this headline">¶</a></h2>
@@ -125,10 +123,10 @@ When returning other objects, you should follow the rules above.</p>
 <div class="section" id="other-macro-implementation-examples">
 <h2>Other Macro Implementation Examples<a class="headerlink" href="#other-macro-implementation-examples" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><a class="reference" href="http://code.google.com/p/creoleparser/source/browse/trunk/creoleparser/test_cheat_sheet_plus.py">test_cheat_sheet_plus.py</a>
-which is used to generate the <a class="reference" href="http://purl.oclc.org/creoleparser/cheatsheet">creoleparser cheatsheet</a> and
+<li><a class="reference external" href="http://code.google.com/p/creoleparser/source/browse/trunk/creoleparser/test_cheat_sheet_plus.py">test_cheat_sheet_plus.py</a>
+which is used to generate the <a class="reference external" href="http://purl.oclc.org/creoleparser/cheatsheet">creoleparser cheatsheet</a> and
 help validate any changes made to the library code.</li>
-<li><a class="reference" href="http://code.google.com/p/urlminer/source/browse/examples/wiki/macros.py">the code used in the sandbox wiki</a>.</li>
+<li><a class="reference external" href="http://code.google.com/p/urlminer/source/browse/examples/wiki/macros.py">the code used in the sandbox wiki</a>.</li>
 </ul>
 </div>
 </div>
@@ -141,43 +139,33 @@ help validate any changes made to the library code.</li>
         <div class="sphinxsidebarwrapper">
             <h3><a href="contents.html">Table Of Contents</a></h3>
             <ul>
-<li><a class="reference" href="">Implementing Macros</a><ul>
-<li><a class="reference" href="#the-macro-func">The <tt class="docutils literal"><span class="pre">macro_func</span></tt></a></li>
-<li><a class="reference" href="#macros-returning-html">Macros Returning HTML</a></li>
-<li><a class="reference" href="#macros-returning-creole">Macros Returning Creole</a></li>
-<li><a class="reference" href="#how-can-i-stop-a-macro-from-being-placed-in-a-paragraph-or-visa-versa">How can I stop a macro from being placed in a paragraph? (or visa versa)</a><ul>
-<li><a class="reference" href="#guidelines-for-macro-return-values-and-paragraph-control">Guidelines for macro return values and paragraph control</a></li>
+<li><a class="reference external" href="#">Implementing Macros</a><ul>
+<li><a class="reference external" href="#the-macro-func">The <tt class="docutils literal"><span class="pre">macro_func</span></tt></a></li>
+<li><a class="reference external" href="#macros-returning-html">Macros Returning HTML</a></li>
+<li><a class="reference external" href="#macros-returning-creole">Macros Returning Creole</a></li>
+<li><a class="reference external" href="#how-can-i-stop-a-macro-from-being-placed-in-a-paragraph-or-visa-versa">How can I stop a macro from being placed in a paragraph? (or visa versa)</a><ul>
+<li><a class="reference external" href="#guidelines-for-macro-return-values-and-paragraph-control">Guidelines for macro return values and paragraph control</a></li>
 </ul>
 </li>
-<li><a class="reference" href="#other-macro-implementation-examples">Other Macro Implementation Examples</a></li>
+<li><a class="reference external" href="#other-macro-implementation-examples">Other Macro Implementation Examples</a></li>
 </ul>
 </li>
 </ul>
 
             <h4>Previous topic</h4>
-            <p class="topless"><a href="usage.html"
-                                  title="previous chapter">Basic Usage</a></p>
+            <p class="topless"><a href="usage.html" title="previous chapter">Basic Usage</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="changelog.html"
-                                  title="next chapter">Changelog</a></p>
+            <p class="topless"><a href="changelog.html" title="next chapter">Changelog</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
-              <li><a href="_sources/macros.txt"
-                     rel="nofollow">Show Source</a></li>
+              <li><a href="_sources/macros.txt">Show Source</a></li>
             </ul>
-          <div id="searchbox" style="display: none">
-            <h3>Quick search</h3>
-              <form class="search" action="search.html" method="get">
-                <input type="text" name="q" size="18" />
-                <input type="submit" value="Go" />
-                <input type="hidden" name="check_keywords" value="yes" />
-                <input type="hidden" name="area" value="default" />
-              </form>
-              <p class="searchtip" style="font-size: 90%">
-              Enter search terms or a module, class or function name.
-              </p>
-          </div>
-          <script type="text/javascript">$('#searchbox').show(0);</script>
+          <h3>Quick search</h3>
+            <form class="search" action="search.html" method="get">
+              <input type="text" name="q" size="18" /> <input type="submit" value="Go" />
+              <input type="hidden" name="check_keywords" value="yes" />
+              <input type="hidden" name="area" value="default" />
+            </form>
         </div>
       </div>
       <div class="clearer"></div>
@@ -187,22 +175,33 @@ help validate any changes made to the library code.</li>
       <ul>
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
-             >index</a></li>
+             accesskey="I">index</a></li>
         <li class="right" >
           <a href="modindex.html" title="Global Module Index"
-             >modules</a> |</li>
+             accesskey="M">modules</a> |</li>
         <li class="right" >
           <a href="changelog.html" title="Changelog"
-             >next</a> |</li>
+             accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="usage.html" title="Basic Usage"
-             >previous</a> |</li>
-        <li><a href="contents.html">creoleparser v0.6.x documentation</a> &raquo;</li>
+             accesskey="P">previous</a> |</li>
+        <li><a href="contents.html">creoleparser v0.7.x documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-      &copy; Copyright 2009, Stephen Day.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.1.
+      &copy; Copyright Stephen Day.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
     </div>
-<script type="text/javascript">var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script><script type="text/javascript">try {var pageTracker = _gat._getTracker("UA-2934490-7");pageTracker._trackPageview();} catch(err) {}</script>  </body>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-2934490-7");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+  </body>
 </html>

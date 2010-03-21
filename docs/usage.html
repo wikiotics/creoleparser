@@ -1,25 +1,24 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Basic Usage &mdash; creoleparser v0.6.x documentation</title>
+    <title>Basic Usage &amp;mdash; creoleparser v0.7.x documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
-        VERSION:     '0.6.x',
-        COLLAPSE_MODINDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+          URL_ROOT:    '#',
+          VERSION:     '0.7.x',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="creoleparser v0.6.x documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="creoleparser v0.7.x documentation" href="index.html" />
     <link rel="next" title="Implementing Macros" href="macros.html" />
     <link rel="prev" title="Syntax" href="syntax.html" /> 
   </head>
@@ -39,10 +38,9 @@
         <li class="right" >
           <a href="syntax.html" title="Syntax"
              accesskey="P">previous</a> |</li>
-        <li><a href="contents.html">creoleparser v0.6.x documentation</a> &raquo;</li> 
+        <li><a href="contents.html">creoleparser v0.7.x documentation</a> &raquo;</li> 
       </ul>
     </div>  
-
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
@@ -54,7 +52,7 @@
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p>The simplest way to use creoleparser is to call the builtin <tt class="docutils literal"><span class="pre">text2html</span></tt>
 Parser object with one argument (the text to be parsed):</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">from</span> <span class="nn">creoleparser</span> <span class="k">import</span> <span class="n">text2html</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">creoleparser</span> <span class="kn">import</span> <span class="n">text2html</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">text2html</span><span class="p">(</span><span class="s">&quot;Some real **simple** mark-up&quot;</span><span class="p">),</span>
 <span class="go">&lt;p&gt;Some real &lt;strong&gt;simple&lt;/strong&gt; mark-up&lt;/p&gt;</span>
@@ -74,8 +72,8 @@ the <tt class="docutils literal"><span class="pre">method</span></tt> parameter.
 <h2>Creating a custom parser<a class="headerlink" href="#creating-a-custom-parser" title="Permalink to this headline">¶</a></h2>
 <p>To change a parser&#8217;s default parameter values, you can create a new one. In order
 to do that you will also need to provide a dialect object.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">from</span> <span class="nn">creoleparser.dialects</span> <span class="k">import</span> <span class="n">create_dialect</span><span class="p">,</span> <span class="n">creole10_base</span><span class="p">,</span> <span class="n">creole11_base</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">from</span> <span class="nn">creoleparser.core</span> <span class="k">import</span> <span class="n">Parser</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">creoleparser.dialects</span> <span class="kn">import</span> <span class="n">create_dialect</span><span class="p">,</span> <span class="n">creole10_base</span><span class="p">,</span> <span class="n">creole11_base</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">creoleparser.core</span> <span class="kn">import</span> <span class="n">Parser</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">my_parser</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">dialect</span><span class="o">=</span><span class="n">create_dialect</span><span class="p">(</span><span class="n">creole11_base</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="s">&#39;xml&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">my_parser</span><span class="p">(</span><span class="s">r&quot;Some real **simple** mark-up</span><span class="se">\\</span><span class="s">line two&quot;</span><span class="p">),</span>
@@ -91,9 +89,9 @@ to do that you will also need to provide a dialect object.</p>
 </pre></div>
 </div>
 <p>For more information on Parser constructor parameters, see
-<a title="creoleparser.core.Parser" class="reference" href="modules/core.html#creoleparser.core.Parser"><tt class="xref docutils literal"><span class="pre">Parser</span></tt></a>. Also note
+<a title="creoleparser.core.Parser" class="reference external" href="modules/core.html#creoleparser.core.Parser"><tt class="xref docutils literal"><span class="pre">Parser</span></tt></a>. Also note
 that the <tt class="docutils literal"><span class="pre">__call__</span></tt> method of Parser wraps its
-<a title="creoleparser.core.Parser.render" class="reference" href="modules/core.html#creoleparser.core.Parser.render"><tt class="xref docutils literal"><span class="pre">render()</span></tt></a> method.</p>
+<a title="creoleparser.core.Parser.render" class="reference external" href="modules/core.html#creoleparser.core.Parser.render"><tt class="xref docutils literal"><span class="pre">render()</span></tt></a> method.</p>
 </div>
 <div class="section" id="creating-a-custom-dialect">
 <h2>Creating a custom dialect<a class="headerlink" href="#creating-a-custom-dialect" title="Permalink to this headline">¶</a></h2>
@@ -109,16 +107,16 @@ default rendering of code blocks has been modified.</p>
 <span class="go">&lt;p&gt;Some real &lt;span&gt;**simple** mark-up&lt;/span&gt;&lt;/p&gt;</span>
 </pre></div>
 </div>
-<p>For a full list of parameters, see <a title="creoleparser.dialects.create_dialect" class="reference" href="modules/dialects.html#creoleparser.dialects.create_dialect"><tt class="xref docutils literal"><span class="pre">create_dialect()</span></tt></a>.</p>
+<p>For a full list of parameters, see <a title="creoleparser.dialects.create_dialect" class="reference external" href="modules/dialects.html#creoleparser.dialects.create_dialect"><tt class="xref docutils literal"><span class="pre">create_dialect()</span></tt></a>.</p>
 <p>Further customization of a dialect is possible though sub-classing. For more
-information see the <a title="creoleparser.dialects.creole11_base" class="reference" href="modules/dialects.html#creoleparser.dialects.creole11_base"><tt class="xref docutils literal"><span class="pre">creoleparser.dialects.creole11_base()</span></tt></a> class factory.</p>
+information see the <a title="creoleparser.dialects.creole11_base" class="reference external" href="modules/dialects.html#creoleparser.dialects.creole11_base"><tt class="xref docutils literal"><span class="pre">creoleparser.dialects.creole11_base()</span></tt></a> class factory.</p>
 </div>
 <div class="section" id="parsing-macro-argument-strings">
 <span id="arg-parser"></span><h2>Parsing macro argument strings<a class="headerlink" href="#parsing-macro-argument-strings" title="Permalink to this headline">¶</a></h2>
 <p>Creoleparser comes with a function for parsing macro argument
 strings. Simply call the builtin <tt class="docutils literal"><span class="pre">parse_args</span></tt> with the string of
 arguments to be parsed:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">from</span> <span class="nn">creoleparser</span> <span class="k">import</span> <span class="n">parse_args</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">creoleparser</span> <span class="kn">import</span> <span class="n">parse_args</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">parse_args</span><span class="p">(</span><span class="s">&quot; val1 &#39;val 2&#39; foo=val3 boo=&#39;val 4&#39; &quot;</span><span class="p">)</span>
 <span class="go">([&#39;val1&#39;, &#39;val 2&#39;], {&#39;foo&#39;: &#39;val3&#39;, &#39;boo&#39;: &#39;val 4&#39;})</span>
@@ -126,8 +124,8 @@ arguments to be parsed:</p>
 </div>
 <p>An argument parser can be customized using a pattern similar to a normal
 parser. Further information is documented with
-<a title="creoleparser.core.ArgParser" class="reference" href="modules/core.html#creoleparser.core.ArgParser"><tt class="xref docutils literal"><span class="pre">ArgParser</span></tt></a> and
-<a title="creoleparser.dialects.creepy10_base" class="reference" href="modules/dialects.html#creoleparser.dialects.creepy10_base"><tt class="xref docutils literal"><span class="pre">creepy10_base()</span></tt></a>.</p>
+<a title="creoleparser.core.ArgParser" class="reference external" href="modules/core.html#creoleparser.core.ArgParser"><tt class="xref docutils literal"><span class="pre">ArgParser</span></tt></a> and
+<a title="creoleparser.dialects.creepy10_base" class="reference external" href="modules/dialects.html#creoleparser.dialects.creepy10_base"><tt class="xref docutils literal"><span class="pre">creepy10_base()</span></tt></a>.</p>
 </div>
 </div>
 
@@ -139,39 +137,29 @@ parser. Further information is documented with
         <div class="sphinxsidebarwrapper">
             <h3><a href="contents.html">Table Of Contents</a></h3>
             <ul>
-<li><a class="reference" href="">Basic Usage</a><ul>
-<li><a class="reference" href="#overview">Overview</a></li>
-<li><a class="reference" href="#creating-a-custom-parser">Creating a custom parser</a></li>
-<li><a class="reference" href="#creating-a-custom-dialect">Creating a custom dialect</a></li>
-<li><a class="reference" href="#parsing-macro-argument-strings">Parsing macro argument strings</a></li>
+<li><a class="reference external" href="#">Basic Usage</a><ul>
+<li><a class="reference external" href="#overview">Overview</a></li>
+<li><a class="reference external" href="#creating-a-custom-parser">Creating a custom parser</a></li>
+<li><a class="reference external" href="#creating-a-custom-dialect">Creating a custom dialect</a></li>
+<li><a class="reference external" href="#parsing-macro-argument-strings">Parsing macro argument strings</a></li>
 </ul>
 </li>
 </ul>
 
             <h4>Previous topic</h4>
-            <p class="topless"><a href="syntax.html"
-                                  title="previous chapter">Syntax</a></p>
+            <p class="topless"><a href="syntax.html" title="previous chapter">Syntax</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="macros.html"
-                                  title="next chapter">Implementing Macros</a></p>
+            <p class="topless"><a href="macros.html" title="next chapter">Implementing Macros</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
-              <li><a href="_sources/usage.txt"
-                     rel="nofollow">Show Source</a></li>
+              <li><a href="_sources/usage.txt">Show Source</a></li>
             </ul>
-          <div id="searchbox" style="display: none">
-            <h3>Quick search</h3>
-              <form class="search" action="search.html" method="get">
-                <input type="text" name="q" size="18" />
-                <input type="submit" value="Go" />
-                <input type="hidden" name="check_keywords" value="yes" />
-                <input type="hidden" name="area" value="default" />
-              </form>
-              <p class="searchtip" style="font-size: 90%">
-              Enter search terms or a module, class or function name.
-              </p>
-          </div>
-          <script type="text/javascript">$('#searchbox').show(0);</script>
+          <h3>Quick search</h3>
+            <form class="search" action="search.html" method="get">
+              <input type="text" name="q" size="18" /> <input type="submit" value="Go" />
+              <input type="hidden" name="check_keywords" value="yes" />
+              <input type="hidden" name="area" value="default" />
+            </form>
         </div>
       </div>
       <div class="clearer"></div>
@@ -181,22 +169,33 @@ parser. Further information is documented with
       <ul>
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
-             >index</a></li>
+             accesskey="I">index</a></li>
         <li class="right" >
           <a href="modindex.html" title="Global Module Index"
-             >modules</a> |</li>
+             accesskey="M">modules</a> |</li>
         <li class="right" >
           <a href="macros.html" title="Implementing Macros"
-             >next</a> |</li>
+             accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="syntax.html" title="Syntax"
-             >previous</a> |</li>
-        <li><a href="contents.html">creoleparser v0.6.x documentation</a> &raquo;</li> 
+             accesskey="P">previous</a> |</li>
+        <li><a href="contents.html">creoleparser v0.7.x documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-      &copy; Copyright 2009, Stephen Day.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.1.
+      &copy; Copyright Stephen Day.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
     </div>
-<script type="text/javascript">var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script><script type="text/javascript">try {var pageTracker = _gat._getTracker("UA-2934490-7");pageTracker._trackPageview();} catch(err) {}</script>  </body>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-2934490-7");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+  </body>
 </html>

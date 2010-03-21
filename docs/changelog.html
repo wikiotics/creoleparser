@@ -1,25 +1,24 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Changelog &mdash; creoleparser v0.6.x documentation</title>
+    <title>Changelog &amp;mdash; creoleparser v0.7.x documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
-        VERSION:     '0.6.x',
-        COLLAPSE_MODINDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+          URL_ROOT:    '#',
+          VERSION:     '0.7.x',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="creoleparser v0.6.x documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="creoleparser v0.7.x documentation" href="index.html" />
     <link rel="next" title="Generated API documentation" href="modules.html" />
     <link rel="prev" title="Implementing Macros" href="macros.html" /> 
   </head>
@@ -39,10 +38,9 @@
         <li class="right" >
           <a href="macros.html" title="Implementing Macros"
              accesskey="P">previous</a> |</li>
-        <li><a href="contents.html">creoleparser v0.6.x documentation</a> &raquo;</li> 
+        <li><a href="contents.html">creoleparser v0.7.x documentation</a> &raquo;</li> 
       </ul>
     </div>  
-
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
@@ -50,6 +48,17 @@
             
   <div class="section" id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="version-0-7-0-march-20-2010">
+<h2>Version 0.7.0 (March 20 2010)<a class="headerlink" href="#version-0-7-0-march-20-2010" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<ul class="simple">
+<li>added syntax for indented regions</li>
+<li>added Parser.parse() method to expose the parse tree (a Genshi Fragment object)</li>
+<li>improved output of passed through macros to better support post-processing</li>
+<li>removed depreciated Creole10 class support</li>
+</ul>
+</blockquote>
+</div>
 <div class="section" id="version-0-6-1-march-31-2009">
 <h2>Version 0.6.1 (March 31 2009)<a class="headerlink" href="#version-0-6-1-march-31-2009" title="Permalink to this headline">¶</a></h2>
 <blockquote>
@@ -77,7 +86,7 @@ it is depreciated.</li>
 </ul>
 </li>
 <li>creole_to_xmtml convenience function removed</li>
-<li>explicit url links (e.g., [[<a class="reference" href="http://example.com/">http://example.com/</a>]]) can be multiline</li>
+<li>explicit url links (e.g., [[<a class="reference external" href="http://example.com/">http://example.com/</a>]]) can be multiline</li>
 <li>added support for easy inline markup customization (SimpleElement)</li>
 <li>changed &lt;tt&gt; to &lt;code&gt;</li>
 <li>added support for blog-style line endings (blog_style_endings=True)</li>
@@ -162,7 +171,7 @@ wiki links (e.g., if the page doesn&#8217;t exist).</li>
 <ul class="simple">
 <li>super (^^), subscript (,,), and underline (__) support added</li>
 <li>definition lists supported (;)</li>
-<li><a class="reference" href="ftp://xxx">ftp://xxx</a> no longer cause italics</li>
+<li><a class="reference external" href="ftp://xxx">ftp://xxx</a> no longer cause italics</li>
 <li>links refactored</li>
 <li>removed store_id_seq in favor of id()</li>
 <li>made element_store thread.local()</li>
@@ -225,47 +234,38 @@ wiki links (e.g., if the page doesn&#8217;t exist).</li>
         <div class="sphinxsidebarwrapper">
             <h3><a href="contents.html">Table Of Contents</a></h3>
             <ul>
-<li><a class="reference" href="">Changelog</a><ul>
-<li><a class="reference" href="#version-0-6-1-march-31-2009">Version 0.6.1 (March 31 2009)</a></li>
-<li><a class="reference" href="#version-0-6-march-1-2009">Version 0.6 (March 1 2009)</a></li>
-<li><a class="reference" href="#version-0-5-1-dec-8-2008">Version 0.5.1 (Dec 8 2008)</a></li>
-<li><a class="reference" href="#version-0-5-0-may-31-2008">Version 0.5.0 (May 31 2008)</a></li>
-<li><a class="reference" href="#version-0-4-0-march-24-2008">Version 0.4.0 (March 24 2008)</a></li>
-<li><a class="reference" href="#version-0-3-3-dec-16-2007">Version 0.3.3 (Dec 16 2007)</a></li>
-<li><a class="reference" href="#version-0-3-2-nov-28-2007">Version 0.3.2 (Nov 28 2007)</a></li>
-<li><a class="reference" href="#version-0-3-1-nov-16-2007">Version 0.3.1 (Nov 16 2007)</a></li>
-<li><a class="reference" href="#version-0-3-nov-10-2007">Version 0.3 (Nov 10 2007)</a></li>
-<li><a class="reference" href="#version-0-2-1-nov-6-2007">Version 0.2.1 (Nov 6 2007)</a></li>
-<li><a class="reference" href="#version-0-2-oct-26-2007">Version 0.2 (Oct 26 2007)</a></li>
-<li><a class="reference" href="#version-0-1-0-1-1-0-1-2-oct-2007">Version 0.1, 0.1.1, 0.1.2 (Oct 2007)</a></li>
+<li><a class="reference external" href="#">Changelog</a><ul>
+<li><a class="reference external" href="#version-0-7-0-march-20-2010">Version 0.7.0 (March 20 2010)</a></li>
+<li><a class="reference external" href="#version-0-6-1-march-31-2009">Version 0.6.1 (March 31 2009)</a></li>
+<li><a class="reference external" href="#version-0-6-march-1-2009">Version 0.6 (March 1 2009)</a></li>
+<li><a class="reference external" href="#version-0-5-1-dec-8-2008">Version 0.5.1 (Dec 8 2008)</a></li>
+<li><a class="reference external" href="#version-0-5-0-may-31-2008">Version 0.5.0 (May 31 2008)</a></li>
+<li><a class="reference external" href="#version-0-4-0-march-24-2008">Version 0.4.0 (March 24 2008)</a></li>
+<li><a class="reference external" href="#version-0-3-3-dec-16-2007">Version 0.3.3 (Dec 16 2007)</a></li>
+<li><a class="reference external" href="#version-0-3-2-nov-28-2007">Version 0.3.2 (Nov 28 2007)</a></li>
+<li><a class="reference external" href="#version-0-3-1-nov-16-2007">Version 0.3.1 (Nov 16 2007)</a></li>
+<li><a class="reference external" href="#version-0-3-nov-10-2007">Version 0.3 (Nov 10 2007)</a></li>
+<li><a class="reference external" href="#version-0-2-1-nov-6-2007">Version 0.2.1 (Nov 6 2007)</a></li>
+<li><a class="reference external" href="#version-0-2-oct-26-2007">Version 0.2 (Oct 26 2007)</a></li>
+<li><a class="reference external" href="#version-0-1-0-1-1-0-1-2-oct-2007">Version 0.1, 0.1.1, 0.1.2 (Oct 2007)</a></li>
 </ul>
 </li>
 </ul>
 
             <h4>Previous topic</h4>
-            <p class="topless"><a href="macros.html"
-                                  title="previous chapter">Implementing Macros</a></p>
+            <p class="topless"><a href="macros.html" title="previous chapter">Implementing Macros</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="modules.html"
-                                  title="next chapter">Generated API documentation</a></p>
+            <p class="topless"><a href="modules.html" title="next chapter">Generated API documentation</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
-              <li><a href="_sources/changelog.txt"
-                     rel="nofollow">Show Source</a></li>
+              <li><a href="_sources/changelog.txt">Show Source</a></li>
             </ul>
-          <div id="searchbox" style="display: none">
-            <h3>Quick search</h3>
-              <form class="search" action="search.html" method="get">
-                <input type="text" name="q" size="18" />
-                <input type="submit" value="Go" />
-                <input type="hidden" name="check_keywords" value="yes" />
-                <input type="hidden" name="area" value="default" />
-              </form>
-              <p class="searchtip" style="font-size: 90%">
-              Enter search terms or a module, class or function name.
-              </p>
-          </div>
-          <script type="text/javascript">$('#searchbox').show(0);</script>
+          <h3>Quick search</h3>
+            <form class="search" action="search.html" method="get">
+              <input type="text" name="q" size="18" /> <input type="submit" value="Go" />
+              <input type="hidden" name="check_keywords" value="yes" />
+              <input type="hidden" name="area" value="default" />
+            </form>
         </div>
       </div>
       <div class="clearer"></div>
@@ -275,22 +275,33 @@ wiki links (e.g., if the page doesn&#8217;t exist).</li>
       <ul>
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
-             >index</a></li>
+             accesskey="I">index</a></li>
         <li class="right" >
           <a href="modindex.html" title="Global Module Index"
-             >modules</a> |</li>
+             accesskey="M">modules</a> |</li>
         <li class="right" >
           <a href="modules.html" title="Generated API documentation"
-             >next</a> |</li>
+             accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="macros.html" title="Implementing Macros"
-             >previous</a> |</li>
-        <li><a href="contents.html">creoleparser v0.6.x documentation</a> &raquo;</li> 
+             accesskey="P">previous</a> |</li>
+        <li><a href="contents.html">creoleparser v0.7.x documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-      &copy; Copyright 2009, Stephen Day.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.1.
+      &copy; Copyright Stephen Day.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
     </div>
-<script type="text/javascript">var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));</script><script type="text/javascript">try {var pageTracker = _gat._getTracker("UA-2934490-7");pageTracker._trackPageview();} catch(err) {}</script>  </body>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-2934490-7");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+  </body>
 </html>

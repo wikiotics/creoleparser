@@ -1,11 +1,12 @@
 # Sphinx inventory version 1
 # Project: creoleparser
-# Version: 0.6.x
+# Version: 0.7.x
 creoleparser.core mod modules/core.html
 creoleparser.dialects mod modules/dialects.html
 creoleparser.core.ArgParser.__call__ method modules/core.html
 creoleparser.core.ArgParser class modules/core.html
 creoleparser.dialects.creole11_base function modules/dialects.html
+creoleparser.core.Parser.parse method modules/core.html
 creoleparser.core.Parser class modules/core.html
 creoleparser.core.Parser.__init__ method modules/core.html
 creoleparser.core.ArgParser.__init__ method modules/core.html
