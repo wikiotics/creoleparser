@@ -15,7 +15,7 @@ from dialects import (creole11_base, creole10_base, creepy10_base,
 
 __docformat__ = 'restructuredtext en'
 
-__version__ = '0.6.1'
+__version__ = '0.7.1'
 
 creole2html = Parser(dialect=create_dialect(creole10_base), method='html')
 """This is a pure Creole 1.0 parser created for convenience"""
