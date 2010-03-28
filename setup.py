@@ -7,9 +7,10 @@ except ImportError:
     print 'please ignore error message about "install_requires"'
     from distutils.core import setup
 
+from creoleparser import __version__ 
 
 setup(name='Creoleparser',
-      version='0.7.0',
+      version=__version__,
       install_requires=['Genshi>=0.4'],
       description='Parser for the Creole common wiki markup language',
       author='Stephen Day',
