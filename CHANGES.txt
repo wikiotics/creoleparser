@@ -1,5 +1,5 @@
-Verion 0.7.1 (March 29 2010)
-----------------------------
+Version 0.7.1 (March 29 2010)
+-----------------------------
 
  * added ``indent_class`` and ``indent_style`` arguments to
    ``create_dialect`` function
