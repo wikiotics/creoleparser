@@ -809,11 +809,10 @@ class IndentTest(unittest.TestCase):
     """
     """
     def setUp(self):
-        Base = creole11_base()
-        class MyDialect(Base):
-            indented = IndentedBlock('div','>', class_=None, style=None)
-            #nested_indented = NestedIndentedBlock('div','>', class_=None, style=None)
-        self.parse = Parser(MyDialect)#text2html
+        #Base = creole11_base()
+        #class MyDialect(Base):
+        #    indented = IndentedBlock('div','>', class_=None, style=None)
+        self.parse = Parser(creole11_base(indent_style=None))#Parser(MyDialect)
 
     def test_simple(self):
         self.assertEquals(

@@ -70,7 +70,11 @@ def create_dialect(dialect_base, **kw_args):
         If `True`, each newline character in a paragraph will be converted to
         a <br />. Note that the escaping mechanism (tilde) does not work
         for newlines.
-        
+      indent_class
+        The class attribute to add to indented regions.
+      indent_style
+        The style attribute to add to indented regions.
+ 
     """
 
     return dialect_base(**kw_args)
@@ -164,7 +168,10 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
 
 
 
-def creole11_base(macro_func=None,**kwargs):
+def creole11_base(macro_func=None,
+                  indent_class=None,
+                  indent_style='margin-left:2em',
+                  **kwargs):
     """Returns a base class for extending (for parameter descriptions, see :func:`~creoleparser.dialects.create_dialect`)
 
     The returned class implements most of the *officially* proposed additions to
@@ -215,7 +222,7 @@ def creole11_base(macro_func=None,**kwargs):
         
         simple_element = SimpleElement(token_dict={'**':'strong','//':'em',',,':'sub',
                                                   '^^':'sup','__':'u','##':'code'})
-        indented = IndentedBlock('div','>', class_=None, style="margin-left:2em")
+        indented = IndentedBlock('div','>', class_=indent_class, style=indent_style)
         
         dd = DefinitionDef('dd',':')
         dt = DefinitionTerm('dt',';',stop_token=':')
