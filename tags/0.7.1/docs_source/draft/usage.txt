@@ -1,0 +1,103 @@
+Basic Usage
+***********
+
+Overview
+--------
+
+The simplest way to use creoleparser is to call the builtin ``text2html``
+Parser object with one argument (the text to be parsed):
+
+.. doctest::
+  
+   >>> from creoleparser import text2html
+
+   >>> print text2html("Some real **simple** mark-up"),
+   <p>Some real <strong>simple</strong> mark-up</p>
+
+By default ``text2html`` outputs html. You can change this by providing
+the ``method`` parameter.
+
+.. doctest::
+
+   >>> print text2html(r"Some real **simple** mark-up\\line two",method='html'),
+   <p>Some real <strong>simple</strong> mark-up<br>line two</p>
+
+   >>> print text2html(r"Some real **simple** mark-up\\line two",method='xhtml'),
+   <p>Some real <strong>simple</strong> mark-up<br />line two</p>
+
+Creating a custom parser
+------------------------
+
+To change a parser's default parameter values, you can create a new one. In order
+to do that you will also need to provide a dialect object.  
+
+.. doctest::
+
+   >>> from creoleparser.dialects import create_dialect, creole10_base, creole11_base
+   >>> from creoleparser.core import Parser
+
+   >>> my_parser = Parser(dialect=create_dialect(creole11_base), method='xml')
+   >>> print my_parser(r"Some real **simple** mark-up\\line two"),
+   <p>Some real <strong>simple</strong> mark-up<br/>line two</p>
+
+   The builtin text2html and croele2html parsers where created
+   as follows:
+
+   >>> text2html = Parser(dialect=create_dialect(creole11_base), method='html')
+
+   >>> creole2html = Parser(dialect=create_dialect(creole10_base),
+   ...                      method='html')
+
+
+
+For more information on Parser constructor parameters, see
+:class:`~creoleparser.core.Parser`. Also note
+that the ``__call__`` method of Parser wraps its
+:meth:`~creoleparser.core.Parser.render` method.
+
+Creating a custom dialect
+-------------------------
+
+Most customization in creoleparser is achieved by creating a new dialect object
+using the ``create_dialect`` factory function. In the following example, the
+default rendering of code blocks has been modified. 
+
+.. doctest::
+
+   >>> my_parser = Parser(dialect=create_dialect(creole11_base))
+   >>> print my_parser("Some real {{{**simple** mark-up}}}"),
+   <p>Some real <code>**simple** mark-up</code></p>
+
+   >>> my_parser = Parser(dialect=create_dialect(creole11_base, no_wiki_monospace=False))
+   >>> print my_parser("Some real {{{**simple** mark-up}}}"),
+   <p>Some real <span>**simple** mark-up</span></p>
+
+For a full list of parameters, see :func:`~creoleparser.dialects.create_dialect`. 
+
+Further customization of a dialect is possible though sub-classing. For more
+information see the :func:`creoleparser.dialects.creole11_base` class factory.
+
+.. _arg_parser:
+   
+Parsing macro argument strings
+------------------------------
+
+Creoleparser comes with a function for parsing macro argument
+strings. Simply call the builtin ``parse_args`` with the string of
+arguments to be parsed:
+
+.. doctest::
+  
+   >>> from creoleparser import parse_args
+
+   >>> print parse_args(" val1 'val 2' foo=val3 boo='val 4' ")
+   (['val1', 'val 2'], {'foo': 'val3', 'boo': 'val 4'})
+
+An argument parser can be customized using a pattern similar to a normal
+parser. Further information is documented with
+:class:`~creoleparser.core.ArgParser` and 
+:func:`~creoleparser.dialects.creepy10_base`.
+
+
+
+
