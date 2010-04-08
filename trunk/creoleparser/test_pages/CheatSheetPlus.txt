@@ -8,13 +8,13 @@
 |<<include-raw NumberedList>>           |<<include NumberedList>>    |<<include-source NumberedList>>
 |<<include-raw MixedList>>              |<<include MixedList>>       |<<include-source MixedList>>
 |<<include-raw DefinitionList>>         |<<include DefinitionList>>  |<<include-source DefinitionList>>
-|##Link to ~[[WikiPage]]##              |Link to [[WikiPage]]        |<<pre>><p>Link to <a href="http://thiswiki.org/WikiPage">WikiPage</a></p><</pre>>
+|##Link to ~[[WikiPage]]##              |Link to [[WikiPage]]        |<<pre>><p>Link to <a href="WikiPage">WikiPage</a></p><</pre>>
 |##{{{[[http://google.com|Google]]}}}## |[[http://google.com|Google]]|<<source>>[[http://google.com|Google]]<</source>>
 |<<include-raw HeadingsPage>>           |<<include HeadingsPage>>    |<<include-source HeadingsPage>>
 |<<include-raw NoLineBreak>>            |<<include NoLineBreak>>     |<<include-source NoLineBreak>>
 |##Force~\\linebreak##                  |Force\\linebreak            |<<source>>Force\\linebreak<</source>>
 |<<include-raw HorizontalLine>>         |<<include HorizontalLine>>  |<<include-source HorizontalLine>>
-|##{{{{{Image.jpg|title}}}}}##          |{{Image.jpg|title}}         |<<source>>{{Image.jpg|title}}<</source>>
+|##{{{{{Image.jpg|Cod}}}}}##            |{{Image.jpg|Cod}}           |<<source>>{{Image.jpg|Cod}}<</source>>
 |<<include-raw RenderedTable>>          |<<include RenderedTable>>   |<<include-source RenderedTable>>
 |<<include-raw RenderedPre>>            |<<include RenderedPre>>     |<<include-source RenderedPre>>
 |<<include-raw Indented>>               |<<include Indented>>        |<<include-source Indented>>
