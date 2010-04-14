@@ -59,8 +59,8 @@ Creating a custom dialect
 -------------------------
 
 Most customization in creoleparser is achieved by creating a new dialect object
-using the ``create_dialect`` factory function. In the following example, the
-default rendering of code blocks has been modified. 
+using the ``create_dialect`` factory function. The following example shows how
+to change the default rendering of code blocks. 
 
 .. doctest::
 

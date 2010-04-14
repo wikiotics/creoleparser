@@ -1,3 +1,9 @@
+Version 0.7.2 (April ?? 2010)
+-----------------------------
+
+* images now support wiki links and interwiki links
+
+
 Version 0.7.1 (March 29 2010)
 -----------------------------
 
