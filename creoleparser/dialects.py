@@ -24,8 +24,8 @@ def create_dialect(dialect_base, **kw_args):
         ``creoleparser.dialects.creole10_base`` and  
         ``creoleparser.dialects.creole11_base`` are possible values.
       wiki_links_base_url
-        The page name found in wiki links will be appended to this to form
-        the href.
+        The page name found in wiki links will be smartly appended to this to
+        form the href.
       wiki_links_space_char
         When wiki_links have spaces, this character replaces those spaces in
         the url.
@@ -39,8 +39,8 @@ def create_dialect(dialect_base, **kw_args):
         If supplied, this fuction will be called when a wiki link is found and
         the return value (should be a string) will be joined to the base_url
         to form the url for href. The function must accept the page name (any
-        spaces will have been replaced) as it's only argument. Returning the
-        unaltered page name is equivalent to not supplying this function at all.
+        spaces will have been replaced) as it's only argument. Special characters
+        should be url encoded.
       interwiki_links_base_urls
         Dictionary of urls for interwiki links.
       interwiki_links_space_chars
@@ -102,24 +102,31 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
         br = LineBreak('br', r'\\',blog_style=blog_style_endings)
         headings = Heading(['h1','h2','h3','h4','h5','h6'],'=')
         no_wiki = NoWikiElement(no_wiki_monospace and 'code' or 'span',['{{{','}}}'])
-        img = Image('img',('{{','}}'),delimiter='|')
+        #img = Image('img',('{{','}}'),delimiter='|')
         simple_element = SimpleElement(token_dict={'**':'strong','//':'em'})
         hr = LoneElement('hr','----')
         blank_line = BlankLine()
         p = Paragraph('p')
         pre = PreBlock('pre',['{{{','}}}'])
         raw_link = RawLink('a')
-        
-        link = Link('',('[[',']]'))
-        url_link = URLLink('a',delimiter = '|',)
-        interwiki_link = InterWikiLink('a',delimiter1=':',delimiter2='|',
+        link = AnchorElement('a',('[[',']]'),delimiter = '|',interwiki_delimiter=':',
                                             base_urls=interwiki_links_base_urls,
                                             links_funcs=interwiki_links_funcs,
                                             default_space_char=wiki_links_space_char,
-                                            space_chars=interwiki_links_space_chars)
-        wiki_link = WikiLink('a',delimiter = '|',base_url=wiki_links_base_url,
+                                            space_chars=interwiki_links_space_chars,
+                                       base_url=wiki_links_base_url,
                               space_char=wiki_links_space_char,class_func=wiki_links_class_func,
                               path_func=wiki_links_path_func)
+
+        img = ImageElement('img',('{{','}}'),delimiter = '|',interwiki_delimiter=':',
+                                            base_urls=interwiki_links_base_urls,
+                                            links_funcs=interwiki_links_funcs,
+                                            default_space_char=wiki_links_space_char,
+                                            space_chars=interwiki_links_space_chars,
+                                       base_url=wiki_links_base_url,
+                              space_char=wiki_links_space_char,class_func=wiki_links_class_func,
+                              path_func=wiki_links_path_func)        
+
 
         td = TableCell('td','|')
         th = TableCell('th','|=')
@@ -133,11 +140,8 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
         nested_ul = NestedList('ul','*')
 
         def __init__(self):
-            self.link.child_elements = [self.url_link,self.interwiki_link,self.wiki_link]
+            self.link.child_elements = [self.simple_element]
             self.simple_element.child_elements = [self.simple_element]
-            self.wiki_link.child_elements = [self.simple_element]
-            self.interwiki_link.child_elements = [self.simple_element]
-            self.url_link.child_elements = [self.simple_element]
             self.headings.child_elements = self.inline_elements
             self.p.child_elements = self.inline_elements
             self.td.child_elements = [self.br, self.raw_link, self.simple_element]
