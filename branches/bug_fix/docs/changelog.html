@@ -1,0 +1,317 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Changelog &amp;mdash; creoleparser v0.7.x documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    '#',
+          VERSION:     '0.7.x',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="creoleparser v0.7.x documentation" href="index.html" />
+    <link rel="next" title="Generated API documentation" href="modules.html" />
+    <link rel="prev" title="Implementing Macros" href="macros.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="Generated API documentation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="macros.html" title="Implementing Macros"
+             accesskey="P">previous</a> |</li>
+        <li><a href="contents.html">creoleparser v0.7.x documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="changelog">
+<h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="version-0-7-1-march-29-2010">
+<h2>Version 0.7.1 (March 29 2010)<a class="headerlink" href="#version-0-7-1-march-29-2010" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<ul class="simple">
+<li>added <tt class="docutils literal"><span class="pre">indent_class</span></tt> and <tt class="docutils literal"><span class="pre">indent_style</span></tt> arguments to
+<tt class="docutils literal"><span class="pre">create_dialect</span></tt> function</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="version-0-7-0-march-20-2010">
+<h2>Version 0.7.0 (March 20 2010)<a class="headerlink" href="#version-0-7-0-march-20-2010" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<ul class="simple">
+<li>added syntax for indented regions</li>
+<li>added Parser.parse() method to expose the parse tree (a Genshi Fragment object)</li>
+<li>improved output of passed through macros to better support post-processing</li>
+<li>removed depreciated Creole10 class support</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="version-0-6-1-march-31-2009">
+<h2>Version 0.6.1 (March 31 2009)<a class="headerlink" href="#version-0-6-1-march-31-2009" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<ul class="simple">
+<li>fixed recursion issue with long lists and tables (&gt;400 rows)</li>
+<li>added <tt class="docutils literal"><span class="pre">parse_args</span></tt> function for macro arg_string parsing</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="version-0-6-march-1-2009">
+<h2>Version 0.6 (March 1 2009)<a class="headerlink" href="#version-0-6-march-1-2009" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<ul class="simple">
+<li>refactored dialects.py to make extending easier<ul>
+<li>added <tt class="docutils literal"><span class="pre">creole10_base</span></tt> class factory function</li>
+<li>added <tt class="docutils literal"><span class="pre">creole11_base</span></tt> class factory function</li>
+<li>added <tt class="docutils literal"><span class="pre">create_dialect</span></tt> factory function</li>
+<li>The old <tt class="docutils literal"><span class="pre">Creole10</span></tt> class is now a factory function and
+it is depreciated.</li>
+</ul>
+</li>
+<li><tt class="docutils literal"><span class="pre">macro_func</span></tt> now takes a fifth positional argument, <tt class="docutils literal"><span class="pre">environ</span></tt></li>
+<li>creole2html and text2html convenience functions now return html, not xhtml<ul>
+<li><tt class="docutils literal"><span class="pre">no_wiki_monospace</span></tt> is now True for text2html</li>
+</ul>
+</li>
+<li>creole_to_xmtml convenience function removed</li>
+<li>explicit url links (e.g., [[<a class="reference external" href="http://example.com/">http://example.com/</a>]]) can be multiline</li>
+<li>added support for easy inline markup customization (SimpleElement)</li>
+<li>changed &lt;tt&gt; to &lt;code&gt;</li>
+<li>added support for blog-style line endings (blog_style_endings=True)</li>
+<li>macros of the same name can nest (previously this was possible
+only for macros with unique names)</li>
+<li>macros can now return Markup objects directly (Stream, Fragment,
+Element, and string (preferably unicode) objects were always okay)</li>
+<li>made creoleparser smarter about adding &lt;p&gt; tags</li>
+<li>improved rawlink detection regex</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="version-0-5-1-dec-8-2008">
+<h2>Version 0.5.1 (Dec 8 2008)<a class="headerlink" href="#version-0-5-1-dec-8-2008" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<ul class="simple">
+<li>converted docs to Sphinx</li>
+<li>improved rendering of unknown macros</li>
+<li>added title attribute to images</li>
+<li>fixed bug with markup in raw links</li>
+<li>fixed bug with unicode characters in wiki links</li>
+<li>fixed bug preventing plain-text rendering</li>
+<li>tests.py was refactored to use unittest (thanks duncan.mcgreggor!)</li>
+<li>special characters in wiki links get quoted for urls</li>
+<li>links refactored to support mailto:</li>
+<li>wiki links can no longer have adjacent spaces</li>
+<li>creoleparser now works on Goggle App Engine</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="version-0-5-0-may-31-2008">
+<h2>Version 0.5.0 (May 31 2008)<a class="headerlink" href="#version-0-5-0-may-31-2008" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<ul class="simple">
+<li>special syntax introduced for macros spanning block level markup</li>
+<li>macros returning Creole can contain other macros (issue 6)</li>
+<li>macros refactored, pre-processing no longer used, more robust</li>
+<li>fixed bug with macros that output unicode strings (issue 4)</li>
+<li>macro names can now include capitals and periods (issue 5)</li>
+<li>added support for custom space characters for interwiki
+links (interwiki_links_space_chars)</li>
+<li>api changed for default interwiki links space character, the
+wiki_links_space_char is used instead of an underscore. (issue 3)</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="version-0-4-0-march-24-2008">
+<h2>Version 0.4.0 (March 24 2008)<a class="headerlink" href="#version-0-4-0-march-24-2008" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<ul class="simple">
+<li>added support for custom urls for interwiki links (interwiki_links_funcs)</li>
+<li>user supplied uri sanitation added</li>
+<li>a macro on a line by itself will no longer be &lt;p&gt;aragraphed</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="version-0-3-3-dec-16-2007">
+<h2>Version 0.3.3 (Dec 16 2007)<a class="headerlink" href="#version-0-3-3-dec-16-2007" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<ul class="simple">
+<li>changed api slightly for wiki_links_class_func (see source)</li>
+<li>added suport for custom urls for wiki links (wiki_links_path_func)</li>
+<li>added support for macros with bodies (&lt;&lt;macro arg_string&gt;&gt;the body&lt;&lt;/macro&gt;&gt;)</li>
+<li>removed use of global element_store and thread.local()</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="version-0-3-2-nov-28-2007">
+<h2>Version 0.3.2 (Nov 28 2007)<a class="headerlink" href="#version-0-3-2-nov-28-2007" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<ul class="simple">
+<li>line breaks (\) can now be escaped with a tilde</li>
+<li>added macro support (&lt;&lt;macro arg_sring&gt;&gt;)</li>
+<li>added support for adding a class attribute to
+wiki links (e.g., if the page doesn&#8217;t exist).</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="version-0-3-1-nov-16-2007">
+<h2>Version 0.3.1 (Nov 16 2007)<a class="headerlink" href="#version-0-3-1-nov-16-2007" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<ul class="simple">
+<li>super (^^), subscript (,,), and underline (__) support added</li>
+<li>definition lists supported (;)</li>
+<li><a class="reference external" href="ftp://xxx">ftp://xxx</a> no longer cause italics</li>
+<li>links refactored</li>
+<li>removed store_id_seq in favor of id()</li>
+<li>made element_store thread.local()</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="version-0-3-nov-10-2007">
+<h2>Version 0.3 (Nov 10 2007)<a class="headerlink" href="#version-0-3-nov-10-2007" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<ul class="simple">
+<li>text2xhtml has no_wiki_monospace=True and use_additions=True</li>
+<li>creole_to_xhtml is now pure Creole 1.0 (use_additions=False)</li>
+<li>removed need for any pre_escaping, much more robust now</li>
+<li>big refactoring of inline wiki markup processing</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="version-0-2-1-nov-6-2007">
+<h2>Version 0.2.1 (Nov 6 2007)<a class="headerlink" href="#version-0-2-1-nov-6-2007" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<ul class="simple">
+<li>links can include mark-up</li>
+<li>creole_to_xhtml has no_wiki_monospace=True and use_additions=True</li>
+<li>fixed bug with bad links</li>
+<li>removed lone line break as an element (it wasn&#8217;t valid xhtml)</li>
+<li>stopped inserting n&#8217;s after &lt;br /&gt;&#8217;s</li>
+<li>wiki_links_space_char option added to dialects.Creole10</li>
+<li>added inline_no_wiki_monospace option to dialects.Creole10</li>
+<li>refactored core.pre_escape()</li>
+<li>CHANGES.txt, LISCENCE.txt, and INSTALL.txt added to distribution</li>
+<li>added use_additions option to dialects.Creole10</li>
+<li>implemented monospace (##) (for use_additions option only)</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="version-0-2-oct-26-2007">
+<h2>Version 0.2 (Oct 26 2007)<a class="headerlink" href="#version-0-2-oct-26-2007" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<ul class="simple">
+<li>module split into separate files to create the creoleparser package</li>
+<li>other refactoring</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="version-0-1-0-1-1-0-1-2-oct-2007">
+<h2>Version 0.1, 0.1.1, 0.1.2 (Oct 2007)<a class="headerlink" href="#version-0-1-0-1-1-0-1-2-oct-2007" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<ul class="simple">
+<li>First public releases</li>
+</ul>
+</blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="contents.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="#">Changelog</a><ul>
+<li><a class="reference external" href="#version-0-7-1-march-29-2010">Version 0.7.1 (March 29 2010)</a></li>
+<li><a class="reference external" href="#version-0-7-0-march-20-2010">Version 0.7.0 (March 20 2010)</a></li>
+<li><a class="reference external" href="#version-0-6-1-march-31-2009">Version 0.6.1 (March 31 2009)</a></li>
+<li><a class="reference external" href="#version-0-6-march-1-2009">Version 0.6 (March 1 2009)</a></li>
+<li><a class="reference external" href="#version-0-5-1-dec-8-2008">Version 0.5.1 (Dec 8 2008)</a></li>
+<li><a class="reference external" href="#version-0-5-0-may-31-2008">Version 0.5.0 (May 31 2008)</a></li>
+<li><a class="reference external" href="#version-0-4-0-march-24-2008">Version 0.4.0 (March 24 2008)</a></li>
+<li><a class="reference external" href="#version-0-3-3-dec-16-2007">Version 0.3.3 (Dec 16 2007)</a></li>
+<li><a class="reference external" href="#version-0-3-2-nov-28-2007">Version 0.3.2 (Nov 28 2007)</a></li>
+<li><a class="reference external" href="#version-0-3-1-nov-16-2007">Version 0.3.1 (Nov 16 2007)</a></li>
+<li><a class="reference external" href="#version-0-3-nov-10-2007">Version 0.3 (Nov 10 2007)</a></li>
+<li><a class="reference external" href="#version-0-2-1-nov-6-2007">Version 0.2.1 (Nov 6 2007)</a></li>
+<li><a class="reference external" href="#version-0-2-oct-26-2007">Version 0.2 (Oct 26 2007)</a></li>
+<li><a class="reference external" href="#version-0-1-0-1-1-0-1-2-oct-2007">Version 0.1, 0.1.1, 0.1.2 (Oct 2007)</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="macros.html" title="previous chapter">Implementing Macros</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="modules.html" title="next chapter">Generated API documentation</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/changelog.txt">Show Source</a></li>
+            </ul>
+          <h3>Quick search</h3>
+            <form class="search" action="search.html" method="get">
+              <input type="text" name="q" size="18" /> <input type="submit" value="Go" />
+              <input type="hidden" name="check_keywords" value="yes" />
+              <input type="hidden" name="area" value="default" />
+            </form>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="Generated API documentation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="macros.html" title="Implementing Macros"
+             accesskey="P">previous</a> |</li>
+        <li><a href="contents.html">creoleparser v0.7.x documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright Stephen Day.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
+    </div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-2934490-7");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+  </body>
+</html>
