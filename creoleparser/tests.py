@@ -16,7 +16,7 @@ from core import Parser
 from dialects import creole10_base, creole11_base, create_dialect#, Creole10
 from elements import SimpleElement, IndentedBlock#, NestedIndentedBlock
 
-base_url = ''
+base_url = 'http://www.wikicreole.org/wiki/'
 inter_wiki_url = 'http://wikiohana.net/cgi-bin/wiki.pl/'
 
 
@@ -52,7 +52,7 @@ class BaseTest(object):
     """
 
     """
-    #parse = lambda x: None
+    parse = lambda x: None
 
     def test_newlines(self):
         self.assertEquals(
@@ -97,64 +97,27 @@ class BaseTest(object):
 
     def test_links(self):
         self.assertEquals(
-            self.parse("[[http://www.google.com ]]"),
+            self.parse("[[http://www.google.com]]"),
             wrap_result("""<a href="http://www.google.com">http://www.google.com</a>"""))
         self.assertEquals(
             self.parse("[[http://www.google.com/search\n?source=ig&hl=en&rlz=&q=creoleparser&btnG=Google+Search&aq=f]]"),
             wrap_result("""<a href="http://www.google.com/search\n?source=ig&amp;hl=en&amp;rlz=&amp;q=creoleparser&amp;btnG=Google+Search&amp;aq=f">http://www.google.com/search\n?source=ig&amp;hl=en&amp;rlz=&amp;q=creoleparser&amp;btnG=Google+Search&amp;aq=f</a>"""))
         self.assertEquals(
-            self.parse("[[http://www.google.com|google]]"),
-            wrap_result("""<a href="http://www.google.com">google</a>"""))
-        self.assertEquals(
-            self.parse("[[http://www.google.com|google|]]"),
-            wrap_result("""[[http://www.google.com|google|]]"""))
-        self.assertEquals(
-            self.parse("[[http://www.google.com|]]"),
-            wrap_result("""<a href="http://www.google.com">http://www.google.com</a>"""))
-        self.assertEquals(
             self.parse(u"[[ɤ]]"),
-            wrap_result("""<a href="%C9%A4">ɤ</a>"""))
-
-    def test_image(self):
-        self.assertEquals(
-            self.parse("{{http://www.google.com/pic.png}}"),
-            wrap_result("""<img src="http://www.google.com/pic.png" alt="pic.png" title="pic.png" />"""))
-        self.assertEquals(
-            self.parse("{{http://www.google.com/pic.png|google}}"),
-            wrap_result("""<img src="http://www.google.com/pic.png" alt="google" title="google" />"""))
-        self.assertEquals(
-            self.parse("{{http://www.google.com/pic.png/}}"),
-            wrap_result("""<img src="http://www.google.com/pic.png/" alt="" title="" />"""))
-        self.assertEquals(
-            self.parse("{{http://www.google.com/pic.png|}}"),
-            wrap_result("""<img src="http://www.google.com/pic.png" alt="" title="" />"""))
-        self.assertEquals(
-            self.parse("{{http://www.google.com/pic.png|name|}}"),
-            wrap_result("""{{http://www.google.com/pic.png|name|}}"""))
+            wrap_result("""<a href="http://www.wikicreole.org/wiki/%C9%A4">ɤ</a>"""))
 
     def test_links_with_spaces(self):
         self.assertEquals(
             self.parse("[[This Page Here]]"),
-            wrap_result("""<a href="This_Page_Here">This Page Here</a>"""))
+            wrap_result("""<a href="http://www.wikicreole.org/wiki/This_Page_Here">This Page Here</a>"""))
         self.assertEquals(
             self.parse("[[New Page|this]]"),
-            wrap_result("""<a href="New_Page">this</a>"""))
-        self.assertEquals(
-            self.parse("[[badname: Home]]"),
-            wrap_result("""<a href="badname%3A_Home">badname: Home</a>"""))
-
-    def test_interwiki_links(self):
+            wrap_result("""<a href="http://www.wikicreole.org/wiki/New_Page">this</a>"""))
         self.assertEquals(
             self.parse("[[Ohana:Home|This one]]"),
             wrap_result("""<a href="http://wikiohana.net/cgi-bin/wiki.pl/Home">This one</a>"""))
-        self.assertEquals(
-            self.parse("[[ :Home|This one]]"),
-            wrap_result("""<a href="%3AHome">This one</a>"""))
-        self.assertEquals(
-            self.parse("[[badname:Home|This one]]"),
-            wrap_result("""[[badname:Home|This one]]"""))
 
-        
+
 class Creole2HTMLTest(unittest.TestCase, BaseTest):
     """
     """
@@ -181,7 +144,7 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
     def setUp(self):
         self.parse = Parser(
         dialect=create_dialect(creole11_base,
-        wiki_links_base_url='',
+        wiki_links_base_url=base_url,
         interwiki_links_base_urls={'Ohana': inter_wiki_url},
         #use_additions=True,
         no_wiki_monospace=False
@@ -192,10 +155,10 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
         super(Text2HTMLTest, self).test_links()
         self.assertEquals(
             self.parse("[[foobar]]"),
-            wrap_result("""<a href="foobar">foobar</a>"""))
+            wrap_result("""<a href="http://www.wikicreole.org/wiki/foobar">foobar</a>"""))
         self.assertEquals(
             self.parse("[[foo bar]]"),
-            wrap_result("""<a href="foo_bar">foo bar</a>"""))
+            wrap_result("""<a href="http://www.wikicreole.org/wiki/foo_bar">foo bar</a>"""))
         self.assertEquals(
             self.parse("[[foo  bar]]"),
             wrap_result("[[foo  bar]]"))
@@ -205,7 +168,6 @@ class Text2HTMLTest(unittest.TestCase, BaseTest):
         self.assertEquals(
             self.parse("[[http://www.google.com| <<luca Google>>]]"),
             wrap_result("""<a href="http://www.google.com"><code class="unknown_macro">&lt;&lt;<span class="macro_name">luca</span><span class="macro_arg_string"> Google</span>&gt;&gt;</code></a>"""))
-
 
     def test_bold(self):
         self.assertEquals(
@@ -489,13 +451,6 @@ class DialectOptionsTest(unittest.TestCase):
             parse("The first line\nthis text **should** be on the second line\n now third"),
             wrap_result("The first line<br />this text <strong>should</strong> be on the second line<br /> now third"))
 
-    def test_wiki_links_base_url_option(self):
-        dialect = create_dialect(creole10_base, wiki_links_base_url='http://www.example.com')
-        parse = Parser(dialect)
-        self.assertEquals(
-            parse("[[foobar]]"),
-            wrap_result("""<a href="http://www.example.com/foobar">foobar</a>"""))
-
 class ExtendingTest(unittest.TestCase):
     
 
@@ -516,7 +471,7 @@ class NoSpaceDialectTest(unittest.TestCase, BaseTest):
             dialect=create_dialect(creole11_base,
                 wiki_links_base_url=base_url,
                 wiki_links_space_char='',
-                interwiki_links_base_urls={'Ohana': inter_wiki_url},
+                #use_additions=True,
                 no_wiki_monospace=False,
                 wiki_links_class_func=class_name_function,
                 wiki_links_path_func=path_name_function
@@ -527,17 +482,17 @@ class NoSpaceDialectTest(unittest.TestCase, BaseTest):
     def test_links_with_spaces(self):
         self.assertEquals(
             self.parse("[[This Page Name Has Spaces]]"),
-            wrap_result("""<a href="ThisPageNameHasSpaces">This Page Name Has Spaces</a>"""))
+            wrap_result("""<a href="http://www.wikicreole.org/wiki/ThisPageNameHasSpaces">This Page Name Has Spaces</a>"""))
 
     def test_special_link(self):
         self.assertEquals(
             self.parse("[[This Page Here]]"),
-            wrap_result("""<a href="Special/ThisPageHere">This Page Here</a>"""))
+            wrap_result("""<a href="http://www.wikicreole.org/wiki/Special/ThisPageHere">This Page Here</a>"""))
 
     def test_new_page(self):
         self.assertEquals(
             self.parse("[[New Page|this]]"),
-            wrap_result("""<a class="nonexistent" href="NewPage">this</a>"""))
+            wrap_result("""<a class="nonexistent" href="http://www.wikicreole.org/wiki/NewPage">this</a>"""))
 
 
 class MacroTest(unittest.TestCase, BaseTest):
@@ -546,9 +501,8 @@ class MacroTest(unittest.TestCase, BaseTest):
 
     def setUp(self):
         dialect = create_dialect(creole11_base,
-            wiki_links_base_url='',
-            wiki_links_space_char='_',
-            interwiki_links_base_urls={'Ohana': inter_wiki_url},
+            wiki_links_base_url='http://creoleparser.x10hosting.com/cgi-bin/creolepiki/',
+            wiki_links_space_char='',
             no_wiki_monospace=False,
             macro_func=self.macroFactory)
         self.parse = Parser(dialect)
@@ -766,19 +720,30 @@ part 2
 
         
     def test_links(self):
-        super(MacroTest, self).test_links()
+        self.assertEquals(
+            self.parse("http://www.google.com"),
+            wrap_result("""<a href="http://www.google.com">http://www.google.com</a>"""))
+        self.assertEquals(
+            self.parse("~http://www.google.com"),
+            wrap_result("""http://www.google.com"""))
+        self.assertEquals(
+            self.parse("[[http://www.google.com]]"),
+            wrap_result("""<a href="http://www.google.com">http://www.google.com</a>"""))
         self.assertEquals(
             self.parse("[[http://www.google.com| <<luca Google>>]]"),
             wrap_result("""<a href="http://www.google.com"><strong> Google</strong></a>"""))
 
     def test_links_with_spaces(self):
-        super(MacroTest, self).test_links_with_spaces()
         self.assertEquals(
-            self.parse("[[This Page Here|<<steve the steve macro!>>]]"),
-            wrap_result("""<a href="This_Page_Here"><strong> the steve macro!</strong></a>"""))
+            self.parse("[[This Page Here]] is <<steve the steve macro!>>"),
+            wrap_result("""<a href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/ThisPageHere">This Page Here</a> is <strong> the steve macro!</strong>"""))
+        self.assertEquals(
+            self.parse("[[New Page|this]]"),
+            wrap_result("""<a href="http://creoleparser.x10hosting.com/cgi-bin/creolepiki/NewPage">this</a>"""))
 
 
-class InterWikiLinksTest(unittest.TestCase,BaseTest):
+
+class InterWikiLinksTest(unittest.TestCase):
 
     def setUp(self):
         def inter_wiki_link_maker(name):
@@ -791,7 +756,6 @@ class InterWikiLinksTest(unittest.TestCase,BaseTest):
         base_urls = {
             'goo': 'http://example.org',
             'poo': 'http://example.org',
-            'Ohana': inter_wiki_url,
             }
         space_characters = {
             'goo': '+',
@@ -807,7 +771,6 @@ class InterWikiLinksTest(unittest.TestCase,BaseTest):
         self.parse = Parser(dialect)
 
     def test_interwiki_links(self):
-        super(InterWikiLinksTest,self).test_interwiki_links()
         self.assertEquals(
             str(self.parse("[[moo:foo bar|Foo]]")),
             wrap_result("""<a href="rab_oof">Foo</a>"""))
@@ -825,8 +788,7 @@ class InterWikiLinksTest(unittest.TestCase,BaseTest):
             wrap_result("""<a href="http://example.org/rab+oof">Foo</a>"""))
         self.assertEquals(
             str(self.parse("[[roo:foo bar|Foo]]")),
-            wrap_result("""<a href="roo%3Afoo_bar">Foo</a>"""))
-            #wrap_result("""[[roo:foo bar|Foo]]"""))
+            wrap_result("""[[roo:foo bar|Foo]]"""))
 
 
 class TaintingTest(unittest.TestCase):
@@ -838,7 +800,7 @@ class TaintingTest(unittest.TestCase):
     def test_cookies(self):
         self.assertEquals(
             self.parse("{{javascript:alert(document.cookie)}}"),
-            wrap_result("{{javascript:alert(document.cookie)}}"))
+            wrap_result("""<img src="unsafe_uri_detected" alt="unsafe_uri_detected" title="unsafe_uri_detected" />"""))
         self.assertEquals(
             self.parse("[[javascript:alert(document.cookie)]]"),
             wrap_result("[[javascript:alert(document.cookie)]]"))

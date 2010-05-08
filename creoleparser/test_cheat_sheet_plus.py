@@ -74,7 +74,7 @@ def macro_dispatcher(macro_name,arg_string,body,isblock,environ):
         return macros[macro_name](arg_string,body,isblock)
     
 dialect = dialects.create_dialect(dialects.creole11_base,
-    wiki_links_base_url='',
+    wiki_links_base_url='http://creoleparser.srcom.org/cgi-bin/creolepiki/',
     wiki_links_space_char='',
 #    use_additions=True,
     no_wiki_monospace=False,

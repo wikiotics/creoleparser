@@ -10,7 +10,6 @@
 import re
 import urlparse
 import urllib
-import keyword
 
 import genshi.builder as bldr
 from genshi.core import Stream, Markup
@@ -230,7 +229,6 @@ class SimpleElement(InlineElement):
         self.token_dict = token_dict
         self.tokens = token_dict.keys()
         super(SimpleElement,self).__init__('','')
-        self.regexp = re.compile(self.re_string(),re.DOTALL)
 
     def re_string(self):
         if isinstance(self.token,basestring):
@@ -244,247 +242,6 @@ class SimpleElement(InlineElement):
                                                           self.child_elements,
                                                           element_store, environ))
 
-
-class LinkElement(InlineElement):
-
-    """Superclass for AnchorLinks and ImageLinks. Parses internal, external,
-    and interwiki links.
-    
-    """
-    
-    def __init__(self,tag, token, delimiter,
-                 interwiki_delimiter,base_urls,links_funcs,default_space_char,space_chars,
-                 base_url,space_char,class_func,path_func):
-        super(LinkElement,self).__init__(tag,token)
-        self.regexp = re.compile(self.re_string(),re.DOTALL)
-        self.delimiter = delimiter
-        self.interwiki_delimiter = interwiki_delimiter
-        self.base_urls = base_urls
-        self.links_funcs = links_funcs
-        self.default_space_char = default_space_char
-        self.space_chars = space_chars
-        self.base_url = base_url
-        self.space_char = space_char
-        self.class_func = class_func
-        self.path_func = path_func
-        self.content_regexp = re.compile(self.content_re_string(),re.DOTALL)
-        self.arg_regexp = re.compile(self.arg_re_string(),re.DOTALL)
-        self.interwikilink_regexp = re.compile(self.interwikilink_re_string())
-        self.urllink_regexp = re.compile(self.urllink_re_string(), re.DOTALL)
-        self.wikilink_regexp = re.compile(self.wikilink_re_string())
-
-    def arg_re_string(self):
-        key = r'((?P<key>\w+)\s*\=)?'
-        value = r'(?P<value>.*?)'
-        return r'\s*' + key + r'\s*' + value + r'\s*(?P<delimiter>' + \
-               re.escape(self.delimiter) + r'|$)(?P<tail>.*)'
-
-    def content_re_string(self):
-        return r'(?P<body>.*?)(' + re.escape(self.delimiter) + '(?P<arg_string>.*?))?$'
-
-    def interwikilink_re_string(self):
-        all_wikis = set(self.links_funcs.keys() + self.base_urls.keys())
-        wiki_id = '(?P<wiki_id>' + '|'.join(all_wikis) + ')'
-        optional_spaces = ' *'
-        page_name = r'(?P<page_name>\S+?( \S+?)*)' #allows any number of single spaces
-        return '^' + optional_spaces + wiki_id + \
-               re.escape(self.interwiki_delimiter) + ' *' + page_name + \
-               optional_spaces + '$'#+ alias
-
-    def urllink_re_string(self):
-        protocol = r'^\s*((\w+?:|/)' 
-        rest_of_url = r'[\S\n]*?)\s*$'
-        return protocol + rest_of_url #+ alias
-
-    def wikilink_re_string(self):
-        optional_spaces = ' *'
-        page_name = r'(?P<page_name>\S+?( \S+?)*?)' #allows any number of single spaces
-        return '^' + optional_spaces + page_name + optional_spaces + '$'#+ \
-
-    def parse_args(self, arg_string):
-        args = []
-        delimiter = True
-        while delimiter:
-            mo = self.arg_regexp.match(arg_string)
-            key, value, delimiter, tail = mo.group('key'),mo.group('value'),mo.group('delimiter'), mo.group('tail')
-            if key:
-                args.append((key, value))
-            else:
-                args.append(value)
-            arg_string = tail
-        positional_args = []
-        kw_args = {}
-        for arg in args:
-           if isinstance(arg,tuple):
-             k, v  = arg
-             k = str(k).lower()
-             if k in keyword.kwlist:
-                 k = k + '_'
-             if k in kw_args:
-                if isinstance(v,list):
-                   try:
-                      kw_args[k].extend(v)
-                   except AttributeError:
-                      v.insert(0,kw_args[k])
-                      kw_args[k] = v
-                elif isinstance(kw_args[k],list):
-                   kw_args[k].append(v)
-                else:
-                   kw_args[k] = [kw_args[k], v]
-                kw_args[k] = ImplicitList(kw_args[k])
-             else:
-                kw_args[k] = v
-             if isinstance(kw_args[k],ImplicitList):
-                 kw_args[k] = ','.join(kw_args[k])
-           else:
-             positional_args.append(arg)
-
-        return (positional_args, kw_args)
-
-
-    def page_name(self,mo):
-        if 'wiki_id' in mo.groupdict():
-            space_char = self.space_chars.get(mo.group('wiki_id'),self.default_space_char)
-        else:
-            space_char = self.space_char
-        return mo.group('page_name').replace(' ',space_char)
-
-    def _build(self,mo,element_store, environ):
-        content_mo = self.content_regexp.match(mo.group(1))
-        body = content_mo.group('body')
-        arg_string = content_mo.group('arg_string')
-        the_class = None
-        interwikilink_mo = self.interwikilink_regexp.match(body)
-        urllink_mo = self.urllink_regexp.match(body)
-        wikilink_mo = self.wikilink_regexp.match(body)
-        if interwikilink_mo:
-            link_type = 'interwiki'
-            base_url = self.base_urls.get(interwikilink_mo.group('wiki_id'))
-            link_func = self.links_funcs.get(interwikilink_mo.group('wiki_id'))
-            page_name = self.page_name(interwikilink_mo)
-            if link_func:
-                url = link_func(page_name)
-            else:
-                url = urllib.quote(page_name.encode('utf-8'))
-            if base_url:
-                url = urlparse.urljoin(base_url, url)
-
-        elif urllink_mo:
-            link_type = 'url'
-            if sanitizer.is_safe_uri(urllink_mo.group(1)):
-                url = urllink_mo.group(1)
-            else:
-                url = None
-        elif wikilink_mo:
-            link_type = 'wiki'
-            page_name = self.page_name(wikilink_mo)
-            if self.path_func:
-                the_path = self.path_func(page_name)
-            else:
-                the_path = urllib.quote(page_name.encode('utf-8'))
-            if self.class_func:
-                the_class = self.class_func(page_name)
-            url = urlparse.urljoin(self.base_url, the_path)
-        else:
-            url = None
-
-        if not url:
-            return mo.group(0)
-        else:
-            if arg_string is not None:
-                args, kw_args = self.parse_args(arg_string)
-            else:
-                args, kw_args = [], {}
-            try:
-                return self.emit(element_store, environ,link_type,body,url,the_class, *args, **kw_args)
-            except TypeError:
-                return mo.group(0)
-                
-
-
-class AnchorElement(LinkElement):
-
-    """Finds and builds internal, external, and interwiki links.
-
-    >>> link = AnchorElement('a',('[[',']]'),'|',
-    ... interwiki_delimiter=':', 
-    ... base_urls=dict(somewiki='http://somewiki.org/',
-    ...                bigwiki='http://bigwiki.net/'),
-    ... links_funcs={},default_space_char='-',
-    ... space_chars={'bigwiki':' '},base_url='http://somewiki.org/',
-    ... space_char='_',class_func=None,path_func=None)
-    
-    >>> mo = link.regexp.search("[[http://www.google.com| here]]")
-    >>> link._build(mo,{},None).generate().render()
-    '<a href="http://www.google.com">here</a>'
-
-    >>> mo = link.regexp.search(" [[somewiki:Home Page|steve]] ")
-    >>> link._build(mo,{},None).generate().render()
-    '<a href="http://somewiki.org/Home-Page">steve</a>'
-
-    >>> mo = link.regexp.search(" [[bigwiki:Home Page]] ")
-    >>> link._build(mo,{},None).generate().render()
-    '<a href="http://bigwiki.net/Home%20Page">bigwiki:Home Page</a>'
-
-    >>> mo = link.regexp.search(" [[Home Page |Home]]")
-    >>> link._build(mo,{},None).generate().render()
-    '<a href="http://somewiki.org/Home_Page">Home</a>'
-    
-    """
-    
-
-    def __init__(self, *args, **kw_args):
-        super(AnchorElement,self).__init__(*args, **kw_args)    
-
-    def emit(self,element_store, environ,link_type,body,url,the_class, alias=None):
-        if alias:
-            alias = fragmentize(alias,self.child_elements,element_store, environ)
-        else:
-            alias = body.strip()
-        return bldr.tag.__getattr__(self.tag)(alias,
-                                              href=url,
-                                              class_=the_class)
-
-        
-class ImageElement(LinkElement):
-
-    def __init__(self, *args, **kw_args):
-        super(ImageElement,self).__init__(*args, **kw_args)    
-
-    def emit(self,element_store, environ,link_type,body,url,the_class, alt=None):
-        if alt is None:
-            if link_type == 'url':
-                alt = urlparse.urlsplit(url).path.split('/')[-1]
-            else:
-                alt = body.strip()
-        return bldr.tag.__getattr__(self.tag)(src=url ,alt=alt, title=alt,
-                                              #class_=the_class
-                                              )           
-        
-
-class Link(InlineElement):
-
-    """Finds and builds links."""
-    
-    def __init__(self,tag, token):
-        super(Link,self).__init__(tag,token)
-        self.regexp = re.compile(self.re_string(),re.DOTALL)
-
-    def _build(self,mo,element_store, environ):
-        
-        for tag in self.child_elements:
-            m = tag.regexp.search(mo.group(1))
-            if m:
-                link = tag._build(m,element_store, environ)
-                if link:
-                    break
-        else:
-            link = None
-
-        if link:
-            return bldr.tag(link)
-        else:
-            return mo.group(0)
 
 
 class Macro(WikiElement):
@@ -818,17 +575,13 @@ class InterWikiLink(WikiElement):
         super(InterWikiLink,self).__init__(tag, '')
         self.delimiter1 = delimiter1
         self.delimiter2 = delimiter2
-        #self.regexp = re.compile(self.re_string())
+        self.regexp = re.compile(self.re_string())
         self.base_urls = base_urls
         self.links_funcs = links_funcs
         self.default_space_char = default_space_char
         self.space_chars = space_chars
-        self.regexp = re.compile(self.re_string())
 
     def re_string(self):
-        #all_wikis = set(self.links_funcs.keys() + self.base_urls.keys())
-        #wiki_id = '(' + '|'.join(all_wikis) + ')'
-
         wiki_id = r'(\w+)'
         optional_spaces = ' *'
         page_name = r'(\S+?( \S+?)*)' #allows any number of single spaces
@@ -1234,28 +987,28 @@ class TableCell(WikiElement):
 
 
 
-##class Link(InlineElement):
-##
-##    """Finds and builds links."""
-##    
-##    def __init__(self,tag, token):
-##        super(Link,self).__init__(tag,token)
-##
-##    def _build(self,mo,element_store, environ):
-##        
-##        for tag in self.child_elements:
-##            m = tag.regexp.search(mo.group(1))
-##            if m:
-##                link = tag._build(m,element_store, environ)
-##                if link:
-##                    break
-##        else:
-##            link = None
-##
-##        if link:
-##            return bldr.tag(link)
-##        else:
-##            return mo.group(0)
+class Link(InlineElement):
+
+    """Finds and builds links."""
+    
+    def __init__(self,tag, token):
+        super(Link,self).__init__(tag,token)
+
+    def _build(self,mo,element_store, environ):
+        
+        for tag in self.child_elements:
+            m = tag.regexp.search(mo.group(1))
+            if m:
+                link = tag._build(m,element_store, environ)
+                if link:
+                    break
+        else:
+            link = None
+
+        if link:
+            return bldr.tag(link)
+        else:
+            return mo.group(0)
 
 class Image(InlineElement):
 
