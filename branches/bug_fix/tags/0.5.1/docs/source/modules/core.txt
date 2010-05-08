@@ -1,5 +1,0 @@
-:mod:`creoleparser.core` 
-************************
-
-.. automodule:: creoleparser.core
-   :members:
