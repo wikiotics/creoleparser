@@ -301,45 +301,45 @@ class LinkElement(InlineElement):
         page_name = r'(?P<page_name>\S+?( \S+?)*?)' #allows any number of single spaces
         return '^' + optional_spaces + page_name + optional_spaces + '$'#+ \
 
-    def parse_args(self, arg_string):
-        args = []
-        delimiter = True
-        while delimiter:
-            mo = self.arg_regexp.match(arg_string)
-            key, value, delimiter, tail = mo.group('key'),mo.group('value'),mo.group('delimiter'), mo.group('tail')
-            if key:
-                args.append((key, value))
-            else:
-                args.append(value)
-            arg_string = tail
-        positional_args = []
-        kw_args = {}
-        for arg in args:
-           if isinstance(arg,tuple):
-             k, v  = arg
-             k = str(k).lower()
-             if k in keyword.kwlist:
-                 k = k + '_'
-             if k in kw_args:
-                if isinstance(v,list):
-                   try:
-                      kw_args[k].extend(v)
-                   except AttributeError:
-                      v.insert(0,kw_args[k])
-                      kw_args[k] = v
-                elif isinstance(kw_args[k],list):
-                   kw_args[k].append(v)
-                else:
-                   kw_args[k] = [kw_args[k], v]
-                kw_args[k] = ImplicitList(kw_args[k])
-             else:
-                kw_args[k] = v
-             if isinstance(kw_args[k],ImplicitList):
-                 kw_args[k] = ','.join(kw_args[k])
-           else:
-             positional_args.append(arg)
-
-        return (positional_args, kw_args)
+##    def parse_args(self, arg_string):
+##        args = []
+##        delimiter = True
+##        while delimiter:
+##            mo = self.arg_regexp.match(arg_string)
+##            key, value, delimiter, tail = mo.group('key'),mo.group('value'),mo.group('delimiter'), mo.group('tail')
+##            if key:
+##                args.append((key, value))
+##            else:
+##                args.append(value)
+##            arg_string = tail
+##        positional_args = []
+##        kw_args = {}
+##        for arg in args:
+##           if isinstance(arg,tuple):
+##             k, v  = arg
+##             k = str(k).lower()
+##             if k in keyword.kwlist:
+##                 k = k + '_'
+##             if k in kw_args:
+##                if isinstance(v,list):
+##                   try:
+##                      kw_args[k].extend(v)
+##                   except AttributeError:
+##                      v.insert(0,kw_args[k])
+##                      kw_args[k] = v
+##                elif isinstance(kw_args[k],list):
+##                   kw_args[k].append(v)
+##                else:
+##                   kw_args[k] = [kw_args[k], v]
+##                kw_args[k] = ImplicitList(kw_args[k])
+##             else:
+##                kw_args[k] = v
+##             if isinstance(kw_args[k],ImplicitList):
+##                 kw_args[k] = ','.join(kw_args[k])
+##           else:
+##             positional_args.append(arg)
+##
+##        return (positional_args, kw_args)
 
 
     def page_name(self,mo):
@@ -354,10 +354,8 @@ class LinkElement(InlineElement):
         body = content_mo.group('body')
         arg_string = content_mo.group('arg_string')
         the_class = None
-        interwikilink_mo = self.interwikilink_regexp.match(body)
-        urllink_mo = self.urllink_regexp.match(body)
-        wikilink_mo = self.wikilink_regexp.match(body)
-        if interwikilink_mo:
+        if self.interwikilink_regexp.match(body):
+            interwikilink_mo = self.interwikilink_regexp.match(body)
             link_type = 'interwiki'
             base_url = self.base_urls.get(interwikilink_mo.group('wiki_id'))
             link_func = self.links_funcs.get(interwikilink_mo.group('wiki_id'))
@@ -368,14 +366,15 @@ class LinkElement(InlineElement):
                 url = urllib.quote(page_name.encode('utf-8'))
             if base_url:
                 url = urlparse.urljoin(base_url, url)
-
-        elif urllink_mo:
+        elif self.urllink_regexp.match(body):
+            urllink_mo = self.urllink_regexp.match(body)
             link_type = 'url'
             if sanitizer.is_safe_uri(urllink_mo.group(1)):
                 url = urllink_mo.group(1)
             else:
                 url = None
-        elif wikilink_mo:
+        elif self.wikilink_regexp.match(body):
+            wikilink_mo = self.wikilink_regexp.match(body)
             link_type = 'wiki'
             page_name = self.page_name(wikilink_mo)
             if self.path_func:
@@ -392,7 +391,7 @@ class LinkElement(InlineElement):
             return mo.group(0)
         else:
             if arg_string is not None:
-                args, kw_args = self.parse_args(arg_string)
+                args, kw_args = [arg_string.strip()], {} #self.parse_args(arg_string)
             else:
                 args, kw_args = [], {}
             try:
