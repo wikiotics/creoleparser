@@ -1,5 +1,0 @@
-:mod:`creoleparser.dialects`
-****************************
-
-.. automodule:: creoleparser.dialects
-   :members:
