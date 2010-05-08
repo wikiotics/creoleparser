@@ -96,8 +96,8 @@ that the <tt class="docutils literal"><span class="pre">__call__</span></tt> met
 <div class="section" id="creating-a-custom-dialect">
 <h2>Creating a custom dialect<a class="headerlink" href="#creating-a-custom-dialect" title="Permalink to this headline">¶</a></h2>
 <p>Most customization in creoleparser is achieved by creating a new dialect object
-using the <tt class="docutils literal"><span class="pre">create_dialect</span></tt> factory function. In the following example, the
-default rendering of code blocks has been modified.</p>
+using the <tt class="docutils literal"><span class="pre">create_dialect</span></tt> factory function. The following example shows how
+to change the default rendering of code blocks.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">my_parser</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">dialect</span><span class="o">=</span><span class="n">create_dialect</span><span class="p">(</span><span class="n">creole11_base</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">my_parser</span><span class="p">(</span><span class="s">&quot;Some real {{{**simple** mark-up}}}&quot;</span><span class="p">),</span>
 <span class="go">&lt;p&gt;Some real &lt;code&gt;**simple** mark-up&lt;/code&gt;&lt;/p&gt;</span>

@@ -66,8 +66,8 @@ see <a title="creoleparser.dialects.creole10_base" class="reference internal" hr
 <tt class="docutils literal"><span class="pre">creoleparser.dialects.creole11_base</span></tt> are possible values.</p>
 </dd>
 <dt>wiki_links_base_url</dt>
-<dd><p class="first last">The page name found in wiki links will be appended to this to form
-the href.</p>
+<dd><p class="first last">The page name found in wiki links will be smartly appended to this to
+form the href.</p>
 </dd>
 <dt>wiki_links_space_char</dt>
 <dd><p class="first last">When wiki_links have spaces, this character replaces those spaces in
@@ -84,8 +84,8 @@ If no class attribute is to be added, return <cite>None</cite>.</p>
 <dd><p class="first last">If supplied, this fuction will be called when a wiki link is found and
 the return value (should be a string) will be joined to the base_url
 to form the url for href. The function must accept the page name (any
-spaces will have been replaced) as it&#8217;s only argument. Returning the
-unaltered page name is equivalent to not supplying this function at all.</p>
+spaces will have been replaced) as it&#8217;s only argument. Special characters
+should be url encoded.</p>
 </dd>
 <dt>interwiki_links_base_urls</dt>
 <dd><p class="first last">Dictionary of urls for interwiki links.</p>
@@ -284,7 +284,7 @@ unescaped special characters:</p>
             <h4>Previous topic</h4>
             <p class="topless"><a href="../modules.html" title="previous chapter">Generated API documentation</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="core.html" title="next chapter"><tt class="docutils literal"><span class="pre">creoleparser.core</span></tt></a></p>
+            <p class="topless"><a href="core.html" title="next chapter"><tt class="docutils literal docutils literal"><span class="pre">creoleparser.core</span></tt></a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="../_sources/modules/dialects.txt">Show Source</a></li>

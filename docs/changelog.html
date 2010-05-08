@@ -48,38 +48,38 @@
             
   <div class="section" id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="version-0-7-2-may-8-2010">
+<h2>Version 0.7.2 (May 8 2010)<a class="headerlink" href="#version-0-7-2-may-8-2010" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>fixed bad import in setup.py</li>
+<li>images now support wiki links and interwiki links</li>
+</ul>
+</div>
 <div class="section" id="version-0-7-1-march-29-2010">
 <h2>Version 0.7.1 (March 29 2010)<a class="headerlink" href="#version-0-7-1-march-29-2010" title="Permalink to this headline">¶</a></h2>
-<blockquote>
 <ul class="simple">
 <li>added <tt class="docutils literal"><span class="pre">indent_class</span></tt> and <tt class="docutils literal"><span class="pre">indent_style</span></tt> arguments to
 <tt class="docutils literal"><span class="pre">create_dialect</span></tt> function</li>
 </ul>
-</blockquote>
 </div>
 <div class="section" id="version-0-7-0-march-20-2010">
 <h2>Version 0.7.0 (March 20 2010)<a class="headerlink" href="#version-0-7-0-march-20-2010" title="Permalink to this headline">¶</a></h2>
-<blockquote>
 <ul class="simple">
 <li>added syntax for indented regions</li>
 <li>added Parser.parse() method to expose the parse tree (a Genshi Fragment object)</li>
 <li>improved output of passed through macros to better support post-processing</li>
 <li>removed depreciated Creole10 class support</li>
 </ul>
-</blockquote>
 </div>
 <div class="section" id="version-0-6-1-march-31-2009">
 <h2>Version 0.6.1 (March 31 2009)<a class="headerlink" href="#version-0-6-1-march-31-2009" title="Permalink to this headline">¶</a></h2>
-<blockquote>
 <ul class="simple">
 <li>fixed recursion issue with long lists and tables (&gt;400 rows)</li>
 <li>added <tt class="docutils literal"><span class="pre">parse_args</span></tt> function for macro arg_string parsing</li>
 </ul>
-</blockquote>
 </div>
 <div class="section" id="version-0-6-march-1-2009">
 <h2>Version 0.6 (March 1 2009)<a class="headerlink" href="#version-0-6-march-1-2009" title="Permalink to this headline">¶</a></h2>
-<blockquote>
 <ul class="simple">
 <li>refactored dialects.py to make extending easier<ul>
 <li>added <tt class="docutils literal"><span class="pre">creole10_base</span></tt> class factory function</li>
@@ -106,11 +106,9 @@ Element, and string (preferably unicode) objects were always okay)</li>
 <li>made creoleparser smarter about adding &lt;p&gt; tags</li>
 <li>improved rawlink detection regex</li>
 </ul>
-</blockquote>
 </div>
 <div class="section" id="version-0-5-1-dec-8-2008">
 <h2>Version 0.5.1 (Dec 8 2008)<a class="headerlink" href="#version-0-5-1-dec-8-2008" title="Permalink to this headline">¶</a></h2>
-<blockquote>
 <ul class="simple">
 <li>converted docs to Sphinx</li>
 <li>improved rendering of unknown macros</li>
@@ -124,11 +122,9 @@ Element, and string (preferably unicode) objects were always okay)</li>
 <li>wiki links can no longer have adjacent spaces</li>
 <li>creoleparser now works on Goggle App Engine</li>
 </ul>
-</blockquote>
 </div>
 <div class="section" id="version-0-5-0-may-31-2008">
 <h2>Version 0.5.0 (May 31 2008)<a class="headerlink" href="#version-0-5-0-may-31-2008" title="Permalink to this headline">¶</a></h2>
-<blockquote>
 <ul class="simple">
 <li>special syntax introduced for macros spanning block level markup</li>
 <li>macros returning Creole can contain other macros (issue 6)</li>
@@ -140,43 +136,35 @@ links (interwiki_links_space_chars)</li>
 <li>api changed for default interwiki links space character, the
 wiki_links_space_char is used instead of an underscore. (issue 3)</li>
 </ul>
-</blockquote>
 </div>
 <div class="section" id="version-0-4-0-march-24-2008">
 <h2>Version 0.4.0 (March 24 2008)<a class="headerlink" href="#version-0-4-0-march-24-2008" title="Permalink to this headline">¶</a></h2>
-<blockquote>
 <ul class="simple">
 <li>added support for custom urls for interwiki links (interwiki_links_funcs)</li>
 <li>user supplied uri sanitation added</li>
 <li>a macro on a line by itself will no longer be &lt;p&gt;aragraphed</li>
 </ul>
-</blockquote>
 </div>
 <div class="section" id="version-0-3-3-dec-16-2007">
 <h2>Version 0.3.3 (Dec 16 2007)<a class="headerlink" href="#version-0-3-3-dec-16-2007" title="Permalink to this headline">¶</a></h2>
-<blockquote>
 <ul class="simple">
 <li>changed api slightly for wiki_links_class_func (see source)</li>
 <li>added suport for custom urls for wiki links (wiki_links_path_func)</li>
 <li>added support for macros with bodies (&lt;&lt;macro arg_string&gt;&gt;the body&lt;&lt;/macro&gt;&gt;)</li>
 <li>removed use of global element_store and thread.local()</li>
 </ul>
-</blockquote>
 </div>
 <div class="section" id="version-0-3-2-nov-28-2007">
 <h2>Version 0.3.2 (Nov 28 2007)<a class="headerlink" href="#version-0-3-2-nov-28-2007" title="Permalink to this headline">¶</a></h2>
-<blockquote>
 <ul class="simple">
 <li>line breaks (\) can now be escaped with a tilde</li>
 <li>added macro support (&lt;&lt;macro arg_sring&gt;&gt;)</li>
 <li>added support for adding a class attribute to
 wiki links (e.g., if the page doesn&#8217;t exist).</li>
 </ul>
-</blockquote>
 </div>
 <div class="section" id="version-0-3-1-nov-16-2007">
 <h2>Version 0.3.1 (Nov 16 2007)<a class="headerlink" href="#version-0-3-1-nov-16-2007" title="Permalink to this headline">¶</a></h2>
-<blockquote>
 <ul class="simple">
 <li>super (^^), subscript (,,), and underline (__) support added</li>
 <li>definition lists supported (;)</li>
@@ -185,22 +173,18 @@ wiki links (e.g., if the page doesn&#8217;t exist).</li>
 <li>removed store_id_seq in favor of id()</li>
 <li>made element_store thread.local()</li>
 </ul>
-</blockquote>
 </div>
 <div class="section" id="version-0-3-nov-10-2007">
 <h2>Version 0.3 (Nov 10 2007)<a class="headerlink" href="#version-0-3-nov-10-2007" title="Permalink to this headline">¶</a></h2>
-<blockquote>
 <ul class="simple">
 <li>text2xhtml has no_wiki_monospace=True and use_additions=True</li>
 <li>creole_to_xhtml is now pure Creole 1.0 (use_additions=False)</li>
 <li>removed need for any pre_escaping, much more robust now</li>
 <li>big refactoring of inline wiki markup processing</li>
 </ul>
-</blockquote>
 </div>
 <div class="section" id="version-0-2-1-nov-6-2007">
 <h2>Version 0.2.1 (Nov 6 2007)<a class="headerlink" href="#version-0-2-1-nov-6-2007" title="Permalink to this headline">¶</a></h2>
-<blockquote>
 <ul class="simple">
 <li>links can include mark-up</li>
 <li>creole_to_xhtml has no_wiki_monospace=True and use_additions=True</li>
@@ -214,24 +198,19 @@ wiki links (e.g., if the page doesn&#8217;t exist).</li>
 <li>added use_additions option to dialects.Creole10</li>
 <li>implemented monospace (##) (for use_additions option only)</li>
 </ul>
-</blockquote>
 </div>
 <div class="section" id="version-0-2-oct-26-2007">
 <h2>Version 0.2 (Oct 26 2007)<a class="headerlink" href="#version-0-2-oct-26-2007" title="Permalink to this headline">¶</a></h2>
-<blockquote>
 <ul class="simple">
 <li>module split into separate files to create the creoleparser package</li>
 <li>other refactoring</li>
 </ul>
-</blockquote>
 </div>
 <div class="section" id="version-0-1-0-1-1-0-1-2-oct-2007">
 <h2>Version 0.1, 0.1.1, 0.1.2 (Oct 2007)<a class="headerlink" href="#version-0-1-0-1-1-0-1-2-oct-2007" title="Permalink to this headline">¶</a></h2>
-<blockquote>
 <ul class="simple">
 <li>First public releases</li>
 </ul>
-</blockquote>
 </div>
 </div>
 
@@ -244,6 +223,7 @@ wiki links (e.g., if the page doesn&#8217;t exist).</li>
             <h3><a href="contents.html">Table Of Contents</a></h3>
             <ul>
 <li><a class="reference external" href="#">Changelog</a><ul>
+<li><a class="reference external" href="#version-0-7-2-may-8-2010">Version 0.7.2 (May 8 2010)</a></li>
 <li><a class="reference external" href="#version-0-7-1-march-29-2010">Version 0.7.1 (March 29 2010)</a></li>
 <li><a class="reference external" href="#version-0-7-0-march-20-2010">Version 0.7.0 (March 20 2010)</a></li>
 <li><a class="reference external" href="#version-0-6-1-march-31-2009">Version 0.6.1 (March 31 2009)</a></li>
