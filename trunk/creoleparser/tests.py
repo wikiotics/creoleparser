@@ -488,6 +488,9 @@ class DialectOptionsTest(unittest.TestCase):
         self.assertEquals(
             parse("The first line\nthis text **should** be on the second line\n now third"),
             wrap_result("The first line<br />this text <strong>should</strong> be on the second line<br /> now third"))
+        self.assertEquals(
+            parse("The first line\\\\\nthis text **should** be on the second line\\\\\n now third"),
+            wrap_result("The first line<br />this text <strong>should</strong> be on the second line<br /> now third"))
 
     def test_wiki_links_base_url_option(self):
         dialect = create_dialect(creole10_base, wiki_links_base_url='http://www.example.com')
