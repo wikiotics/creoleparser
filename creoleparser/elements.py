@@ -1453,7 +1453,7 @@ class LineBreak(InlineElement):
 
     def re_string(self):
         if self.blog_style:
-            return '(' + esc_neg_look + re.escape(self.token) + r'|\n(?!$))'
+            return '(' + esc_neg_look + re.escape(self.token) + r'\n?|\n(?!$))'
         else:
             return esc_neg_look + re.escape(self.token)
     
