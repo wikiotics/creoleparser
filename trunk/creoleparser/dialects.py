@@ -1,7 +1,7 @@
 # dialects.py
 # -*- coding: utf-8 -*-
 #
-# Copyright © 2009 Stephen Day
+# Copyright Â© 2009 Stephen Day
 #
 # This module is part of Creoleparser and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -25,10 +25,12 @@ def create_dialect(dialect_base, **kw_args):
         ``creoleparser.dialects.creole11_base`` are possible values.
       wiki_links_base_url
         The page name found in wiki links will be smartly appended to this to
-        form the href.
+        form the href. To use a different base url for images, supply a two
+        element list; the second element will be used.
       wiki_links_space_char
         When wiki_links have spaces, this character replaces those spaces in
-        the url.
+        the url. To use a different character for images, supply a two element
+        list; the second element will be used.
       wiki_links_class_func
         If supplied, this fuction will be called when a wiki link is found and
         the return value (should be a string) will be added as a class attribute
@@ -40,7 +42,8 @@ def create_dialect(dialect_base, **kw_args):
         the return value (should be a string) will be joined to the base_url
         to form the url for href. The function must accept the page name (any
         spaces will have been replaced) as it's only argument. Special characters
-        should be url encoded.
+        should be url encoded. To use a different function for images, supply a
+        two element list; the second element will be used.
       interwiki_links_base_urls
         Dictionary of urls for interwiki links.
       interwiki_links_space_chars
@@ -96,6 +99,20 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
     to Creole 1.0 specification.
 
     """
+    
+    if isinstance(wiki_links_base_url,(list, tuple)):
+        wiki_links_base_url, embed_base_url = wiki_links_base_url
+    else:
+        embed_base_url = wiki_links_base_url
+    if isinstance(wiki_links_path_func,(list, tuple)):
+        wiki_links_path_func, embed_path_func = wiki_links_path_func
+    else:
+        embed_path_func = wiki_links_path_func
+    if isinstance(wiki_links_space_char,(list, tuple)):
+        wiki_links_space_char, embed_space_char = wiki_links_space_char
+    else:
+        embed_space_char = wiki_links_space_char
+
         
     class Base(Dialect):
 
@@ -121,11 +138,11 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
         img = ImageElement('img',('{{','}}'),delimiter = '|',interwiki_delimiter=':',
                                             base_urls=interwiki_links_base_urls,
                                             links_funcs=interwiki_links_funcs,
-                                            default_space_char=wiki_links_space_char,
+                                            default_space_char=embed_space_char,
                                             space_chars=interwiki_links_space_chars,
-                                       base_url=wiki_links_base_url,
-                              space_char=wiki_links_space_char,class_func=wiki_links_class_func,
-                              path_func=wiki_links_path_func)        
+                                       base_url=embed_base_url,
+                              space_char=embed_space_char,class_func=wiki_links_class_func,
+                              path_func=embed_path_func)        
 
 
         td = TableCell('td','|')
