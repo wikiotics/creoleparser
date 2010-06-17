@@ -1,7 +1,7 @@
 # elements.py
 # -*- coding: utf-8 -*-
 #
-# Copyright © Stephen Day
+# Copyright Â© Stephen Day
 #
 # This module is part of Creoleparser and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -536,7 +536,7 @@ class Macro(WikiElement):
         elif isinstance(value, (basestring,bldr.Fragment,bldr.Element, Stream)):
             return value
         else:
-            raise "macros can only return strings and genshi objects" 
+            raise Exception("macros can only return strings and genshi objects") 
         
 
 class BodiedMacro(Macro):
@@ -594,7 +594,7 @@ class BodiedMacro(Macro):
         elif isinstance(value, (basestring,bldr.Fragment, Stream)):
             return [value,tail]
         else:
-            raise "macros can only return strings and genshi objects"
+            raise Exception("macros can only return strings and genshi objects")
 
        
 
@@ -695,7 +695,7 @@ class BodiedBlockMacro(WikiElement):
         elif isinstance(value, bldr.Fragment):
             return [bldr.tag.p(value), tail]
         else:
-            raise "macros can only return strings and genshi objects"
+            raise Exception("macros can only return strings and genshi objects")
         
     
 class RawLink(InlineElement):

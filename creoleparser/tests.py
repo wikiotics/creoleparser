@@ -1,7 +1,7 @@
 # tests.py
 # -*- coding: utf-8 -*-
 #
-# Copyright � Stephen Day
+# Copyright © Stephen Day
 #
 # This module is part of Creoleparser and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -112,8 +112,8 @@ class BaseTest(object):
             self.parse("[[http://www.google.com|]]"),
             wrap_result("""<a href="http://www.google.com">http://www.google.com</a>"""))
         self.assertEquals(
-            self.parse(u"[[ɤ]]"),
-            wrap_result("""<a href="%C9%A4">ɤ</a>"""))
+            self.parse(u"[[α]]"),
+            wrap_result("""<a href="%CE%B1">α</a>"""))
 
     def test_image(self):
         self.assertEquals(
@@ -641,11 +641,11 @@ class MacroTest(unittest.TestCase, BaseTest):
             self.parse('<<pre>>one<<pre>>\n<</pre>>two<</pre>>'),
             '<pre>**one&lt;&lt;pre&gt;&gt;\n&lt;&lt;/pre&gt;&gt;two**</pre>\n')
         self.assertEquals(
-            self.parse(u'<<mateo>>fooɤ<</mateo>>'),
-            wrap_result('<em>foo\xc9\xa4</em>'))
+            self.parse(u'<<mateo>>fooα<</mateo>>'),
+            wrap_result('<em>foo\xce\xb1</em>'))
         self.assertEquals(
-            self.parse(u'<<steve fooɤ>>'),
-            wrap_result('<strong> foo\xc9\xa4</strong>'))
+            self.parse(u'<<steve fooα>>'),
+            wrap_result('<strong> foo\xce\xb1</strong>'))
         self.assertEquals(
             self.parse('<<ReverseFrag>>**foo**<</ReverseFrag>>'),
             wrap_result('**oof**'))
