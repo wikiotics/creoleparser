@@ -499,6 +499,20 @@ class DialectOptionsTest(unittest.TestCase):
             parse("[[foobar]]"),
             wrap_result("""<a href="http://www.example.com/foobar">foobar</a>"""))
 
+    def test_image_link_options(self):
+        dialect = create_dialect(creole10_base, wiki_links_base_url=['/pages/',
+                                                                     '/files/'],
+                                 wiki_links_space_char=['_',' '],
+                                 wiki_links_path_func=[lambda s:s.upper(),
+                                                       lambda s:s.capitalize()])
+        parse = Parser(dialect)
+        self.assertEquals(
+            parse("[[foo bar]]"),
+            wrap_result("""<a href="/pages/FOO_BAR">foo bar</a>"""))
+        self.assertEquals(
+            parse("{{foo bar}}"),
+            wrap_result("""<img src="/files/Foo bar" alt="foo bar" title="foo bar" />"""))
+        
 class ExtendingTest(unittest.TestCase):
     
 
