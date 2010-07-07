@@ -11,11 +11,12 @@ import re
 import urlparse
 import urllib
 import keyword
+import sys
 
 import genshi.builder as bldr
 from genshi.core import Stream, Markup
 
-from core import (escape_char, esc_neg_look, fragmentize, ImplicitList) 
+from core import (escape_char, esc_neg_look, fragmentize, ImplicitList, P3Template) 
 
 BLOCK_ONLY_TAGS = ['h1','h2','h3','h4','h5','h6',
               'ul','ol','dl',
@@ -268,16 +269,16 @@ class LinkElement(InlineElement):
         self.class_func = class_func
         self.path_func = path_func
         self.content_regexp = re.compile(self.content_re_string(),re.DOTALL)
-        self.arg_regexp = re.compile(self.arg_re_string(),re.DOTALL)
+##        self.arg_regexp = re.compile(self.arg_re_string(),re.DOTALL)
         self.interwikilink_regexp = re.compile(self.interwikilink_re_string())
         self.urllink_regexp = re.compile(self.urllink_re_string(), re.DOTALL)
         self.wikilink_regexp = re.compile(self.wikilink_re_string())
 
-    def arg_re_string(self):
-        key = r'((?P<key>\w+)\s*\=)?'
-        value = r'(?P<value>.*?)'
-        return r'\s*' + key + r'\s*' + value + r'\s*(?P<delimiter>' + \
-               re.escape(self.delimiter) + r'|$)(?P<tail>.*)'
+##    def arg_re_string(self):
+##        key = r'((?P<key>\w+)\s*\=)?'
+##        value = r'(?P<value>.*?)'
+##        return r'\s*' + key + r'\s*' + value + r'\s*(?P<delimiter>' + \
+##               re.escape(self.delimiter) + r'|$)(?P<tail>.*)'
 
     def content_re_string(self):
         return r'(?P<body>.*?)(' + re.escape(self.delimiter) + '(?P<arg_string>.*?))?$'
@@ -718,7 +719,8 @@ class RawLink(InlineElement):
 
     def re_string(self):
         escape = '(' + re.escape(escape_char) + ')?'
-        protocol = '((https?|ftp)://'
+        #protocol = '((https?|ftp)://'
+        protocol = '((https?)://'
         rest_of_url = r'\S+?)'
         #allow one punctuation character or '**' or '//'. Don't include a placeholder.
         look_ahead = r'(?=([>)}\]]?[,.?!:;"\']?(([^a-zA-Z0-9])\6)?(\s|$))|<<<)'
@@ -1441,8 +1443,6 @@ class BlankLine(WikiElement):
 
         return frags
 
-
-    
 class LineBreak(InlineElement):
     """An inline line break."""
 
@@ -1459,7 +1459,58 @@ class LineBreak(InlineElement):
     
     def _build(self,mo,element_store, environ):
         return bldr.tag.__getattr__(self.tag)()
+    
+class GenericElement(InlineElement):
+    """A generic element."""
 
+    def __init__(self,pattern,tag,text_node=None,attrs=None):
+        super(GenericElement,self).__init__(tag,pattern )
+        self.attrs = attrs or {}
+        self.text_node = text_node
+        self.regexp = re.compile(self.re_string(),re.DOTALL)
+        
+
+    def re_string(self):
+        escape = '(' + re.escape(escape_char) + ')*'
+        return escape + self.token 
+    
+    def _build(self,mo,element_store, environ):
+        d = mo.groupdict()
+        if d.has_key('all') or d.has_key('environ'):
+            raise Exception('GenericElement patterns cannot have "all" or \
+                            "environ" as group names.')
+        d['all'] = mo.group(0)
+        d['environ'] = environ
+        if mo.group(1):
+            return mo.group(0)[1:]
+        else:
+            if isinstance(self.text_node,(Stream, bldr.Fragment,Markup)) or self.text_node is None:
+                content = self.text_node
+            elif isinstance(self.text_node, basestring):
+                if sys.version >= '2.6':
+                    content = self.text_node.format(**d)
+                else:
+                    content = P3Template(self.text_node).substitute(d)  
+            else:
+                content = self.text_node(mo, environ)
+
+            kwparams = {}
+            for k,v in self.attrs.items():
+                if isinstance(v,(Stream, bldr.Fragment,Markup)) or v is None:
+                    kwparams[k+'_'] = v
+                elif isinstance(v,basestring):
+                    if sys.version >= '2.6':
+                        kwparams[k+'_'] = v.format(**d)
+                    else:
+                        kwparams[k+'_'] = P3Template(v).substitute(d)
+                else:
+                    kwparams[k+'_'] =  v(mo, environ)
+
+            if self.tag:
+                return bldr.tag.__getattr__(self.tag)(content,**kwparams)
+            else:
+                return content
+        
 #############################################################################
 # The WikeElement classes below are used for parsing macro argument strings # 
 #############################################################################

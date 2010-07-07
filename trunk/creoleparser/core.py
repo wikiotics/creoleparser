@@ -1,13 +1,13 @@
 # core.py
 # -*- coding: utf-8 -*-
 #
-# Copyright © Stephen Day
+# Copyright Â© Stephen Day
 #
 # This module is part of Creoleparser and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 #
 
-import re
+import re, string
 import warnings
 
 import genshi.builder as bldr
@@ -322,6 +322,23 @@ def fill_from_store(text,element_store):
 class ImplicitList(list):
     """This class marks argument lists as implicit"""
     pass
+
+_pattern = r"""
+    {(?:
+      (?P<escaped>{) |   # Escape sequence of two delimiters
+      (?P<named>[_a-z][_a-z0-9]*)}      |   # delimiter and a Python identifier
+      (?P<braced>[_a-z][_a-z0-9]*)}   |   # delimiter and a braced identifier
+      (?P<invalid>)              # Other ill-formed delimiter exprs
+    )
+    """
+
+class P3Template(string.Template):
+    pattern = _pattern
+    delimiter = '{'
+
+    def substitute(self, *args, **kws):
+        return super(P3Template,self).substitute(*args, **kws).replace('}}','}')
+
 
 def _test():
     import doctest
