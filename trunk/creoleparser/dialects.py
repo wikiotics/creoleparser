@@ -113,12 +113,15 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
     else:
         embed_space_char = wiki_links_space_char
         
-    if blog_style_endings:
-        line_break_pattern = r'\\\\\n?|\n(?!$)'
-    else:
-        line_break_pattern = r'\\\\'
 
-    url_end_pattern = r'\S+?(?=([>)}\]]?[,.?!:;"\']?(([^a-zA-Z0-9])\4)?(\s|$))|<<<)'
+    url_end_pattern = r'\S+?(?=([>)}\]]?[,.?!:;"\']?(([^a-zA-Z0-9])\5)?(\s|$))|<<<)'
+
+    def raw_link_tag(mo, environ):
+        if mo.group('protocol') in ['http','https']:
+            tag = 'a'
+        else:
+            tag = ''
+        return tag
     
     class Base(Dialect):
 
@@ -132,13 +135,10 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
         p = Paragraph('p')
         pre = PreBlock('pre',['{{{','}}}'])
         #raw_link = RawLink('a',)
-        br = GenericElement(line_break_pattern,'br')
-        raw_link = GenericElement('https?://'+ url_end_pattern, 'a','{all}', dict(href='{all}'))
-        masked_raw_link = GenericElement('ftp://'+ url_end_pattern,'','{all}')
-        #generic_elements = []#[GenericElement(line_break_pattern,'br'),
-             #GenericElement('ftp://'+ url_end_pattern,'','{all}'),
-             #GenericElement('https?://'+ url_end_pattern, 'a','{all}', dict(href='{all}')),
-             #]
+        br = GenericElement(blog_style_endings and r'\\\\\n?|\n(?!$)' or r'\\\\','br')
+        raw_link = GenericElement('(?P<protocol>https?|ftp)://'+ url_end_pattern, raw_link_tag,'{all}', dict(href='{all}'))
+        #masked_raw_link = GenericElement('(ftp)://'+ url_end_pattern,'','{all}')
+
         link = AnchorElement('a',('[[',']]'),delimiter = '|',interwiki_delimiter=':',
                                             base_urls=interwiki_links_base_urls,
                                             links_funcs=interwiki_links_funcs,
@@ -187,7 +187,7 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
         @property 
         def inline_elements(self):
             return [self.no_wiki, self.img, self.link, 
-                    self.br, self.raw_link, self.masked_raw_link, self.simple_element]
+                    self.br, self.raw_link, self.simple_element]
 
         @property 
         def block_elements(self):
@@ -300,8 +300,8 @@ def creole11_base(macro_func=None,
         def __init__(self):
             super(Base,self).__init__()
             self.tr.child_elements[0] = (self.no_wiki,self.bodiedmacro,self.macro)
-            self.dd.child_elements = [self.br, self.raw_link, self.masked_raw_link, self.simple_element]
-            self.dt.child_elements = [self.br, self.raw_link, self.masked_raw_link, self.simple_element]
+            self.dd.child_elements = self.inline_elements[3:]
+            self.dt.child_elements = self.inline_elements[3:]
             self.dl.child_elements = [(self.no_wiki,self.bodiedmacro,self.macro),self.img,self.link,self.dt,self.dd]
             self.indented.child_elements = self.block_elements
             
