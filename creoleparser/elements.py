@@ -1494,8 +1494,12 @@ class GenericElement(InlineElement):
             else:
                 content = self.text_node(mo, environ)
 
+            if callable(self.attrs):
+                attrs = self.attrs(mo, environ)
+            else:
+                attrs = self.attrs
             kwparams = {}
-            for k,v in self.attrs.items():
+            for k,v in attrs.items():
                 if isinstance(v,(Stream, bldr.Fragment,Markup)) or v is None:
                     kwparams[k+'_'] = v
                 elif isinstance(v,basestring):
@@ -1505,9 +1509,12 @@ class GenericElement(InlineElement):
                         kwparams[k+'_'] = P3Template(v).substitute(d)
                 else:
                     kwparams[k+'_'] =  v(mo, environ)
-
-            if self.tag:
-                return bldr.tag.__getattr__(self.tag)(content,**kwparams)
+            if callable(self.tag):
+                tag = self.tag(mo, environ)
+            else:
+                tag = self.tag
+            if tag:
+                return bldr.tag.__getattr__(tag)(content,**kwparams)
             else:
                 return content
         
