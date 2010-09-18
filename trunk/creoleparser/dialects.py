@@ -1,7 +1,7 @@
 # dialects.py
 # -*- coding: utf-8 -*-
 #
-# Copyright © Stephen Day
+# Copyright © 2009 Stephen Day
 #
 # This module is part of Creoleparser and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -112,20 +112,11 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
         wiki_links_space_char, embed_space_char = wiki_links_space_char
     else:
         embed_space_char = wiki_links_space_char
+
         
-
-    url_end_pattern = r'\S+?(?=([>)}\]]?[,.?!:;"\']?(([^a-zA-Z0-9])\5)?(\s|$))|<<<)'
-
-    def raw_link_tag(mo, environ):
-        if mo.group('protocol') in ['http','https']:
-            tag = 'a'
-        else:
-            tag = ''
-        return tag
-    
     class Base(Dialect):
 
-        #br = LineBreak('br', r'\\',blog_style=blog_style_endings)
+        br = LineBreak('br', r'\\',blog_style=blog_style_endings)
         headings = Heading(['h1','h2','h3','h4','h5','h6'],'=')
         no_wiki = NoWikiElement(no_wiki_monospace and 'code' or 'span',['{{{','}}}'])
         #img = Image('img',('{{','}}'),delimiter='|')
@@ -134,11 +125,7 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
         blank_line = BlankLine()
         p = Paragraph('p')
         pre = PreBlock('pre',['{{{','}}}'])
-        #raw_link = RawLink('a',)
-        br = GenericElement(blog_style_endings and r'\\\\\n?|\n(?!$)' or r'\\\\','br')
-        raw_link = GenericElement('(?P<protocol>https?|ftp)://'+ url_end_pattern, raw_link_tag,'{all}', dict(href='{all}'))
-        #masked_raw_link = GenericElement('(ftp)://'+ url_end_pattern,'','{all}')
-
+        raw_link = RawLink('a')
         link = AnchorElement('a',('[[',']]'),delimiter = '|',interwiki_delimiter=':',
                                             base_urls=interwiki_links_base_urls,
                                             links_funcs=interwiki_links_funcs,
@@ -174,8 +161,8 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
             self.simple_element.child_elements = [self.simple_element]
             self.headings.child_elements = self.inline_elements
             self.p.child_elements = self.inline_elements
-            self.td.child_elements = self.inline_elements[3:]#[self.br, self.raw_link, self.masked_raw_link, self.simple_element]
-            self.th.child_elements = self.inline_elements[3:]#[self.br, self.raw_link, self.masked_raw_link, self.simple_element]
+            self.td.child_elements = [self.br, self.raw_link, self.simple_element]
+            self.th.child_elements = [self.br, self.raw_link, self.simple_element]
             self.tr.child_elements = [self.no_wiki,self.img,self.link,self.th,self.td]
             self.table.child_elements = [self.tr]
             self.ol.child_elements = [self.li]
@@ -186,8 +173,7 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
 
         @property 
         def inline_elements(self):
-            return [self.no_wiki, self.img, self.link, 
-                    self.br, self.raw_link, self.simple_element]
+            return [self.no_wiki, self.img, self.link, self.br, self.raw_link, self.simple_element]
 
         @property 
         def block_elements(self):
@@ -207,7 +193,7 @@ def creole11_base(macro_func=None,
                   indent_class=None,
                   indent_style='margin-left:2em',
                   **kwargs):
-    r"""Returns a base class for extending (for parameter descriptions, see :func:`~creoleparser.dialects.create_dialect`)
+    """Returns a base class for extending (for parameter descriptions, see :func:`~creoleparser.dialects.create_dialect`)
 
     The returned class implements most of the *officially* proposed additions to
     to Creole 1.0 specification:
@@ -226,46 +212,16 @@ def creole11_base(macro_func=None,
 
        >>> Base = creole11_base()
        >>> class MyDialect(Base):
-       ...      simple_element = SimpleElement(token_dict={'**':'strong',
+       ...       simple_element = SimpleElement(token_dict={'**':'strong',
        ...                                                  '//':'em',
        ...                                                  ',,':'sub',
        ...                                                  '^^':'sup',
        ...                                                  '--':'del',
        ...                                                  '##':'code'})
-       ...
-       ...      my_custom_element = GenericElement('issue (?P<id>\d+)',
-       ...             'a','{all}',dict(href='http://code.google.com/p/creoleparser/issues/detail?id={id}',
-       ...              class_='external-link'))
-       ...
-       ...      @property
-       ...      def inline_elements(self):
-       ...          elements = super(MyDialect,self).inline_elements
-       ...          elements.append(self.my_custom_element)
-       ...          return elements
-       ...
        >>> from core import Parser
-       >>> parser = Parser(MyDialect) 
+       >>> parser = Parser(MyDialect) # for verion 6.0, use Parser(MyDialect())
        >>> print parser.render("delete --this-- but don't underline __this__"),
        <p>delete <del>this</del> but don't underline __this__</p>
-       >>> print parser.render("see issue 43 for more information"),
-       <p>see <a class="external-link" href="http://code.google.com/p/creoleparser/issues/detail?id=43">issue 43</a> for more information</p>
-
-
-  While extending the base class in a conventional way is sometimes needed (e.g., when extending a inline_elements()),
-  in many cases, like this one, class attributes can be altered directly instead:
-  
-       >>> MyDialect = creole11_base()
-       >>> MyDialect.simple_element = SimpleElement(token_dict={'**':'strong',
-       ...                                                  '//':'em',
-       ...                                                  ',,':'sub',
-       ...                                                  '^^':'sup',
-       ...                                                  '--':'del',
-       ...                                                  '##':'code'})
-       >>> parser = Parser(MyDialect) 
-       >>> print parser.render("delete --this-- but don't underline __this__"),
-       <p>delete <del>this</del> but don't underline __this__</p>
-
-
            
    For a more complex example, see the `source code
    <http://code.google.com/p/creoleparser/source/browse/trunk/creoleparser/dialects.py>`_
@@ -300,24 +256,21 @@ def creole11_base(macro_func=None,
         def __init__(self):
             super(Base,self).__init__()
             self.tr.child_elements[0] = (self.no_wiki,self.bodiedmacro,self.macro)
-            self.dd.child_elements = self.inline_elements[3:]
-            self.dt.child_elements = self.inline_elements[3:]
+            self.dd.child_elements = [self.br, self.raw_link, self.simple_element]
+            self.dt.child_elements = [self.br, self.raw_link, self.simple_element]
             self.dl.child_elements = [(self.no_wiki,self.bodiedmacro,self.macro),self.img,self.link,self.dt,self.dd]
             self.indented.child_elements = self.block_elements
             
         @property 
         def inline_elements(self):
-            elements = super(Base,self).inline_elements
-            elements[0] = (self.no_wiki,self.bodiedmacro,self.macro)
-            return elements
+            return [(self.no_wiki,self.bodiedmacro,self.macro), self.img, self.link, self.br, self.raw_link, self.simple_element]
 
         @property 
         def block_elements(self):
-            elements = super(Base,self).block_elements
-            elements[0] = (self.bodied_block_macro,self.pre)
-            return elements[:5] + [self.indented, self.dl] + elements[5:]
-
+            return [(self.bodied_block_macro,self.pre),self.blank_line,self.table,self.headings,
+                           self.hr,self.indented,self.dl,self.ul,self.ol,self.p]
     return Base
+
 
 
 class Dialect(object):
