@@ -94,9 +94,6 @@ class BaseTest(object):
         self.assertEquals(
             self.parse(r"//http://www.google.com//"),
             wrap_result("""<em><a href="http://www.google.com">http://www.google.com</a></em>"""))
-        self.assertEquals(
-            self.parse(r"ftp://www.google.com"),
-            wrap_result("""ftp://www.google.com"""))
 
     def test_links(self):
         self.assertEquals(
