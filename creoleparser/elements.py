@@ -402,13 +402,13 @@ class ImageElement(LinkElement):
 
     """Processes image elements.
 
-    >>> img = ImageElement('img',('{{','}}'),'|',
+    >>> img = ImageElement('img',('{{','}}'), delimiter='|',
     ... interwiki_delimiter=':', 
     ... base_urls=dict(somewiki='http://somewiki.org/',
     ...                bigwiki='http://bigwiki.net/'),
     ... links_funcs={},default_space_char='-',
     ... space_chars={'bigwiki':' '},base_url='/images/',
-    ... space_char='_',class_func=None,path_func=None)
+    ... space_char='_',class_func=None,path_func=None,disable_external=False)
 
     >>> mo = img.regexp.search('{{ picture.jpg | An image of a house }}')
     >>> img._build(mo,{},None).generate().render()
@@ -417,15 +417,22 @@ class ImageElement(LinkElement):
     """
 
 
-    def __init__(self, *args, **kw_args):
-        super(ImageElement,self).__init__(*args, **kw_args)    
+    def __init__(self, tag, token, disable_external, *args, **kw_args):
+        super(ImageElement,self).__init__(tag, token, *args, **kw_args)
+        self.disable_external = disable_external
 
     def emit(self,element_store, environ,link_type,body,url,the_class, alt=None):
+
+        if self.disable_external and link_type == 'url':
+            return bldr.tag.span('External images are disabled', class_='external_image')
+
         if alt is None:
             if link_type == 'url':
                 alt = urlparse.urlsplit(url).path.split('/')[-1]
             else:
                 alt = body.strip()
+
+            
         return bldr.tag.__getattr__(self.tag)(src=url ,alt=alt, title=alt,
                                               #class_=the_class
                                               )           
