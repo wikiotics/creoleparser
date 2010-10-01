@@ -11,6 +11,7 @@ import re
 import urlparse
 import urllib
 import keyword
+import warnings
 
 import genshi.builder as bldr
 from genshi.core import Stream, Markup
@@ -268,16 +269,9 @@ class LinkElement(InlineElement):
         self.class_func = class_func
         self.path_func = path_func
         self.content_regexp = re.compile(self.content_re_string(),re.DOTALL)
-        self.arg_regexp = re.compile(self.arg_re_string(),re.DOTALL)
         self.interwikilink_regexp = re.compile(self.interwikilink_re_string())
         self.urllink_regexp = re.compile(self.urllink_re_string(), re.DOTALL)
         self.wikilink_regexp = re.compile(self.wikilink_re_string())
-
-    def arg_re_string(self):
-        key = r'((?P<key>\w+)\s*\=)?'
-        value = r'(?P<value>.*?)'
-        return r'\s*' + key + r'\s*' + value + r'\s*(?P<delimiter>' + \
-               re.escape(self.delimiter) + r'|$)(?P<tail>.*)'
 
     def content_re_string(self):
         return r'(?P<body>.*?)(' + re.escape(self.delimiter) + '(?P<arg_string>.*?))?$'
@@ -289,58 +283,17 @@ class LinkElement(InlineElement):
         page_name = r'(?P<page_name>\S+?( \S+?)*)' #allows any number of single spaces
         return '^' + optional_spaces + wiki_id + \
                re.escape(self.interwiki_delimiter) + ' *' + page_name + \
-               optional_spaces + '$'#+ alias
+               optional_spaces + '$'
 
     def urllink_re_string(self):
         protocol = r'^\s*((\w+?:|/)' 
         rest_of_url = r'[\S\n]*?)\s*$'
-        return protocol + rest_of_url #+ alias
+        return protocol + rest_of_url
 
     def wikilink_re_string(self):
         optional_spaces = ' *'
         page_name = r'(?P<page_name>\S+?( \S+?)*?)' #allows any number of single spaces
-        return '^' + optional_spaces + page_name + optional_spaces + '$'#+ \
-
-##    def parse_args(self, arg_string):
-##        args = []
-##        delimiter = True
-##        while delimiter:
-##            mo = self.arg_regexp.match(arg_string)
-##            key, value, delimiter, tail = mo.group('key'),mo.group('value'),mo.group('delimiter'), mo.group('tail')
-##            if key:
-##                args.append((key, value))
-##            else:
-##                args.append(value)
-##            arg_string = tail
-##        positional_args = []
-##        kw_args = {}
-##        for arg in args:
-##           if isinstance(arg,tuple):
-##             k, v  = arg
-##             k = str(k).lower()
-##             if k in keyword.kwlist:
-##                 k = k + '_'
-##             if k in kw_args:
-##                if isinstance(v,list):
-##                   try:
-##                      kw_args[k].extend(v)
-##                   except AttributeError:
-##                      v.insert(0,kw_args[k])
-##                      kw_args[k] = v
-##                elif isinstance(kw_args[k],list):
-##                   kw_args[k].append(v)
-##                else:
-##                   kw_args[k] = [kw_args[k], v]
-##                kw_args[k] = ImplicitList(kw_args[k])
-##             else:
-##                kw_args[k] = v
-##             if isinstance(kw_args[k],ImplicitList):
-##                 kw_args[k] = ','.join(kw_args[k])
-##           else:
-##             positional_args.append(arg)
-##
-##        return (positional_args, kw_args)
-
+        return '^' + optional_spaces + page_name + optional_spaces + '$'
 
     def page_name(self,mo):
         if 'wiki_id' in mo.groupdict():
@@ -391,7 +344,7 @@ class LinkElement(InlineElement):
             return mo.group(0)
         else:
             if arg_string is not None:
-                args, kw_args = [arg_string.strip()], {} #self.parse_args(arg_string)
+                args, kw_args = [arg_string.strip()], {} 
             else:
                 args, kw_args = [], {}
             try:
@@ -447,6 +400,23 @@ class AnchorElement(LinkElement):
         
 class ImageElement(LinkElement):
 
+    """Processes image elements.
+
+    >>> img = ImageElement('img',('{{','}}'),'|',
+    ... interwiki_delimiter=':', 
+    ... base_urls=dict(somewiki='http://somewiki.org/',
+    ...                bigwiki='http://bigwiki.net/'),
+    ... links_funcs={},default_space_char='-',
+    ... space_chars={'bigwiki':' '},base_url='/images/',
+    ... space_char='_',class_func=None,path_func=None)
+
+    >>> mo = img.regexp.search('{{ picture.jpg | An image of a house }}')
+    >>> img._build(mo,{},None).generate().render()
+    '<img src="/images/picture.jpg" alt="An image of a house" title="An image of a house"/>'
+
+    """
+
+
     def __init__(self, *args, **kw_args):
         super(ImageElement,self).__init__(*args, **kw_args)    
 
@@ -468,6 +438,10 @@ class Link(InlineElement):
     def __init__(self,tag, token):
         super(Link,self).__init__(tag,token)
         self.regexp = re.compile(self.re_string(),re.DOTALL)
+        warnings.warn("""
+Use of elements.Link is depreciated. 
+"""
+                  )
 
     def _build(self,mo,element_store, environ):
         
@@ -745,23 +719,16 @@ class RawLink(InlineElement):
 
 class URLLink(WikiElement):
     
-    """Used to find url type links inside a link.
-
-    The scope of these is within link markup only (i.e., [[url]]
-
-    >>> url_link = URLLink('a','|')
-    >>> mo = url_link.regexp.search(" http://www.google.com| here ")
-    >>> url_link.href(mo)
-    'http://www.google.com'
-    >>> url_link._build(mo,{},None).generate().render()
-    '<a href="http://www.google.com">here</a>'
-    
-    """
+    """DEPRECIATED    """
 
     def __init__(self, tag,delimiter):
         super(URLLink,self).__init__(tag, '')
         self.delimiter = delimiter
         self.regexp = re.compile(self.re_string(),re.DOTALL)
+        warnings.warn("""
+Use of elements.URLLink is depreciated. 
+"""
+                  )
 
     def re_string(self):
         protocol = r'^\s*((\w+?:|/)' 
@@ -794,23 +761,7 @@ class URLLink(WikiElement):
 
 class InterWikiLink(WikiElement):
 
-    """Used to match interwiki links inside a link.
-
-    The search scope for these is only inside links. 
-
-    >>> interwiki_link = InterWikiLink('a',
-    ... delimiter1=':', delimiter2 = '|',
-    ... base_urls=dict(somewiki='http://somewiki.org/',
-    ...                bigwiki='http://bigwiki.net/'),
-    ...                links_funcs={},default_space_char='_',
-    ...                space_chars={})
-    >>> mo = interwiki_link.regexp.search(" somewiki:Home Page|steve ")
-    >>> interwiki_link.href(mo)
-    'http://somewiki.org/Home_Page'
-    >>> interwiki_link.alias(mo,{},None)
-    ['steve']
-    
-    """
+    """DEPRECIATED    """
 
     def __init__(self, tag, delimiter1,
                  delimiter2,base_urls,links_funcs,default_space_char,space_chars):
@@ -823,6 +774,10 @@ class InterWikiLink(WikiElement):
         self.default_space_char = default_space_char
         self.space_chars = space_chars
         self.regexp = re.compile(self.re_string())
+        warnings.warn("""
+Use of elements.InterWikiLink is depreciated. 
+"""
+                  )
 
     def re_string(self):
         #all_wikis = set(self.links_funcs.keys() + self.base_urls.keys())
@@ -872,19 +827,7 @@ class InterWikiLink(WikiElement):
 
 class WikiLink(WikiElement):
 
-    """Used to match wiki links inside a link.
-
-    The search scope for these is only inside links.
-
-    >>> wiki_link = WikiLink('a','|',base_url='http://somewiki.org/',
-    ...                      space_char='_',class_func=None, path_func=None)
-    >>> mo = wiki_link.regexp.search(" Home Page |Home")
-    >>> wiki_link.href(mo)
-    'http://somewiki.org/Home_Page'
-    >>> wiki_link.alias(mo,{},None)
-    ['Home']
-    
-    """
+    """DEPRECIATED    """
 
     def __init__(self, tag, delimiter,
                  base_url,space_char,class_func,path_func):
@@ -895,6 +838,11 @@ class WikiLink(WikiElement):
         self.class_func = class_func
         self.path_func = path_func
         self.regexp = re.compile(self.re_string())
+        warnings.warn("""
+Use of elements.WikiLink is depreciated. 
+"""
+                  )
+
 
     def re_string(self):
         optional_spaces = ' *'
@@ -1231,47 +1179,19 @@ class TableCell(WikiElement):
         return esc_neg_look + re.escape(self.token) + whitespace + \
                content + whitespace + look_ahead    
 
-
-
-##class Link(InlineElement):
-##
-##    """Finds and builds links."""
-##    
-##    def __init__(self,tag, token):
-##        super(Link,self).__init__(tag,token)
-##
-##    def _build(self,mo,element_store, environ):
-##        
-##        for tag in self.child_elements:
-##            m = tag.regexp.search(mo.group(1))
-##            if m:
-##                link = tag._build(m,element_store, environ)
-##                if link:
-##                    break
-##        else:
-##            link = None
-##
-##        if link:
-##            return bldr.tag(link)
-##        else:
-##            return mo.group(0)
-
 class Image(InlineElement):
 
-    """Processes image elements.
-
-    >>> img = Image('img',('{{','}}'), delimiter='|')
-    >>> mo = img.regexp.search('{{ picture.jpg | An image of a house }}')
-    >>> img._build(mo,{},None).generate().render()
-    '<img src="picture.jpg" alt="An image of a house" title="An image of a house"/>'
-
-    """
+    """DEPRECIATED    """
 
     def __init__(self, tag, token, delimiter):
         super(Image,self).__init__(tag,token )
         self.regexp = re.compile(self.re_string())
         self.delimiter = delimiter
         self.src_regexp = re.compile(r'^\s*(\S+)\s*$')
+        warnings.warn("""
+Use of elements.Image is depreciated. 
+"""
+                  )
 
     def _build(self,mo,element_store, environ):
         body = mo.group(1).split(self.delimiter,1)

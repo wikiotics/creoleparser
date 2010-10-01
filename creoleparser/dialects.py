@@ -1,7 +1,7 @@
 # dialects.py
 # -*- coding: utf-8 -*-
 #
-# Copyright © 2009 Stephen Day
+# Copyright © Stephen Day
 #
 # This module is part of Creoleparser and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -119,7 +119,6 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
         br = LineBreak('br', r'\\',blog_style=blog_style_endings)
         headings = Heading(['h1','h2','h3','h4','h5','h6'],'=')
         no_wiki = NoWikiElement(no_wiki_monospace and 'code' or 'span',['{{{','}}}'])
-        #img = Image('img',('{{','}}'),delimiter='|')
         simple_element = SimpleElement(token_dict={'**':'strong','//':'em'})
         hr = LoneElement('hr','----')
         blank_line = BlankLine()
