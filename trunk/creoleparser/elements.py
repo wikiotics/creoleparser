@@ -433,7 +433,7 @@ class ImageElement(LinkElement):
 
 class Link(InlineElement):
 
-    """Finds and builds links."""
+    """DEPRECIATED    """
     
     def __init__(self,tag, token):
         super(Link,self).__init__(tag,token)
