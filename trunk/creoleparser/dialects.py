@@ -23,6 +23,9 @@ def create_dialect(dialect_base, **kw_args):
         The class factory to use for creating the dialect object.
         ``creoleparser.dialects.creole10_base`` and  
         ``creoleparser.dialects.creole11_base`` are possible values.
+      disable_external_content
+        If True, an error message will be inserted when an externally
+        hosted image is found. 
       wiki_links_base_url
         The page name found in wiki links will be smartly appended to this to
         form the href. To use a different base url for images, supply a two
@@ -91,6 +94,7 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
                  wiki_links_path_func=None, interwiki_links_funcs={},
                  interwiki_links_space_chars={},
                  blog_style_endings=False,
+                 disable_external_content=False, 
                  ):
     """Returns a base class for extending
     (for parameter descriptions, see :func:`~creoleparser.dialects.create_dialect`)
@@ -141,7 +145,7 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
                                             space_chars=interwiki_links_space_chars,
                                        base_url=embed_base_url,
                               space_char=embed_space_char,class_func=wiki_links_class_func,
-                              path_func=embed_path_func)        
+                              path_func=embed_path_func,disable_external=disable_external_content)        
 
 
         td = TableCell('td','|')
