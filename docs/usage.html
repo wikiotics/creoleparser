@@ -1,3 +1,4 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -15,6 +16,7 @@
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -30,8 +32,8 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="modindex.html" title="Global Module Index"
-             accesskey="M">modules</a> |</li>
+          <a href="py-modindex.html" title="Python Module Index"
+             accesskey="">modules</a> |</li>
         <li class="right" >
           <a href="macros.html" title="Implementing Macros"
              accesskey="N">next</a> |</li>
@@ -89,9 +91,9 @@ to do that you will also need to provide a dialect object.</p>
 </pre></div>
 </div>
 <p>For more information on Parser constructor parameters, see
-<a title="creoleparser.core.Parser" class="reference external" href="modules/core.html#creoleparser.core.Parser"><tt class="xref docutils literal"><span class="pre">Parser</span></tt></a>. Also note
+<a class="reference internal" href="modules/core.html#creoleparser.core.Parser" title="creoleparser.core.Parser"><tt class="xref py py-class docutils literal"><span class="pre">Parser</span></tt></a>. Also note
 that the <tt class="docutils literal"><span class="pre">__call__</span></tt> method of Parser wraps its
-<a title="creoleparser.core.Parser.render" class="reference external" href="modules/core.html#creoleparser.core.Parser.render"><tt class="xref docutils literal"><span class="pre">render()</span></tt></a> method.</p>
+<a class="reference internal" href="modules/core.html#creoleparser.core.Parser.render" title="creoleparser.core.Parser.render"><tt class="xref py py-meth docutils literal"><span class="pre">render()</span></tt></a> method.</p>
 </div>
 <div class="section" id="creating-a-custom-dialect">
 <h2>Creating a custom dialect<a class="headerlink" href="#creating-a-custom-dialect" title="Permalink to this headline">¶</a></h2>
@@ -107,9 +109,9 @@ to change the default rendering of code blocks.</p>
 <span class="go">&lt;p&gt;Some real &lt;span&gt;**simple** mark-up&lt;/span&gt;&lt;/p&gt;</span>
 </pre></div>
 </div>
-<p>For a full list of parameters, see <a title="creoleparser.dialects.create_dialect" class="reference external" href="modules/dialects.html#creoleparser.dialects.create_dialect"><tt class="xref docutils literal"><span class="pre">create_dialect()</span></tt></a>.</p>
+<p>For a full list of parameters, see <a class="reference internal" href="modules/dialects.html#creoleparser.dialects.create_dialect" title="creoleparser.dialects.create_dialect"><tt class="xref py py-func docutils literal"><span class="pre">create_dialect()</span></tt></a>.</p>
 <p>Further customization of a dialect is possible though sub-classing. For more
-information see the <a title="creoleparser.dialects.creole11_base" class="reference external" href="modules/dialects.html#creoleparser.dialects.creole11_base"><tt class="xref docutils literal"><span class="pre">creoleparser.dialects.creole11_base()</span></tt></a> class factory.</p>
+information see the <a class="reference internal" href="modules/dialects.html#creoleparser.dialects.creole11_base" title="creoleparser.dialects.creole11_base"><tt class="xref py py-func docutils literal"><span class="pre">creoleparser.dialects.creole11_base()</span></tt></a> class factory.</p>
 </div>
 <div class="section" id="parsing-macro-argument-strings">
 <span id="arg-parser"></span><h2>Parsing macro argument strings<a class="headerlink" href="#parsing-macro-argument-strings" title="Permalink to this headline">¶</a></h2>
@@ -124,8 +126,8 @@ arguments to be parsed:</p>
 </div>
 <p>An argument parser can be customized using a pattern similar to a normal
 parser. Further information is documented with
-<a title="creoleparser.core.ArgParser" class="reference external" href="modules/core.html#creoleparser.core.ArgParser"><tt class="xref docutils literal"><span class="pre">ArgParser</span></tt></a> and
-<a title="creoleparser.dialects.creepy10_base" class="reference external" href="modules/dialects.html#creoleparser.dialects.creepy10_base"><tt class="xref docutils literal"><span class="pre">creepy10_base()</span></tt></a>.</p>
+<a class="reference internal" href="modules/core.html#creoleparser.core.ArgParser" title="creoleparser.core.ArgParser"><tt class="xref py py-class docutils literal"><span class="pre">ArgParser</span></tt></a> and
+<a class="reference internal" href="modules/dialects.html#creoleparser.dialects.creepy10_base" title="creoleparser.dialects.creepy10_base"><tt class="xref py py-func docutils literal"><span class="pre">creepy10_base()</span></tt></a>.</p>
 </div>
 </div>
 
@@ -137,11 +139,11 @@ parser. Further information is documented with
         <div class="sphinxsidebarwrapper">
             <h3><a href="contents.html">Table Of Contents</a></h3>
             <ul>
-<li><a class="reference external" href="#">Basic Usage</a><ul>
-<li><a class="reference external" href="#overview">Overview</a></li>
-<li><a class="reference external" href="#creating-a-custom-parser">Creating a custom parser</a></li>
-<li><a class="reference external" href="#creating-a-custom-dialect">Creating a custom dialect</a></li>
-<li><a class="reference external" href="#parsing-macro-argument-strings">Parsing macro argument strings</a></li>
+<li><a class="reference internal" href="#">Basic Usage</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#creating-a-custom-parser">Creating a custom parser</a></li>
+<li><a class="reference internal" href="#creating-a-custom-dialect">Creating a custom dialect</a></li>
+<li><a class="reference internal" href="#parsing-macro-argument-strings">Parsing macro argument strings</a></li>
 </ul>
 </li>
 </ul>
@@ -160,6 +162,11 @@ parser. Further information is documented with
               <input type="hidden" name="check_keywords" value="yes" />
               <input type="hidden" name="area" value="default" />
             </form>
+          <!-- Google Sidewiki Element -->
+<h3 style="background: url(//www.google.com/sidewiki/static/sidebar_element/img/sidewiki-bubble.png) no-repeat 0 0; padding: .4em 1em .5em 35px; cursor: pointer;" id="sidewiki-open-ui-button">Comments</h3>
+<script src="http://www.google.com/sidewiki/static/sidebar_element/sidebar-element-compiled.js"></script>
+<script defer="defer">var sidebarElement = new google.elements.sidewiki.SidebarElement(window.location.href,false);sidebarElement.bindToElement("sidewiki-open-ui-button");</script>
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -171,8 +178,8 @@ parser. Further information is documented with
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="modindex.html" title="Global Module Index"
-             accesskey="M">modules</a> |</li>
+          <a href="py-modindex.html" title="Python Module Index"
+             accesskey="">modules</a> |</li>
         <li class="right" >
           <a href="macros.html" title="Implementing Macros"
              accesskey="N">next</a> |</li>
@@ -184,7 +191,7 @@ parser. Further information is documented with
     </div>
     <div class="footer">
       &copy; Copyright Stephen Day.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.4.
     </div>
 
 <script type="text/javascript">

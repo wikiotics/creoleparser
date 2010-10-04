@@ -1,3 +1,4 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -15,6 +16,7 @@
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -30,8 +32,8 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../modindex.html" title="Global Module Index"
-             accesskey="M">modules</a> |</li>
+          <a href="../py-modindex.html" title="Python Module Index"
+             accesskey="">modules</a> |</li>
         <li class="right" >
           <a href="dialects.html" title="creoleparser.dialects"
              accesskey="P">previous</a> |</li>
@@ -45,7 +47,7 @@
           <div class="body">
             
   <div class="section" id="module-creoleparser.core">
-<h1><tt class="xref docutils literal"><span class="pre">creoleparser.core</span></tt><a class="headerlink" href="#module-creoleparser.core" title="Permalink to this headline">¶</a></h1>
+<span id="creoleparser-core"></span><h1><a class="reference internal" href="#module-creoleparser.core" title="creoleparser.core"><tt class="xref py py-mod docutils literal"><span class="pre">creoleparser.core</span></tt></a><a class="headerlink" href="#module-creoleparser.core" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="creoleparser.core.Parser">
 <em class="property">class </em><tt class="descclassname">creoleparser.core.</tt><tt class="descname">Parser</tt><big>(</big><em>dialect</em>, <em>method='xhtml'</em>, <em>strip_whitespace=False</em>, <em>encoding='utf-8'</em><big>)</big><a class="headerlink" href="#creoleparser.core.Parser" title="Permalink to this definition">¶</a></dt>
@@ -57,9 +59,9 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<tr class="field"><th class="field-name">Parameters :</th><td class="field-body"><dl class="first last docutils">
 <dt>dialect</dt>
-<dd><p class="first last">Usually created using <a title="creoleparser.dialects.create_dialect" class="reference external" href="dialects.html#creoleparser.dialects.create_dialect"><tt class="xref docutils literal"><span class="pre">creoleparser.dialects.create_dialect()</span></tt></a></p>
+<dd><p class="first last">Usually created using <a class="reference internal" href="dialects.html#creoleparser.dialects.create_dialect" title="creoleparser.dialects.create_dialect"><tt class="xref py py-func docutils literal"><span class="pre">creoleparser.dialects.create_dialect()</span></tt></a></p>
 </dd>
 <dt>method</dt>
 <dd><p class="first last">This value is passed to Genshies Steam.render(). Possible values
@@ -87,7 +89,7 @@ will be a unicode object.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<tr class="field"><th class="field-name">Parameters :</th><td class="field-body"><dl class="first last docutils">
 <dt>text</dt>
 <dd><p class="first last">The text to be parsed.</p>
 </dd>
@@ -102,7 +104,7 @@ of WikiElement objects (use with caution).</p>
 <dt>environ</dt>
 <dd><p class="first last">This can be any type of object. It will be passed to <tt class="docutils literal"><span class="pre">macro_func</span></tt>
 unchanged (for a description of <tt class="docutils literal"><span class="pre">macro_func</span></tt>, see
-<a title="creoleparser.dialects.create_dialect" class="reference external" href="dialects.html#creoleparser.dialects.create_dialect"><tt class="xref docutils literal"><span class="pre">create_dialect()</span></tt></a>).</p>
+<a class="reference internal" href="dialects.html#creoleparser.dialects.create_dialect" title="creoleparser.dialects.create_dialect"><tt class="xref py py-func docutils literal"><span class="pre">create_dialect()</span></tt></a>).</p>
 </dd>
 <dt>preprocess</dt>
 <dd><p class="first last">Passes text through preprocess method that replaces Windows style
@@ -118,14 +120,15 @@ line breaks.</p>
 <dl class="method">
 <dt id="creoleparser.core.Parser.generate">
 <tt class="descname">generate</tt><big>(</big><em>text</em>, <em>element_store=None</em>, <em>context='block'</em>, <em>environ=None</em>, <em>preprocess=True</em><big>)</big><a class="headerlink" href="#creoleparser.core.Parser.generate" title="Permalink to this definition">¶</a></dt>
-<dd>Returns a Genshi Stream. See
-<a title="creoleparser.core.Parser.parse" class="reference internal" href="#creoleparser.core.Parser.parse"><tt class="xref docutils literal"><span class="pre">parse()</span></tt></a> for named parameter descriptions.</dd></dl>
+<dd><p>Returns a Genshi Stream. See
+<a class="reference internal" href="#creoleparser.core.Parser.parse" title="creoleparser.core.Parser.parse"><tt class="xref py py-meth docutils literal"><span class="pre">parse()</span></tt></a> for named parameter descriptions.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="creoleparser.core.Parser.render">
 <tt class="descname">render</tt><big>(</big><em>text</em>, <em>element_store=None</em>, <em>context='block'</em>, <em>environ=None</em>, <em>preprocess=True</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#creoleparser.core.Parser.render" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the final output string (e.g., xhtml). See
-<a title="creoleparser.core.Parser.parse" class="reference internal" href="#creoleparser.core.Parser.parse"><tt class="xref docutils literal"><span class="pre">parse()</span></tt></a> for named parameter descriptions.</p>
+<a class="reference internal" href="#creoleparser.core.Parser.parse" title="creoleparser.core.Parser.parse"><tt class="xref py py-meth docutils literal"><span class="pre">parse()</span></tt></a> for named parameter descriptions.</p>
 <p>Left over keyword arguments (<tt class="docutils literal"><span class="pre">kwargs</span></tt>) will be passed to Genshi&#8217;s Stream.render() method,
 overriding the corresponding attributes of the Parser object. For more infomation on Streams,
 see the <a class="reference external" href="http://genshi.edgewall.org/wiki/Documentation/streams.html#serialization-options">Genshi documentation</a>.</p>
@@ -134,7 +137,8 @@ see the <a class="reference external" href="http://genshi.edgewall.org/wiki/Docu
 <dl class="method">
 <dt id="creoleparser.core.Parser.__call__">
 <tt class="descname">__call__</tt><big>(</big><em>text</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#creoleparser.core.Parser.__call__" title="Permalink to this definition">¶</a></dt>
-<dd>Wrapper for the render method. Returns final output string.</dd></dl>
+<dd><p>Wrapper for the render method. Returns final output string.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -159,7 +163,7 @@ values are either strings or lists.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<tr class="field"><th class="field-name">Parameters :</th><td class="field-body"><dl class="first last docutils">
 <dt>convert_unicode_keys</dt>
 <dd><p class="first last">If <em>True</em>, keys will be converted using <tt class="docutils literal"><span class="pre">str(key)</span></tt> before being
 added to the output dictionary. This allows the dictionary to be
@@ -167,14 +171,14 @@ safely passed to functions using the special <tt class="docutils literal"><span 
 <tt class="docutils literal"><span class="pre">func(**kwargs)</span></tt>).</p>
 </dd>
 <dt>dialect</dt>
-<dd><p class="first last">Usually created using <a title="creoleparser.dialects.creepy10_base" class="reference external" href="dialects.html#creoleparser.dialects.creepy10_base"><tt class="xref docutils literal"><span class="pre">creepy10_base()</span></tt></a>
-or <a title="creoleparser.dialects.creepy20_base" class="reference external" href="dialects.html#creoleparser.dialects.creepy20_base"><tt class="xref docutils literal"><span class="pre">creepy20_base()</span></tt></a></p>
+<dd><p class="first last">Usually created using <a class="reference internal" href="dialects.html#creoleparser.dialects.creepy10_base" title="creoleparser.dialects.creepy10_base"><tt class="xref py py-func docutils literal"><span class="pre">creepy10_base()</span></tt></a>
+or <a class="reference internal" href="dialects.html#creoleparser.dialects.creepy20_base" title="creoleparser.dialects.creepy20_base"><tt class="xref py py-func docutils literal"><span class="pre">creepy20_base()</span></tt></a></p>
 </dd>
 <dt>convert_implicit_lists</dt>
 <dd><p class="first last">If <em>True</em>, all implicit lists will be converted to strings
 using <tt class="docutils literal"><span class="pre">'</span> <span class="pre">'.join(list)</span></tt>. &#8220;Implicit&#8221; lists are created when
 positional arguments follow keyword arguments
-(see <a title="creoleparser.dialects.creepy10_base" class="reference external" href="dialects.html#creoleparser.dialects.creepy10_base"><tt class="xref docutils literal"><span class="pre">creepy10_base()</span></tt></a>).</p>
+(see <a class="reference internal" href="dialects.html#creoleparser.dialects.creepy10_base" title="creoleparser.dialects.creepy10_base"><tt class="xref py py-func docutils literal"><span class="pre">creepy10_base()</span></tt></a>).</p>
 </dd>
 <dt>illegal_keys</dt>
 <dd><p class="first last">A tuple of keys that will be post-fixed with an underscore if found
@@ -230,6 +234,11 @@ attributes of the ArgParser object (see above). However, the
               <input type="hidden" name="check_keywords" value="yes" />
               <input type="hidden" name="area" value="default" />
             </form>
+          <!-- Google Sidewiki Element -->
+<h3 style="background: url(//www.google.com/sidewiki/static/sidebar_element/img/sidewiki-bubble.png) no-repeat 0 0; padding: .4em 1em .5em 35px; cursor: pointer;" id="sidewiki-open-ui-button">Comments</h3>
+<script src="http://www.google.com/sidewiki/static/sidebar_element/sidebar-element-compiled.js"></script>
+<script defer="defer">var sidebarElement = new google.elements.sidewiki.SidebarElement(window.location.href,false);sidebarElement.bindToElement("sidewiki-open-ui-button");</script>
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -241,8 +250,8 @@ attributes of the ArgParser object (see above). However, the
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../modindex.html" title="Global Module Index"
-             accesskey="M">modules</a> |</li>
+          <a href="../py-modindex.html" title="Python Module Index"
+             accesskey="">modules</a> |</li>
         <li class="right" >
           <a href="dialects.html" title="creoleparser.dialects"
              accesskey="P">previous</a> |</li>
@@ -252,7 +261,7 @@ attributes of the ArgParser object (see above). However, the
     </div>
     <div class="footer">
       &copy; Copyright Stephen Day.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.4.
     </div>
 
 <script type="text/javascript">

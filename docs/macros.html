@@ -1,3 +1,4 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -15,6 +16,7 @@
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -30,8 +32,8 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="modindex.html" title="Global Module Index"
-             accesskey="M">modules</a> |</li>
+          <a href="py-modindex.html" title="Python Module Index"
+             accesskey="">modules</a> |</li>
         <li class="right" >
           <a href="changelog.html" title="Changelog"
              accesskey="N">next</a> |</li>
@@ -49,7 +51,7 @@
   <div class="section" id="implementing-macros">
 <span id="macros"></span><h1>Implementing Macros<a class="headerlink" href="#implementing-macros" title="Permalink to this headline">¶</a></h1>
 <p>This page describes how to implement macros (i.e, extensions) in a wiki engine.
-For end user usage, please see <a class="reference external" href="syntax.html#syntax"><em>Syntax</em></a>.</p>
+For end user usage, please see <a class="reference internal" href="syntax.html#syntax"><em>Syntax</em></a>.</p>
 <div class="section" id="the-macro-func">
 <h2>The <tt class="docutils literal"><span class="pre">macro_func</span></tt><a class="headerlink" href="#the-macro-func" title="Permalink to this headline">¶</a></h2>
 <p><tt class="docutils literal"><span class="pre">macro_func</span></tt> is an optional argument used during instantiation of a dialect object.
@@ -74,7 +76,7 @@ compatible signatures.</p>
 <p>In the code above, <tt class="docutils literal"><span class="pre">eniviron['macros']</span></tt> is a dictionary of functions. Note that if <tt class="docutils literal"><span class="pre">macro_name</span></tt> is
 not in the dictionary, or if a macro returns <cite>None</cite>, creoleparser will treat the macro as
 unknown and render the raw wikitext unaltered.</p>
-<p>Additional information about <tt class="docutils literal"><span class="pre">macro_func</span></tt> is documented with the <a title="creoleparser.dialects.create_dialect" class="reference external" href="modules/dialects.html#creoleparser.dialects.create_dialect"><tt class="xref docutils literal"><span class="pre">create_dialect()</span></tt></a> factory function.</p>
+<p>Additional information about <tt class="docutils literal"><span class="pre">macro_func</span></tt> is documented with the <a class="reference internal" href="modules/dialects.html#creoleparser.dialects.create_dialect" title="creoleparser.dialects.create_dialect"><tt class="xref py py-func docutils literal"><span class="pre">create_dialect()</span></tt></a> factory function.</p>
 </div>
 <div class="section" id="macros-returning-html">
 <h2>Macros Returning HTML<a class="headerlink" href="#macros-returning-html" title="Permalink to this headline">¶</a></h2>
@@ -139,15 +141,15 @@ help validate any changes made to the library code.</li>
         <div class="sphinxsidebarwrapper">
             <h3><a href="contents.html">Table Of Contents</a></h3>
             <ul>
-<li><a class="reference external" href="#">Implementing Macros</a><ul>
-<li><a class="reference external" href="#the-macro-func">The <tt class="docutils literal"><span class="pre">macro_func</span></tt></a></li>
-<li><a class="reference external" href="#macros-returning-html">Macros Returning HTML</a></li>
-<li><a class="reference external" href="#macros-returning-creole">Macros Returning Creole</a></li>
-<li><a class="reference external" href="#how-can-i-stop-a-macro-from-being-placed-in-a-paragraph-or-visa-versa">How can I stop a macro from being placed in a paragraph? (or visa versa)</a><ul>
-<li><a class="reference external" href="#guidelines-for-macro-return-values-and-paragraph-control">Guidelines for macro return values and paragraph control</a></li>
+<li><a class="reference internal" href="#">Implementing Macros</a><ul>
+<li><a class="reference internal" href="#the-macro-func">The <tt class="docutils literal"><span class="pre">macro_func</span></tt></a></li>
+<li><a class="reference internal" href="#macros-returning-html">Macros Returning HTML</a></li>
+<li><a class="reference internal" href="#macros-returning-creole">Macros Returning Creole</a></li>
+<li><a class="reference internal" href="#how-can-i-stop-a-macro-from-being-placed-in-a-paragraph-or-visa-versa">How can I stop a macro from being placed in a paragraph? (or visa versa)</a><ul>
+<li><a class="reference internal" href="#guidelines-for-macro-return-values-and-paragraph-control">Guidelines for macro return values and paragraph control</a></li>
 </ul>
 </li>
-<li><a class="reference external" href="#other-macro-implementation-examples">Other Macro Implementation Examples</a></li>
+<li><a class="reference internal" href="#other-macro-implementation-examples">Other Macro Implementation Examples</a></li>
 </ul>
 </li>
 </ul>
@@ -166,6 +168,11 @@ help validate any changes made to the library code.</li>
               <input type="hidden" name="check_keywords" value="yes" />
               <input type="hidden" name="area" value="default" />
             </form>
+          <!-- Google Sidewiki Element -->
+<h3 style="background: url(//www.google.com/sidewiki/static/sidebar_element/img/sidewiki-bubble.png) no-repeat 0 0; padding: .4em 1em .5em 35px; cursor: pointer;" id="sidewiki-open-ui-button">Comments</h3>
+<script src="http://www.google.com/sidewiki/static/sidebar_element/sidebar-element-compiled.js"></script>
+<script defer="defer">var sidebarElement = new google.elements.sidewiki.SidebarElement(window.location.href,false);sidebarElement.bindToElement("sidewiki-open-ui-button");</script>
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -177,8 +184,8 @@ help validate any changes made to the library code.</li>
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="modindex.html" title="Global Module Index"
-             accesskey="M">modules</a> |</li>
+          <a href="py-modindex.html" title="Python Module Index"
+             accesskey="">modules</a> |</li>
         <li class="right" >
           <a href="changelog.html" title="Changelog"
              accesskey="N">next</a> |</li>
@@ -190,7 +197,7 @@ help validate any changes made to the library code.</li>
     </div>
     <div class="footer">
       &copy; Copyright Stephen Day.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.4.
     </div>
 
 <script type="text/javascript">

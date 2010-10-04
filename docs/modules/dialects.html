@@ -1,3 +1,4 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -15,6 +16,7 @@
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -31,8 +33,8 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../modindex.html" title="Global Module Index"
-             accesskey="M">modules</a> |</li>
+          <a href="../py-modindex.html" title="Python Module Index"
+             accesskey="">modules</a> |</li>
         <li class="right" >
           <a href="core.html" title="creoleparser.core"
              accesskey="N">next</a> |</li>
@@ -49,17 +51,17 @@
           <div class="body">
             
   <div class="section" id="module-creoleparser.dialects">
-<h1><tt class="xref docutils literal"><span class="pre">creoleparser.dialects</span></tt><a class="headerlink" href="#module-creoleparser.dialects" title="Permalink to this headline">¶</a></h1>
+<span id="creoleparser-dialects"></span><h1><a class="reference internal" href="#module-creoleparser.dialects" title="creoleparser.dialects"><tt class="xref py py-mod docutils literal"><span class="pre">creoleparser.dialects</span></tt></a><a class="headerlink" href="#module-creoleparser.dialects" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="creoleparser.dialects.create_dialect">
 <tt class="descclassname">creoleparser.dialects.</tt><tt class="descname">create_dialect</tt><big>(</big><em>dialect_base</em>, <em>**kw_args</em><big>)</big><a class="headerlink" href="#creoleparser.dialects.create_dialect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Factory function for dialect objects (for parameter defaults,
-see <a title="creoleparser.dialects.creole10_base" class="reference internal" href="#creoleparser.dialects.creole10_base"><tt class="xref docutils literal"><span class="pre">creole10_base()</span></tt></a>)</p>
+see <a class="reference internal" href="#creoleparser.dialects.creole10_base" title="creoleparser.dialects.creole10_base"><tt class="xref py py-func docutils literal"><span class="pre">creole10_base()</span></tt></a>)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<tr class="field"><th class="field-name">Parameters :</th><td class="field-body"><dl class="first last docutils">
 <dt>dialect_base</dt>
 <dd><p class="first last">The class factory to use for creating the dialect object.
 <tt class="docutils literal"><span class="pre">creoleparser.dialects.creole10_base</span></tt> and  
@@ -110,7 +112,7 @@ function must accept the following postional arguments:</p>
 <li>the argument, including any delimter (string)</li>
 <li>the macro body (string or None for a macro without a body)</li>
 <li>macro type (boolean, True for block macros, False for normal macros)</li>
-<li>an <cite>environ</cite> object (see <a title="creoleparser.core.Parser.generate" class="reference external" href="core.html#creoleparser.core.Parser.generate"><tt class="xref docutils literal"><span class="pre">creoleparser.core.Parser.generate()</span></tt></a>)</li>
+<li>an <cite>environ</cite> object (see <a class="reference internal" href="core.html#creoleparser.core.Parser.generate" title="creoleparser.core.Parser.generate"><tt class="xref py py-meth docutils literal"><span class="pre">creoleparser.core.Parser.generate()</span></tt></a>)</li>
 </ol>
 <p class="last">The function may return a string (which will be subject to further wiki
 processing) or a Genshi object (Stream, Markup, builder.Fragment, or
@@ -139,7 +141,7 @@ for newlines.</p>
 <dt id="creoleparser.dialects.creole10_base">
 <tt class="descclassname">creoleparser.dialects.</tt><tt class="descname">creole10_base</tt><big>(</big><em>wiki_links_base_url=''</em>, <em>wiki_links_space_char='_'</em>, <em>interwiki_links_base_urls={}</em>, <em>no_wiki_monospace=True</em>, <em>wiki_links_class_func=None</em>, <em>wiki_links_path_func=None</em>, <em>interwiki_links_funcs={}</em>, <em>interwiki_links_space_chars={}</em>, <em>blog_style_endings=False</em><big>)</big><a class="headerlink" href="#creoleparser.dialects.creole10_base" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a base class for extending
-(for parameter descriptions, see <a title="creoleparser.dialects.create_dialect" class="reference internal" href="#creoleparser.dialects.create_dialect"><tt class="xref docutils literal"><span class="pre">create_dialect()</span></tt></a>)</p>
+(for parameter descriptions, see <a class="reference internal" href="#creoleparser.dialects.create_dialect" title="creoleparser.dialects.create_dialect"><tt class="xref py py-func docutils literal"><span class="pre">create_dialect()</span></tt></a>)</p>
 <p>The returned class does not implement any of the proposed additions to
 to Creole 1.0 specification.</p>
 </dd></dl>
@@ -147,7 +149,7 @@ to Creole 1.0 specification.</p>
 <dl class="function">
 <dt id="creoleparser.dialects.creole11_base">
 <tt class="descclassname">creoleparser.dialects.</tt><tt class="descname">creole11_base</tt><big>(</big><em>macro_func=None</em>, <em>indent_class=None</em>, <em>indent_style='margin-left:2em'</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#creoleparser.dialects.creole11_base" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a base class for extending (for parameter descriptions, see <a title="creoleparser.dialects.create_dialect" class="reference internal" href="#creoleparser.dialects.create_dialect"><tt class="xref docutils literal"><span class="pre">create_dialect()</span></tt></a>)</p>
+<dd><p>Returns a base class for extending (for parameter descriptions, see <a class="reference internal" href="#creoleparser.dialects.create_dialect" title="creoleparser.dialects.create_dialect"><tt class="xref py py-func docutils literal"><span class="pre">create_dialect()</span></tt></a>)</p>
 <blockquote>
 <p>The returned class implements most of the <em>officially</em> proposed additions to
 to Creole 1.0 specification:</p>
@@ -192,13 +194,13 @@ which could lead to unexpected behaviour.</p>
 <dl class="function">
 <dt id="creoleparser.dialects.creepy10_base">
 <tt class="descclassname">creoleparser.dialects.</tt><tt class="descname">creepy10_base</tt><big>(</big><big>)</big><a class="headerlink" href="#creoleparser.dialects.creepy10_base" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a dialect object (a class) to be used by <a title="creoleparser.core.ArgParser" class="reference external" href="core.html#creoleparser.core.ArgParser"><tt class="xref docutils literal"><span class="pre">ArgParser</span></tt></a></p>
+<dd><p>Returns a dialect object (a class) to be used by <a class="reference internal" href="core.html#creoleparser.core.ArgParser" title="creoleparser.core.ArgParser"><tt class="xref py py-class docutils literal"><span class="pre">ArgParser</span></tt></a></p>
 <p><strong>How it Works</strong></p>
 <p>The &#8220;Creepy&#8221; dialect uses a syntax that can look much like that of
 attribute definition in xml. The most important differences are that
 positional arguments are allowed and quoting is optional.</p>
 <p>A Creepy dialect object is normally passed to
-<a title="creoleparser.core.ArgParser" class="reference external" href="core.html#creoleparser.core.ArgParser"><tt class="xref docutils literal"><span class="pre">ArgParser</span></tt></a> to create a new parser object.
+<a class="reference internal" href="core.html#creoleparser.core.ArgParser" title="creoleparser.core.ArgParser"><tt class="xref py py-class docutils literal"><span class="pre">ArgParser</span></tt></a> to create a new parser object.
 When called with a single argument, this outputs a two-tuple
 (a list of positional arguments and a dictionary of keyword arguments):</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">core</span> <span class="kn">import</span> <span class="n">ArgParser</span>
@@ -295,6 +297,11 @@ unescaped special characters:</p>
               <input type="hidden" name="check_keywords" value="yes" />
               <input type="hidden" name="area" value="default" />
             </form>
+          <!-- Google Sidewiki Element -->
+<h3 style="background: url(//www.google.com/sidewiki/static/sidebar_element/img/sidewiki-bubble.png) no-repeat 0 0; padding: .4em 1em .5em 35px; cursor: pointer;" id="sidewiki-open-ui-button">Comments</h3>
+<script src="http://www.google.com/sidewiki/static/sidebar_element/sidebar-element-compiled.js"></script>
+<script defer="defer">var sidebarElement = new google.elements.sidewiki.SidebarElement(window.location.href,false);sidebarElement.bindToElement("sidewiki-open-ui-button");</script>
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -306,8 +313,8 @@ unescaped special characters:</p>
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../modindex.html" title="Global Module Index"
-             accesskey="M">modules</a> |</li>
+          <a href="../py-modindex.html" title="Python Module Index"
+             accesskey="">modules</a> |</li>
         <li class="right" >
           <a href="core.html" title="creoleparser.core"
              accesskey="N">next</a> |</li>
@@ -320,7 +327,7 @@ unescaped special characters:</p>
     </div>
     <div class="footer">
       &copy; Copyright Stephen Day.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.4.
     </div>
 
 <script type="text/javascript">

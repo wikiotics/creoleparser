@@ -1,3 +1,4 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -15,6 +16,7 @@
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -30,8 +32,8 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="modindex.html" title="Global Module Index"
-             accesskey="M">modules</a> |</li>
+          <a href="py-modindex.html" title="Python Module Index"
+             accesskey="">modules</a> |</li>
         <li class="right" >
           <a href="modules.html" title="Generated API documentation"
              accesskey="N">next</a> |</li>
@@ -48,6 +50,14 @@
             
   <div class="section" id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="version-0-7-3-2010">
+<h2>Version 0.7.3 (??? 2010)<a class="headerlink" href="#version-0-7-3-2010" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>added <tt class="docutils literal"><span class="pre">disable_external_content</span></tt> parameter to
+<tt class="docutils literal"><span class="pre">create_dialect</span></tt> function</li>
+<li>added support for custom base urls and functions for images</li>
+</ul>
+</div>
 <div class="section" id="version-0-7-2-may-8-2010">
 <h2>Version 0.7.2 (May 8 2010)<a class="headerlink" href="#version-0-7-2-may-8-2010" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -58,7 +68,7 @@
 <div class="section" id="version-0-7-1-march-29-2010">
 <h2>Version 0.7.1 (March 29 2010)<a class="headerlink" href="#version-0-7-1-march-29-2010" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>added <tt class="docutils literal"><span class="pre">indent_class</span></tt> and <tt class="docutils literal"><span class="pre">indent_style</span></tt> arguments to
+<li>added <tt class="docutils literal"><span class="pre">indent_class</span></tt> and <tt class="docutils literal"><span class="pre">indent_style</span></tt> parameter to
 <tt class="docutils literal"><span class="pre">create_dialect</span></tt> function</li>
 </ul>
 </div>
@@ -222,22 +232,23 @@ wiki links (e.g., if the page doesn&#8217;t exist).</li>
         <div class="sphinxsidebarwrapper">
             <h3><a href="contents.html">Table Of Contents</a></h3>
             <ul>
-<li><a class="reference external" href="#">Changelog</a><ul>
-<li><a class="reference external" href="#version-0-7-2-may-8-2010">Version 0.7.2 (May 8 2010)</a></li>
-<li><a class="reference external" href="#version-0-7-1-march-29-2010">Version 0.7.1 (March 29 2010)</a></li>
-<li><a class="reference external" href="#version-0-7-0-march-20-2010">Version 0.7.0 (March 20 2010)</a></li>
-<li><a class="reference external" href="#version-0-6-1-march-31-2009">Version 0.6.1 (March 31 2009)</a></li>
-<li><a class="reference external" href="#version-0-6-march-1-2009">Version 0.6 (March 1 2009)</a></li>
-<li><a class="reference external" href="#version-0-5-1-dec-8-2008">Version 0.5.1 (Dec 8 2008)</a></li>
-<li><a class="reference external" href="#version-0-5-0-may-31-2008">Version 0.5.0 (May 31 2008)</a></li>
-<li><a class="reference external" href="#version-0-4-0-march-24-2008">Version 0.4.0 (March 24 2008)</a></li>
-<li><a class="reference external" href="#version-0-3-3-dec-16-2007">Version 0.3.3 (Dec 16 2007)</a></li>
-<li><a class="reference external" href="#version-0-3-2-nov-28-2007">Version 0.3.2 (Nov 28 2007)</a></li>
-<li><a class="reference external" href="#version-0-3-1-nov-16-2007">Version 0.3.1 (Nov 16 2007)</a></li>
-<li><a class="reference external" href="#version-0-3-nov-10-2007">Version 0.3 (Nov 10 2007)</a></li>
-<li><a class="reference external" href="#version-0-2-1-nov-6-2007">Version 0.2.1 (Nov 6 2007)</a></li>
-<li><a class="reference external" href="#version-0-2-oct-26-2007">Version 0.2 (Oct 26 2007)</a></li>
-<li><a class="reference external" href="#version-0-1-0-1-1-0-1-2-oct-2007">Version 0.1, 0.1.1, 0.1.2 (Oct 2007)</a></li>
+<li><a class="reference internal" href="#">Changelog</a><ul>
+<li><a class="reference internal" href="#version-0-7-3-2010">Version 0.7.3 (??? 2010)</a></li>
+<li><a class="reference internal" href="#version-0-7-2-may-8-2010">Version 0.7.2 (May 8 2010)</a></li>
+<li><a class="reference internal" href="#version-0-7-1-march-29-2010">Version 0.7.1 (March 29 2010)</a></li>
+<li><a class="reference internal" href="#version-0-7-0-march-20-2010">Version 0.7.0 (March 20 2010)</a></li>
+<li><a class="reference internal" href="#version-0-6-1-march-31-2009">Version 0.6.1 (March 31 2009)</a></li>
+<li><a class="reference internal" href="#version-0-6-march-1-2009">Version 0.6 (March 1 2009)</a></li>
+<li><a class="reference internal" href="#version-0-5-1-dec-8-2008">Version 0.5.1 (Dec 8 2008)</a></li>
+<li><a class="reference internal" href="#version-0-5-0-may-31-2008">Version 0.5.0 (May 31 2008)</a></li>
+<li><a class="reference internal" href="#version-0-4-0-march-24-2008">Version 0.4.0 (March 24 2008)</a></li>
+<li><a class="reference internal" href="#version-0-3-3-dec-16-2007">Version 0.3.3 (Dec 16 2007)</a></li>
+<li><a class="reference internal" href="#version-0-3-2-nov-28-2007">Version 0.3.2 (Nov 28 2007)</a></li>
+<li><a class="reference internal" href="#version-0-3-1-nov-16-2007">Version 0.3.1 (Nov 16 2007)</a></li>
+<li><a class="reference internal" href="#version-0-3-nov-10-2007">Version 0.3 (Nov 10 2007)</a></li>
+<li><a class="reference internal" href="#version-0-2-1-nov-6-2007">Version 0.2.1 (Nov 6 2007)</a></li>
+<li><a class="reference internal" href="#version-0-2-oct-26-2007">Version 0.2 (Oct 26 2007)</a></li>
+<li><a class="reference internal" href="#version-0-1-0-1-1-0-1-2-oct-2007">Version 0.1, 0.1.1, 0.1.2 (Oct 2007)</a></li>
 </ul>
 </li>
 </ul>
@@ -256,6 +267,11 @@ wiki links (e.g., if the page doesn&#8217;t exist).</li>
               <input type="hidden" name="check_keywords" value="yes" />
               <input type="hidden" name="area" value="default" />
             </form>
+          <!-- Google Sidewiki Element -->
+<h3 style="background: url(//www.google.com/sidewiki/static/sidebar_element/img/sidewiki-bubble.png) no-repeat 0 0; padding: .4em 1em .5em 35px; cursor: pointer;" id="sidewiki-open-ui-button">Comments</h3>
+<script src="http://www.google.com/sidewiki/static/sidebar_element/sidebar-element-compiled.js"></script>
+<script defer="defer">var sidebarElement = new google.elements.sidewiki.SidebarElement(window.location.href,false);sidebarElement.bindToElement("sidewiki-open-ui-button");</script>
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -267,8 +283,8 @@ wiki links (e.g., if the page doesn&#8217;t exist).</li>
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="modindex.html" title="Global Module Index"
-             accesskey="M">modules</a> |</li>
+          <a href="py-modindex.html" title="Python Module Index"
+             accesskey="">modules</a> |</li>
         <li class="right" >
           <a href="modules.html" title="Generated API documentation"
              accesskey="N">next</a> |</li>
@@ -280,7 +296,7 @@ wiki links (e.g., if the page doesn&#8217;t exist).</li>
     </div>
     <div class="footer">
       &copy; Copyright Stephen Day.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.4.
     </div>
 
 <script type="text/javascript">
