@@ -1,6 +1,8 @@
 Version 0.7.3 (??? 2010)
 ---------------------------
 
+* added ``disable_external_content`` parameter to
+  ``create_dialect`` function
 * added support for custom base urls and functions for images
 
 
@@ -14,7 +16,7 @@ Version 0.7.2 (May 8 2010)
 Version 0.7.1 (March 29 2010)
 -----------------------------
 
-* added ``indent_class`` and ``indent_style`` arguments to
+* added ``indent_class`` and ``indent_style`` parameter to
   ``create_dialect`` function
 
 Version 0.7.0 (March 20 2010)
