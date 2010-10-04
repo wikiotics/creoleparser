@@ -20,7 +20,7 @@ import sys, os
 # released version if building live site docs and trunk docstrings
 # no longer apply to the released version.
 sys.path.insert(0,os.path.abspath('../../trunk/'))
-#sys.path.insert(0,os.path.abspath('../../tags/0.6/'))
+#sys.path.insert(0,os.path.abspath('../../tags/0.7.2/'))
 
 
 # General configuration
