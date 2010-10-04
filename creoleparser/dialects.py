@@ -19,45 +19,30 @@ def create_dialect(dialect_base, **kw_args):
     see :func:`~creoleparser.dialects.creole10_base`)
 
     :parameters:
+      blog_style_endings
+        If `True`, each newline character in a paragraph will be converted to
+        a <br />. Note that the escaping mechanism (tilde) does not work
+        for newlines.
       dialect_base
         The class factory to use for creating the dialect object.
         ``creoleparser.dialects.creole10_base`` and  
         ``creoleparser.dialects.creole11_base`` are possible values.
       disable_external_content
         If True, an error message will be inserted when an externally
-        hosted image is found. 
-      wiki_links_base_url
-        The page name found in wiki links will be smartly appended to this to
-        form the href. To use a different base url for images, supply a two
-        element list; the second element will be used.
-      wiki_links_space_char
-        When wiki_links have spaces, this character replaces those spaces in
-        the url. To use a different character for images, supply a two element
-        list; the second element will be used.
-      wiki_links_class_func
-        If supplied, this fuction will be called when a wiki link is found and
-        the return value (should be a string) will be added as a class attribute
-        of the corresponding link. The function must accept the page name (any
-        spaces will have been replaced) as it's only argument.
-        If no class attribute is to be added, return `None`.
-      wiki_links_path_func
-        If supplied, this fuction will be called when a wiki link is found and
-        the return value (should be a string) will be joined to the base_url
-        to form the url for href. The function must accept the page name (any
-        spaces will have been replaced) as it's only argument. Special characters
-        should be url encoded. To use a different function for images, supply a
-        two element list; the second element will be used.
+        hosted image is found.
+      indent_class
+        The class attribute to add to indented regions.
+      indent_style
+        The style attribute to add to indented regions.
       interwiki_links_base_urls
         Dictionary of urls for interwiki links.
+      interwiki_links_funcs
+        Dictionary of functions that will be called for interwiki link
+        names. Works like wiki_links_path_func
       interwiki_links_space_chars
         Dictionary of characters that that will be used to replace spaces
         that occur in interwiki_links. If no key is present for an interwiki
         name, the wiki_links_space_char will be used.
-      interwiki_links_funcs
-        Dictionary of functions that will be called for interwiki link
-        names. Works like wiki_links_path_func
-      no_wiki_monospace
-        If `False`, inline no_wiki will be rendered as <span> not <code>
       macro_func
         If supplied, this fuction will be called when macro markup is found. The
         function must accept the following postional arguments:
@@ -72,14 +57,29 @@ def create_dialect(dialect_base, **kw_args):
         processing) or a Genshi object (Stream, Markup, builder.Fragment, or
         builder.Element). If None is returned, the markup will
         be rendered unchanged.
-      blog_style_endings
-        If `True`, each newline character in a paragraph will be converted to
-        a <br />. Note that the escaping mechanism (tilde) does not work
-        for newlines.
-      indent_class
-        The class attribute to add to indented regions.
-      indent_style
-        The style attribute to add to indented regions.
+      no_wiki_monospace
+        If `False`, inline no_wiki will be rendered as <span> not <code>
+      wiki_links_base_url
+        The page name found in wiki links will be smartly appended to this to
+        form the href. To use a different base url for images, supply a two
+        element list; the second element will be used.
+      wiki_links_class_func
+        If supplied, this fuction will be called when a wiki link is found and
+        the return value (should be a string) will be added as a class attribute
+        of the corresponding link. The function must accept the page name (any
+        spaces will have been replaced) as it's only argument.
+        If no class attribute is to be added, return `None`.
+      wiki_links_path_func
+        If supplied, this fuction will be called when a wiki link is found and
+        the return value (should be a string) will be joined to the base_url
+        to form the url for href. The function must accept the page name (any
+        spaces will have been replaced) as it's only argument. Special characters
+        should be url encoded. To use a different function for images, supply a
+        two element list; the second element will be used.
+      wiki_links_space_char
+        When wiki_links have spaces, this character replaces those spaces in
+        the url. To use a different character for images, supply a two element
+        list; the second element will be used.
  
     """
 
