@@ -245,6 +245,19 @@ class SimpleElement(InlineElement):
                                                           self.child_elements,
                                                           element_store, environ))
 
+class CustomElement(InlineElement):
+
+    def __init__(self, reg_exp, func):
+        super(CustomElement,self).__init__('','')
+        self.regexp = re.compile(reg_exp)
+        self.func = func
+
+    def re_string(self):
+        return ''
+
+    def _build(self, mo, element_store, environ):
+        return self.func(mo, environ)
+        
 
 class LinkElement(InlineElement):
 

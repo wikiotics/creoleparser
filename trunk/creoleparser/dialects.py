@@ -94,7 +94,8 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
                  wiki_links_path_func=None, interwiki_links_funcs={},
                  interwiki_links_space_chars={},
                  blog_style_endings=False,
-                 disable_external_content=False, 
+                 disable_external_content=False,
+                 custom_element_list=[],
                  ):
     """Returns a base class for extending
     (for parameter descriptions, see :func:`~creoleparser.dialects.create_dialect`)
@@ -159,13 +160,15 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
         nested_ol = NestedList('ol','#')
         nested_ul = NestedList('ul','*')
 
+        custom_elements = [CustomElement(reg_exp, func) for reg_exp, func in custom_element_list] 
+
         def __init__(self):
             self.link.child_elements = [self.simple_element]
             self.simple_element.child_elements = [self.simple_element]
             self.headings.child_elements = self.inline_elements
             self.p.child_elements = self.inline_elements
-            self.td.child_elements = [self.br, self.raw_link, self.simple_element]
-            self.th.child_elements = [self.br, self.raw_link, self.simple_element]
+            self.td.child_elements = [self.br, self.raw_link] + self.custom_elements + [self.simple_element]
+            self.th.child_elements = [self.br, self.raw_link] + self.custom_elements + [self.simple_element]
             self.tr.child_elements = [self.no_wiki,self.img,self.link,self.th,self.td]
             self.table.child_elements = [self.tr]
             self.ol.child_elements = [self.li]
@@ -176,7 +179,8 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
 
         @property 
         def inline_elements(self):
-            return [self.no_wiki, self.img, self.link, self.br, self.raw_link, self.simple_element]
+            return [self.no_wiki, self.img, self.link, self.br, self.raw_link] \
+                   + self.custom_elements + [self.simple_element]
 
         @property 
         def block_elements(self):
@@ -187,6 +191,8 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
             knowledge of those before (as those were parsed out already). This makes the
             regular expression patterns for later elements very simple.
             """        
+
+
 
     return Base
 
@@ -259,19 +265,22 @@ def creole11_base(macro_func=None,
         def __init__(self):
             super(Base,self).__init__()
             self.tr.child_elements[0] = (self.no_wiki,self.bodiedmacro,self.macro)
-            self.dd.child_elements = [self.br, self.raw_link, self.simple_element]
-            self.dt.child_elements = [self.br, self.raw_link, self.simple_element]
+            self.dd.child_elements = [self.br, self.raw_link] + self.custom_elements + [self.simple_element]
+            self.dt.child_elements = [self.br, self.raw_link] + self.custom_elements + [self.simple_element]
             self.dl.child_elements = [(self.no_wiki,self.bodiedmacro,self.macro),self.img,self.link,self.dt,self.dd]
             self.indented.child_elements = self.block_elements
             
         @property 
         def inline_elements(self):
-            return [(self.no_wiki,self.bodiedmacro,self.macro), self.img, self.link, self.br, self.raw_link, self.simple_element]
+            return [(self.no_wiki,self.bodiedmacro,self.macro), self.img,
+                    self.link, self.br, self.raw_link] + self.custom_elements \
+                    +  [self.simple_element]
 
         @property 
         def block_elements(self):
             return [(self.bodied_block_macro,self.pre),self.blank_line,self.table,self.headings,
                            self.hr,self.indented,self.dl,self.ul,self.ol,self.p]
+        
     return Base
 
 
