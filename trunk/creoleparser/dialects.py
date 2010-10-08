@@ -23,6 +23,28 @@ def create_dialect(dialect_base, **kw_args):
         If `True`, each newline character in a paragraph will be converted to
         a <br />. Note that the escaping mechanism (tilde) does not work
         for newlines.
+      custom_markup
+        List of tuples that can each define arbitrary custom wiki markup such
+        as WikiWords and emoticons. Each tuple must have two elements,
+        as follows:
+
+        1. Regular expression pattern or compiled regular expresion. Patterns
+           will be prepended with a negative lookback to support escaping
+           (with a tilde) and compiled using the re.DOTALL flag.
+        2. Function that takes two postional arguments as follows:
+
+           1. the match object
+           2. an `environ` object (see :meth:`creoleparser.core.Parser.generate`)
+
+           The function must return a Genshi object (Stream, Markup,
+           builder.Fragment, or builder.Element). Returning a string will
+           raise an error.
+
+        As a shortcut for simple cases, the second tuple element may
+        alternatively be a string. The string will be wrapped in a Markup
+        object (to allow pass-through of HTML) and a Fragment object (to prevent
+        Creoleparser from creating a new paragraph). 
+           
       dialect_base
         The class factory to use for creating the dialect object.
         ``creoleparser.dialects.creole10_base`` and  
@@ -95,7 +117,7 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
                  interwiki_links_space_chars={},
                  blog_style_endings=False,
                  disable_external_content=False,
-                 custom_element_list=[],
+                 custom_markup=[],
                  ):
     """Returns a base class for extending
     (for parameter descriptions, see :func:`~creoleparser.dialects.create_dialect`)
@@ -160,7 +182,7 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
         nested_ol = NestedList('ol','#')
         nested_ul = NestedList('ul','*')
 
-        custom_elements = [CustomElement(reg_exp, func) for reg_exp, func in custom_element_list] 
+        custom_elements = [CustomElement(reg_exp, func) for reg_exp, func in custom_markup] 
 
         def __init__(self):
             self.link.child_elements = [self.simple_element]
