@@ -247,16 +247,26 @@ class SimpleElement(InlineElement):
 
 class CustomElement(InlineElement):
 
+    """Finds markup defined by provided custom regexp."""
+
     def __init__(self, reg_exp, func):
         super(CustomElement,self).__init__('','')
-        self.regexp = re.compile(reg_exp)
+        if isinstance(reg_exp, basestring):
+            self.regexp = re.compile(esc_neg_look + reg_exp, re.DOTALL)
+        else:
+            self.regexp = reg_exp
         self.func = func
 
-    def re_string(self):
-        return ''
 
-    def _build(self, mo, element_store, environ):
-        return self.func(mo, environ)
+    def _build(self,mo,element_store, environ):
+        if isinstance(self.func, basestring) and not isinstance(self.func, bldr.Markup):
+            value = bldr.tag(bldr.Markup(self.func))
+        else:
+            value = self.func(mo, environ)
+            if isinstance(value, basestring) and not isinstance(value, bldr.Markup):
+                raise Exception("Custom markup functions can only return Genshi objects.")
+
+        return value
         
 
 class LinkElement(InlineElement):

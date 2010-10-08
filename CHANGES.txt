@@ -1,7 +1,7 @@
 Version 0.7.3 (??? 2010)
 ---------------------------
 
-* added ``disable_external_content`` parameter to
+* added ``disable_external_content`` and ``custom_markup`` parameter to
   ``create_dialect`` function
 * added support for custom base urls and functions for images
 

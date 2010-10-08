@@ -528,6 +528,20 @@ class DialectOptionsTest(unittest.TestCase):
         self.assertEquals(
             parse("{{http://www.somesite.com/campfire.jpg}}"),
             wrap_result("""<span class="external_image">External images are disabled</span>"""))
+
+
+    def test_custom_markup_option(self):
+        def wikiword(mo, e):
+            return builder.tag.a(mo.group(1),href=mo.group(1))
+        dialect = create_dialect(creole10_base, custom_markup=[(r'\(c\)','&copy;'),
+                                                               (r'\b([A-Z]\w+[A-Z]+\w+)',wikiword)])
+        parse = Parser(dialect)
+        self.assertEquals(
+            parse("The copyright symbol (c)"),
+            wrap_result("The copyright symbol &copy;"))
+        self.assertEquals(
+            parse("A WikiPage name that is a ~WikiWord"),
+            wrap_result('A <a href="WikiPage">WikiPage</a> name that is a WikiWord'))
        
 class ExtendingTest(unittest.TestCase):
     
