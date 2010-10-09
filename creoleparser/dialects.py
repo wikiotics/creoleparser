@@ -28,10 +28,8 @@ def create_dialect(dialect_base, **kw_args):
         as WikiWords and emoticons. Each tuple must have two elements,
         as follows:
 
-        1. String to match or compiled regular expresion. Strings will be re.escaped
-           and prepended with a negative lookback to support escaping
-           (with a tilde).
-        2. Function that takes two postional arguments as follows:
+        1. String to match, or compiled regular expresion.
+        2. Function that takes two postional arguments, as follows:
 
            1. the match object
            2. an `environ` object (see :meth:`creoleparser.core.Parser.generate`)
@@ -80,6 +78,13 @@ def create_dialect(dialect_base, **kw_args):
         be rendered unchanged.
       no_wiki_monospace
         If `False`, inline no_wiki will be rendered as <span> not <code>
+      simple_markup
+        List of tuples that each define markup such as `strong` and `em`
+        that can nest. Each tuple must have two elements, as follows:
+
+        1. String to match start and end of text to be enclosed. 
+        2. HTML tag
+
       wiki_links_base_url
         The page name found in wiki links will be smartly appended to this to
         form the href. To use a different base url for images, supply a two
@@ -117,6 +122,7 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
                  blog_style_endings=False,
                  disable_external_content=False,
                  custom_markup=[],
+                 simple_markup=[('**','strong'),('//','em')], 
                  ):
     """Returns a base class for extending
     (for parameter descriptions, see :func:`~creoleparser.dialects.create_dialect`)
@@ -145,7 +151,7 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
         br = LineBreak('br', r'\\',blog_style=blog_style_endings)
         headings = Heading(['h1','h2','h3','h4','h5','h6'],'=')
         no_wiki = NoWikiElement(no_wiki_monospace and 'code' or 'span',['{{{','}}}'])
-        simple_element = SimpleElement(token_dict={'**':'strong','//':'em'})
+        simple_element = SimpleElement(token_dict=dict(simple_markup))
         hr = LoneElement('hr','----')
         blank_line = BlankLine()
         p = Paragraph('p')
@@ -222,6 +228,8 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
 def creole11_base(macro_func=None,
                   indent_class=None,
                   indent_style='margin-left:2em',
+                  simple_markup=[('**','strong'),('//','em'),(',,','sub'),
+                                 ('^^','sup'),('__','u'),('##','code')],
                   **kwargs):
     """Returns a base class for extending (for parameter descriptions, see :func:`~creoleparser.dialects.create_dialect`)
 
@@ -267,12 +275,12 @@ def creole11_base(macro_func=None,
     
     """
     
-    Creole10Base = creole10_base(**kwargs)
+    Creole10Base = creole10_base(simple_markup=simple_markup, **kwargs)
     
     class Base(Creole10Base):
         
-        simple_element = SimpleElement(token_dict={'**':'strong','//':'em',',,':'sub',
-                                                  '^^':'sup','__':'u','##':'code'})
+        #simple_element = SimpleElement(token_dict={'**':'strong','//':'em',',,':'sub',
+        #                                          '^^':'sup','__':'u','##':'code'})
         indented = IndentedBlock('div','>', class_=indent_class, style=indent_style)
         
         dd = DefinitionDef('dd',':')
