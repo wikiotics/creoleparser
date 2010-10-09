@@ -28,9 +28,9 @@ def create_dialect(dialect_base, **kw_args):
         as WikiWords and emoticons. Each tuple must have two elements,
         as follows:
 
-        1. Regular expression pattern or compiled regular expresion. Patterns
-           will be prepended with a negative lookback to support escaping
-           (with a tilde) and compiled using the re.DOTALL flag.
+        1. String to match or compiled regular expresion. Strings will be re.escaped
+           and prepended with a negative lookback to support escaping
+           (with a tilde).
         2. Function that takes two postional arguments as follows:
 
            1. the match object
@@ -44,7 +44,6 @@ def create_dialect(dialect_base, **kw_args):
         alternatively be a string. The string will be wrapped in a Markup
         object (to allow pass-through of HTML) and a Fragment object (to prevent
         Creoleparser from creating a new paragraph). 
-           
       dialect_base
         The class factory to use for creating the dialect object.
         ``creoleparser.dialects.creole10_base`` and  
@@ -189,9 +188,9 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
             self.simple_element.child_elements = [self.simple_element]
             self.headings.child_elements = self.inline_elements
             self.p.child_elements = self.inline_elements
-            self.td.child_elements = [self.br, self.raw_link] + self.custom_elements + [self.simple_element]
-            self.th.child_elements = [self.br, self.raw_link] + self.custom_elements + [self.simple_element]
-            self.tr.child_elements = [self.no_wiki,self.img,self.link,self.th,self.td]
+            self.td.child_elements = [self.br, self.raw_link, self.simple_element]
+            self.th.child_elements = [self.br, self.raw_link, self.simple_element]
+            self.tr.child_elements = [self.no_wiki,self.img,self.link,self.custom_elements,self.th,self.td]
             self.table.child_elements = [self.tr]
             self.ol.child_elements = [self.li]
             self.ul.child_elements = [self.li]
@@ -201,8 +200,8 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
 
         @property 
         def inline_elements(self):
-            return [self.no_wiki, self.img, self.link, self.br, self.raw_link] \
-                   + self.custom_elements + [self.simple_element]
+            return [self.no_wiki, self.img, self.link] + self.custom_elements \
+                   + [self.br, self.raw_link, self.simple_element]
 
         @property 
         def block_elements(self):
@@ -287,16 +286,16 @@ def creole11_base(macro_func=None,
         def __init__(self):
             super(Base,self).__init__()
             self.tr.child_elements[0] = (self.no_wiki,self.bodiedmacro,self.macro)
-            self.dd.child_elements = [self.br, self.raw_link] + self.custom_elements + [self.simple_element]
-            self.dt.child_elements = [self.br, self.raw_link] + self.custom_elements + [self.simple_element]
+            self.dd.child_elements = self.custom_elements + [self.br, self.raw_link, self.simple_element]
+            self.dt.child_elements = self.custom_elements + [self.br, self.raw_link, self.simple_element]
             self.dl.child_elements = [(self.no_wiki,self.bodiedmacro,self.macro),self.img,self.link,self.dt,self.dd]
             self.indented.child_elements = self.block_elements
             
         @property 
         def inline_elements(self):
             return [(self.no_wiki,self.bodiedmacro,self.macro), self.img,
-                    self.link, self.br, self.raw_link] + self.custom_elements \
-                    +  [self.simple_element]
+                    self.link] + self.custom_elements + [self.br, self.raw_link,
+                    self.simple_element]
 
         @property 
         def block_elements(self):
