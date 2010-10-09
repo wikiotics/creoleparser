@@ -252,7 +252,7 @@ class CustomElement(InlineElement):
     def __init__(self, reg_exp, func):
         super(CustomElement,self).__init__('','')
         if isinstance(reg_exp, basestring):
-            self.regexp = re.compile(esc_neg_look + reg_exp, re.DOTALL)
+            self.regexp = re.compile(esc_neg_look + re.escape(reg_exp), re.DOTALL)
         else:
             self.regexp = reg_exp
         self.func = func

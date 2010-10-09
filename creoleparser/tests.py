@@ -8,11 +8,12 @@
 #
 import urllib
 import unittest
+import re
 
 from genshi import builder
 from genshi.core import Markup
 
-from core import Parser
+from core import Parser, esc_neg_look
 from dialects import creole10_base, creole11_base, create_dialect#, Creole10
 from elements import SimpleElement, IndentedBlock#, NestedIndentedBlock
 
@@ -533,12 +534,13 @@ class DialectOptionsTest(unittest.TestCase):
     def test_custom_markup_option(self):
         def wikiword(mo, e):
             return builder.tag.a(mo.group(1),href=mo.group(1))
-        dialect = create_dialect(creole10_base, custom_markup=[(r'\(c\)','&copy;'),
-                                                               (r'\b([A-Z]\w+[A-Z]+\w+)',wikiword)])
+        dialect = create_dialect(creole10_base,
+                                 custom_markup=[('(c)','&copy;'),
+                                                (re.compile(esc_neg_look + r'\b([A-Z]\w+[A-Z]+\w+)'),wikiword)])
         parse = Parser(dialect)
         self.assertEquals(
-            parse("The copyright symbol (c)"),
-            wrap_result("The copyright symbol &copy;"))
+            parse("The copyright symbol (c), escaped ~(c)"),
+            wrap_result("The copyright symbol &copy;, escaped (c)"))
         self.assertEquals(
             parse("A WikiPage name that is a ~WikiWord"),
             wrap_result('A <a href="WikiPage">WikiPage</a> name that is a WikiWord'))
