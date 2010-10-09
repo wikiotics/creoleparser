@@ -544,6 +544,13 @@ class DialectOptionsTest(unittest.TestCase):
         self.assertEquals(
             parse("A WikiPage name that is a ~WikiWord"),
             wrap_result('A <a href="WikiPage">WikiPage</a> name that is a WikiWord'))
+
+    def test_simple_markup_option(self):
+        MyDialect = create_dialect(creole10_base, simple_markup=[('*','strong'),('#','code')])
+        parse = Parser(MyDialect)
+        self.assertEquals(
+            parse("This block of #text *should* be monospace# now"),
+            wrap_result("This block of <code>text <strong>should</strong> be monospace</code> now"))
        
 class ExtendingTest(unittest.TestCase):
     
