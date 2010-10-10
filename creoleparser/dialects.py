@@ -23,6 +23,14 @@ def create_dialect(dialect_base, **kw_args):
         If `True`, each newline character in a paragraph will be converted to
         a <br />. Note that the escaping mechanism (tilde) does not work
         for newlines.
+      bodied_macros
+        Dictionary of dictionaries with macro names as keys. If a macro name is
+        not in the dictionary, the `macro_func` will be called instead. When a
+        macro is present, its dictionary's key-value pairs correspond
+        to attribute values of HTML output. The tag of the output is the value
+        of the 'tag' key. If no 'tag' key is present, `span` or `div` will be
+        used automatically, depending on the context. The body of the macro
+        will be processed automatically and added to the output.
       custom_markup
         List of tuples that can each define arbitrary custom wiki markup such
         as WikiWords and emoticons. Each tuple must have two elements,
@@ -73,9 +81,9 @@ def create_dialect(dialect_base, **kw_args):
         5. an `environ` object (see :meth:`creoleparser.core.Parser.generate`)
         
         The function may return a string (which will be subject to further wiki
-        processing) or a Genshi object (Stream, Markup, builder.Fragment, or
-        builder.Element). If None is returned, the markup will
-        be rendered unchanged.
+        processing), a Genshi object (Stream, Markup, builder.Fragment, or
+        builder.Element), or a dictionary (see `bodied_macros` above for more
+        info). If None is returned, the markup will be rendered unchanged.
       no_wiki_monospace
         If `False`, inline no_wiki will be rendered as <span> not <code>
       simple_markup
@@ -230,6 +238,7 @@ def creole11_base(macro_func=None,
                   indent_style='margin-left:2em',
                   simple_markup=[('**','strong'),('//','em'),(',,','sub'),
                                  ('^^','sup'),('__','u'),('##','code')],
+                  bodied_macros={},
                   **kwargs):
     """Returns a base class for extending (for parameter descriptions, see :func:`~creoleparser.dialects.create_dialect`)
 
@@ -288,8 +297,8 @@ def creole11_base(macro_func=None,
         dl = List('dl',';',stop_tokens='*#')
 
         macro = Macro('',('<<','>>'),func=macro_func)
-        bodiedmacro = BodiedMacro('',('<<','>>'),func=macro_func)
-        bodied_block_macro = BodiedBlockMacro('',('<<','>>'),func=macro_func)    
+        bodiedmacro = BodiedMacro('',('<<','>>'),func=macro_func, macros=bodied_macros)
+        bodied_block_macro = BodiedBlockMacro('',('<<','>>'),func=macro_func, macros=bodied_macros)    
 
         def __init__(self):
             super(Base,self).__init__()
@@ -298,6 +307,8 @@ def creole11_base(macro_func=None,
             self.dt.child_elements = self.custom_elements + [self.br, self.raw_link, self.simple_element]
             self.dl.child_elements = [(self.no_wiki,self.bodiedmacro,self.macro),self.img,self.link,self.dt,self.dd]
             self.indented.child_elements = self.block_elements
+            self.bodiedmacro.child_elements = self.inline_elements
+            self.bodied_block_macro.child_elements = self.block_elements
             
         @property 
         def inline_elements(self):

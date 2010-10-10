@@ -549,9 +549,10 @@ class BodiedMacro(Macro):
     Does not span across top level block markup
     (see BodiedBlockMacro's for that)."""
 
-    def __init__(self, tag, token, func):
+    def __init__(self, tag, token, func, macros):
         super(BodiedMacro,self).__init__(tag,token , func)
         self.func = func
+        self.macros = macros
         self.regexp = re.compile(self.re_string(),re.DOTALL)
 
     def re_string(self):
@@ -582,23 +583,34 @@ class BodiedMacro(Macro):
             body = mo.group('body')
             tail = ''
                 
-                
-        
-        if self.func:
+        if mo.group('name') in self.macros:
+            if isinstance(self.macros[mo.group('name')],dict):
+                value = self.macros[mo.group('name')].copy()
+            else:
+                raise Exception("bodied_macro dictionary values must also be dictionaries. \
+Callback support planned for 8.0")
+#                value = self.macros[mo.group('name')](mo.group('name'),mo.group('arg_string'),body,False,environ)
+        elif self.func:
             value = self.func(mo.group('name'),mo.group('arg_string'),body,False,environ)
         else:
             value = None
-        if value is None:
+
+        if isinstance(value,dict):
+           tag = value.pop('tag','span')
+           output = bldr.tag.__getattr__(tag)(
+               fragmentize(body, self.child_elements, element_store, environ),**value)
+        elif value is None:
             content_out = [self.token[0],bldr.tag.span(mo.group('name'),class_="macro_name"),
                            bldr.tag.span(mo.group('arg_string'),class_="macro_arg_string"),
                            self.token[1],bldr.tag.span(mo.group('body'),class_="macro_body"),
                            self.token[0] + '/' + mo.group('name') + self.token[1]]
-            return [bldr.tag.code(content_out,class_="unknown_macro", style="white-space:pre-wrap"),tail]
-            
+            output = bldr.tag.code(content_out,class_="unknown_macro", style="white-space:pre-wrap")
         elif isinstance(value, (basestring,bldr.Fragment, Stream)):
-            return [value,tail]
+            output = value
         else:
             raise Exception("macros can only return strings and genshi objects")
+
+        return [output, tail]
 
        
 
@@ -610,9 +622,10 @@ class BodiedBlockMacro(WikiElement):
     including pre blocks and other BodiedBlockMacro's."""
 
 
-    def __init__(self, tag, token, func):
-        super(BodiedBlockMacro,self).__init__(tag,token , func)
+    def __init__(self, tag, token, func, macros):
+        super(BodiedBlockMacro,self).__init__(tag,token)
         self.func = func
+        self.macros = macros
         self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
 
     def re_string(self):
@@ -682,24 +695,41 @@ class BodiedBlockMacro(WikiElement):
             body = mo.group('body')
             tail = ''
 
-        if self.func:
+
+        if mo.group('name') in self.macros:
+            if isinstance(self.macros[mo.group('name')],dict):
+                value = self.macros[mo.group('name')].copy()
+            else:
+                raise Exception("bodied_macro dictionary values must also be dictionaries. \
+Callback support planned for 8.0")
+#                value = self.macros[mo.group('name')](mo.group('name'),mo.group('arg_string'),body,True,environ)
+        elif self.func:
             value = self.func(mo.group('name'),mo.group('arg_string'),body,True,environ)
         else:
             value = None
-        if value is None:
-            return [bldr.tag.pre(self.token[0],bldr.tag.span(mo.group('name'),class_="macro_name"),
+
+        if isinstance(value,dict):
+           tag = value.pop('tag','div')
+           output = bldr.tag.__getattr__(tag)(
+               fragmentize(body, self.child_elements, element_store, environ),**value)
+           if tag not in BLOCK_TAGS:
+               output = bldr.tag.p(output)
+        elif value is None:
+            output = bldr.tag.pre(self.token[0],bldr.tag.span(mo.group('name'),class_="macro_name"),
                            bldr.tag.span(mo.group('arg_string'),class_="macro_arg_string"),
                            self.token[1],'\n',bldr.tag.span(mo.group('body'),class_="macro_body"),
                            self.token[0] + '/' + mo.group('name') + self.token[1],
-                           class_="unknown_macro"), tail]
+                           class_="unknown_macro")
         elif (isinstance(value, (Stream, basestring)) or
              (isinstance(value,bldr.Element) and value.tag in BLOCK_TAGS)):
-            return [value, tail]
+            output = value
         # Add a p tag if the value is a Fragment or Element that needs one
         elif isinstance(value, bldr.Fragment):
-            return [bldr.tag.p(value), tail]
+            output = bldr.tag.p(value)
         else:
             raise Exception("macros can only return strings and genshi objects")
+
+        return [output, tail]
         
     
 class RawLink(InlineElement):

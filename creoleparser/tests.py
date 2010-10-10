@@ -551,6 +551,24 @@ class DialectOptionsTest(unittest.TestCase):
         self.assertEquals(
             parse("This block of #text *should* be monospace# now"),
             wrap_result("This block of <code>text <strong>should</strong> be monospace</code> now"))
+
+    def test_bodied_macros_option(self):
+        MyDialect = create_dialect(creole11_base, bodied_macros=dict([('red',{'style':'color:red'}),
+                                                                      ('blockquote',{'tag':'blockquote'})]))
+        parse = Parser(MyDialect)
+        self.assertEquals(
+            parse("This block of <<red>>text **should** be monospace<</red>> now"),
+            wrap_result('This block of <span style="color:red">text <strong>should</strong> be monospace</span> now'))
+        self.assertEquals(
+            parse("<<red>>\ntext **should** be monospace\n<</red>>"),
+            '<div style="color:red"><p>text <strong>should</strong> be monospace</p>\n</div>')
+        self.assertEquals(
+            parse("This block of <<blockquote>>text **should** be monospace<</blockquote>> now"),
+            wrap_result('This block of </p><blockquote>text <strong>should</strong> be monospace</blockquote><p> now'))
+        self.assertEquals(
+            parse("<<blockquote>>\ntext **should** be monospace\n<</blockquote>>"),
+            '<blockquote><p>text <strong>should</strong> be monospace</p>\n</blockquote>')
+
        
 class ExtendingTest(unittest.TestCase):
     
@@ -606,7 +624,9 @@ class MacroTest(unittest.TestCase, BaseTest):
             wiki_links_space_char='_',
             interwiki_links_base_urls={'Ohana': inter_wiki_url},
             no_wiki_monospace=False,
-            macro_func=self.macroFactory)
+            macro_func=self.macroFactory,
+ #           bodied_macros=dict(span=self.span)
+                                 )
         self.parse = Parser(dialect)
 
     class Wiki(object):
@@ -621,6 +641,9 @@ class MacroTest(unittest.TestCase, BaseTest):
         wrapped = Markup(text)
         fragment = builder.tag(wrapped)
         return fragment.generate()
+
+#    def span(self, macro_name, arg_string, body, context,wiki):
+#        return builder.tag.span(self.parse.generate(body,context='inline'),id_=arg_string.strip())    
 
     def macroFactory(self, macro_name, arg_string, body, context,wiki):
         if macro_name == 'html':
