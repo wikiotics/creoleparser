@@ -23,14 +23,6 @@ def create_dialect(dialect_base, **kw_args):
         If `True`, each newline character in a paragraph will be converted to
         a <br />. Note that the escaping mechanism (tilde) does not work
         for newlines.
-      bodied_macros
-        Dictionary of dictionaries with macro names as keys. If a macro name is
-        not in the dictionary, the `macro_func` will be called instead. When a
-        macro is present, its dictionary's key-value pairs correspond
-        to attribute values of HTML output. The tag of the output is the value
-        of the 'tag' key. If no 'tag' key is present, `span` or `div` will be
-        used automatically, depending on the context. The body of the macro
-        will be processed automatically and added to the output.
       custom_markup
         List of tuples that can each define arbitrary custom wiki markup such
         as WikiWords and emoticons. Each tuple must have two elements,
@@ -82,8 +74,14 @@ def create_dialect(dialect_base, **kw_args):
         
         The function may return a string (which will be subject to further wiki
         processing), a Genshi object (Stream, Markup, builder.Fragment, or
-        builder.Element), or a dictionary (see `bodied_macros` above for more
-        info). If None is returned, the markup will be rendered unchanged.
+        builder.Element), or a dictionary (bodied macros only). If None is
+        returned, the markup will be rendered unchanged.
+
+        When a dictionary is returned, its key-value pairs will appear
+        as attribute values in the HTML output. If a 'tag' key is present, the
+        value will be use as the HTML tag, otherwise, `span` or `div` will be
+        used automatically, depending on the context. The body of the macro
+        will be processed independently and added to the HTML textnode.
       no_wiki_monospace
         If `False`, inline no_wiki will be rendered as <span> not <code>
       simple_markup
@@ -238,7 +236,7 @@ def creole11_base(macro_func=None,
                   indent_style='margin-left:2em',
                   simple_markup=[('**','strong'),('//','em'),(',,','sub'),
                                  ('^^','sup'),('__','u'),('##','code')],
-                  bodied_macros={},
+                  bodied_macros={}, #not ready for public consumption
                   **kwargs):
     """Returns a base class for extending (for parameter descriptions, see :func:`~creoleparser.dialects.create_dialect`)
 
