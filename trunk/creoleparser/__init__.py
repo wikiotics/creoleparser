@@ -1,7 +1,7 @@
 # __init__.py
 # -*- coding: utf-8 -*-
 #
-# Copyright © Stephen Day
+# Copyright Â© Stephen Day
 #
 # This module is part of Creoleparser and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -15,7 +15,7 @@ from dialects import (creole11_base, creole10_base, creepy10_base,
 
 __docformat__ = 'restructuredtext en'
 
-__version__ = '0.7.2'
+__version__ = '0.7.3'
 
 creole2html = Parser(dialect=create_dialect(creole10_base), method='html')
 """This is a pure Creole 1.0 parser created for convenience"""
