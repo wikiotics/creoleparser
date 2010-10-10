@@ -345,7 +345,7 @@ class LinkElement(InlineElement):
                 url = urlparse.urljoin(base_url, url)
         elif self.urllink_regexp.match(body):
             urllink_mo = self.urllink_regexp.match(body)
-            link_type = 'url'
+            link_type = 'external'
             if sanitizer.is_safe_uri(urllink_mo.group(1)):
                 url = urllink_mo.group(1)
             else:
@@ -382,13 +382,13 @@ class AnchorElement(LinkElement):
 
     """Finds and builds internal, external, and interwiki links.
 
-    >>> link = AnchorElement('a',('[[',']]'),'|',
+    >>> link = AnchorElement('a',('[[',']]'),delimiter='|',
     ... interwiki_delimiter=':', 
     ... base_urls=dict(somewiki='http://somewiki.org/',
     ...                bigwiki='http://bigwiki.net/'),
     ... links_funcs={},default_space_char='-',
     ... space_chars={'bigwiki':' '},base_url='http://somewiki.org/',
-    ... space_char='_',class_func=None,path_func=None)
+    ... space_char='_',class_func=None,path_func=None,external_links_class=None)
     
     >>> mo = link.regexp.search("[[http://www.google.com| here]]")
     >>> link._build(mo,{},None).generate().render()
@@ -407,16 +407,18 @@ class AnchorElement(LinkElement):
     '<a href="http://somewiki.org/Home_Page">Home</a>'
     
     """
-    
 
-    def __init__(self, *args, **kw_args):
-        super(AnchorElement,self).__init__(*args, **kw_args)    
+    def __init__(self, tag, token, external_links_class, *args, **kw_args):
+        super(AnchorElement,self).__init__(tag, token, *args, **kw_args)
+        self.external_links_class = external_links_class
 
     def emit(self,element_store, environ,link_type,body,url,the_class, alias=None):
         if alias:
             alias = fragmentize(alias,self.child_elements,element_store, environ)
         else:
             alias = body.strip()
+        if link_type == 'external':
+            the_class = self.external_links_class
         return bldr.tag.__getattr__(self.tag)(alias,
                                               href=url,
                                               class_=the_class)
@@ -447,11 +449,11 @@ class ImageElement(LinkElement):
 
     def emit(self,element_store, environ,link_type,body,url,the_class, alt=None):
 
-        if self.disable_external and link_type == 'url':
+        if self.disable_external and link_type == 'external':
             return bldr.tag.span('External images are disabled', class_='external_image')
 
         if alt is None:
-            if link_type == 'url':
+            if link_type == 'external':
                 alt = urlparse.urlsplit(url).path.split('/')[-1]
             else:
                 alt = body.strip()

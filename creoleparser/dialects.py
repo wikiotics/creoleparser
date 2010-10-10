@@ -49,10 +49,13 @@ def create_dialect(dialect_base, **kw_args):
       disable_external_content
         If True, an error message will be inserted when an externally
         hosted image is found.
+      external_links_class
+        Class attribute to add to external links (i.e., not wiki or interwiki
+        link).
       indent_class
-        The class attribute to add to indented regions.
+        Class attribute to add to indented regions.
       indent_style
-        The style attribute to add to indented regions.
+        Style attribute to add to indented regions.
       interwiki_links_base_urls
         Dictionary of urls for interwiki links.
       interwiki_links_funcs
@@ -122,7 +125,7 @@ def create_dialect(dialect_base, **kw_args):
 def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
                  interwiki_links_base_urls={},
                  no_wiki_monospace=True,
-                 wiki_links_class_func=None,
+                 wiki_links_class_func=None, external_links_class=None,
                  wiki_links_path_func=None, interwiki_links_funcs={},
                  interwiki_links_space_chars={},
                  blog_style_endings=False,
@@ -170,7 +173,7 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
                                             space_chars=interwiki_links_space_chars,
                                        base_url=wiki_links_base_url,
                               space_char=wiki_links_space_char,class_func=wiki_links_class_func,
-                              path_func=wiki_links_path_func)
+                              path_func=wiki_links_path_func, external_links_class=external_links_class)
 
         img = ImageElement('img',('{{','}}'),delimiter = '|',interwiki_delimiter=':',
                                             base_urls=interwiki_links_base_urls,
