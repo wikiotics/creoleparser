@@ -1,7 +1,7 @@
 # core.py
 # -*- coding: utf-8 -*-
 #
-# Copyright © Stephen Day
+# Copyright Â© Stephen Day
 #
 # This module is part of Creoleparser and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -322,6 +322,10 @@ def fill_from_store(text,element_store):
 class ImplicitList(list):
     """This class marks argument lists as implicit"""
     pass
+
+class AttrDict(dict):
+    def __getattr__(self, attr):
+        return self[attr] 
 
 def _test():
     import doctest

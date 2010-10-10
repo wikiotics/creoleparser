@@ -16,7 +16,8 @@ import warnings
 import genshi.builder as bldr
 from genshi.core import Stream, Markup
 
-from core import (escape_char, esc_neg_look, fragmentize, ImplicitList) 
+from core import (escape_char, esc_neg_look, fragmentize,
+                  ImplicitList, AttrDict) 
 
 BLOCK_ONLY_TAGS = ['h1','h2','h3','h4','h5','h6',
               'ul','ol','dl',
@@ -533,7 +534,8 @@ class Macro(WikiElement):
             value = self.func(mo.group('name'),arg_string,None,False,environ)
         else:
             value = None
-        if value is None:
+
+        if value is None or isinstance(value,dict):
             return bldr.tag.code(self.token[0],bldr.tag.span(mo.group('name'),class_="macro_name"),
                            bldr.tag.span(arg_string,class_="macro_arg_string"),
                            self.token[1],class_="unknown_macro")
@@ -584,12 +586,10 @@ class BodiedMacro(Macro):
             tail = ''
                 
         if mo.group('name') in self.macros:
-            if isinstance(self.macros[mo.group('name')],dict):
-                value = self.macros[mo.group('name')].copy()
-            else:
-                raise Exception("bodied_macro dictionary values must also be dictionaries. \
-Callback support planned for 8.0")
-#                value = self.macros[mo.group('name')](mo.group('name'),mo.group('arg_string'),body,False,environ)
+            macro = AttrDict(name=mo.group('name'),arg_string=mo.group('arg_string'),
+                             body=body, isblock=False)
+            # arg_string parsing to be added here
+            value = self.macros[mo.group('name')](macro,environ)    
         elif self.func:
             value = self.func(mo.group('name'),mo.group('arg_string'),body,False,environ)
         else:
@@ -697,12 +697,10 @@ class BodiedBlockMacro(WikiElement):
 
 
         if mo.group('name') in self.macros:
-            if isinstance(self.macros[mo.group('name')],dict):
-                value = self.macros[mo.group('name')].copy()
-            else:
-                raise Exception("bodied_macro dictionary values must also be dictionaries. \
-Callback support planned for 8.0")
-#                value = self.macros[mo.group('name')](mo.group('name'),mo.group('arg_string'),body,True,environ)
+            macro = AttrDict(name=mo.group('name'),arg_string=mo.group('arg_string'),
+                             body=body, isblock=True)
+            # arg_string parsing to be added here
+            value = self.macros[mo.group('name')](macro,environ)    
         elif self.func:
             value = self.func(mo.group('name'),mo.group('arg_string'),body,True,environ)
         else:

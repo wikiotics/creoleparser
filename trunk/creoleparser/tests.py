@@ -553,8 +553,11 @@ class DialectOptionsTest(unittest.TestCase):
             wrap_result("This block of <code>text <strong>should</strong> be monospace</code> now"))
 
     def test_bodied_macros_option(self):
-        MyDialect = create_dialect(creole11_base, bodied_macros=dict([('red',{'style':'color:red'}),
-                                                                      ('blockquote',{'tag':'blockquote'})]))
+        def red(macro,e,*args,**kw):
+            return {'style':'color:red'}
+        def blockquote(macro,e,*args,**kw):
+            return {'tag':'blockquote'}
+        MyDialect = create_dialect(creole11_base, bodied_macros=dict(red=red, blockquote=blockquote))
         parse = Parser(MyDialect)
         self.assertEquals(
             parse("This block of <<red>>text **should** be monospace<</red>> now"),
