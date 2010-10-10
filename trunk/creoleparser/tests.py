@@ -572,6 +572,21 @@ class DialectOptionsTest(unittest.TestCase):
             parse("<<blockquote>>\ntext **should** be monospace\n<</blockquote>>"),
             '<blockquote><p>text <strong>should</strong> be monospace</p>\n</blockquote>')
 
+    def test_external_links_class_option(self):
+        dialect = create_dialect(creole10_base, external_links_class='external')
+        parse = Parser(dialect)
+        self.assertEquals(
+            parse("[[campfire.jpg]]"),
+            wrap_result("""<a href="campfire.jpg">campfire.jpg</a>"""))
+        self.assertEquals(
+            parse("[[/campfire.jpg]]"),
+            wrap_result("""<a class="external" href="/campfire.jpg">/campfire.jpg</a>"""))
+        self.assertEquals(
+            parse("[[http://www.somesite.com/campfire.jpg]]"),
+            wrap_result("""<a class="external" href="http://www.somesite.com/campfire.jpg">http://www.somesite.com/campfire.jpg</a>"""))
+
+
+
        
 class ExtendingTest(unittest.TestCase):
     
