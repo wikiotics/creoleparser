@@ -8,21 +8,182 @@
 #
 
 import warnings
-import string
+import string, keyword
 
 from elements import *
+from core import ArgParser
+
+
+def creepy10_base():
+    """Returns a dialect object (a class) to be used by :class:`~creoleparser.core.ArgParser`
+
+
+    **How it Works**
+
+    The "Creepy" dialect uses a syntax that can look much like that of
+    attribute definition in xml. The most important differences are that
+    positional arguments are allowed and quoting is optional.
+
+    A Creepy dialect object is normally passed to
+    :class:`~creoleparser.core.ArgParser` to create a new parser object.
+    When called with a single argument, this outputs a two-tuple
+    (a list of positional arguments and a dictionary of keyword arguments):
+
+    >>> from core import ArgParser
+    >>> my_parser = ArgParser(dialect=creepy10_base(), convert_implicit_lists=False)
+    >>> my_parser(" foo='one' ")
+    ([], {'foo': 'one'})
+    >>> my_parser("  'one' ")
+    (['one'], {})
+    >>> my_parser("  'one' foo='two' ")
+    (['one'], {'foo': 'two'})
+
+    Positional arguments must come before keyword arguments. If they occur
+    after a keyword argument, they will be combined with that value as a list:
+    
+    >>> my_parser("  foo='one' 'two' ")
+    ([], {'foo': ['one', 'two']})
+
+    Similarly, if two or more keywords are the same, the values will be combined
+    into a list:
+
+    >>> my_parser("  foo='one' foo='two' ")
+    ([], {'foo': ['one', 'two']})
+
+    The lists above are known as "Implicit" lists. They can automatically be
+    converted to strings by setting ``convert_implicit_lists=True`` in the
+    parser.
+
+    Quotes can be single or double:
+    
+    >>> my_parser(''' foo="it's okay" ''')
+    ([], {'foo': "it's okay"})
+
+    Tildes can be used for escaping:
+
+    >>> my_parser(''' foo='it~'s okay' ''')
+    ([], {'foo': "it's okay"})
+    
+    Quotes are optional if an argument value doesn't contain spaces or
+    unescaped special characters:
+    
+    >>> my_parser("  one foo = two ")
+    (['one'], {'foo': 'two'})
+
+    Keyword arguments lacking a value will be interpreted as an empty string:
+
+    >>> my_parser(" '' foo=  boo= '' ")
+    ([''], {'foo': '', 'boo': ''})
+
+    """
+    
+    class Base(ArgDialect):
+
+       kw_arg = KeywordArg(token='=')
+       quoted_arg = QuotedArg(token='\'"')
+       spaces = WhiteSpace()
+
+       def __init__(self):
+          self.kw_arg.child_elements = [self.spaces]
+          self.quoted_arg.child_elements = []
+          self.spaces.child_elements = []
+
+       @property
+       def top_elements(self):
+          return [self.quoted_arg, self.kw_arg, self.spaces]
+
+    return Base
+
+
+
+def creepy20_base():
+    """Extends creepy10_base to support an explicit list argument syntax.
+
+    >>> from core import ArgParser
+    >>> my_parser = ArgParser(dialect=creepy20_base(),convert_implicit_lists=False)
+    >>> my_parser(" one [two three] foo=['four' 'five'] ")
+    (['one', ['two', 'three']], {'foo': ['four', 'five']})
+
+    You can test if a list is explicit by testing its class:
+
+    >>> from core import ImplicitList
+    >>> pos, kw = my_parser("  foo=['one' 'two'] boo = 'three' 'four'")
+    >>> print kw
+    {'foo': ['one', 'two'], 'boo': ['three', 'four']}
+    >>> isinstance(kw['foo'], ImplicitList)
+    False
+    >>> isinstance(kw['boo'], ImplicitList)
+    True
+    
+    Lists of length zero or one are **never** of type ImplicitList.
+
+    """
+
+    Creepy10Base = creepy10_base()
+    class Base(Creepy10Base):
+
+       list_arg = ListArg(token=['[',']'])
+       explicit_list_arg = ExplicitListArg(token=['[',']'])
+
+       def __init__(self):
+          super(Base,self).__init__()
+          self.kw_arg.child_elements = [self.explicit_list_arg,self.spaces]
+          self.list_arg.child_elements = [self.spaces]
+          self.explicit_list_arg.child_elements = [self.spaces]
+
+       @property
+       def top_elements(self):
+          return [self.quoted_arg, self.kw_arg, self.list_arg,self.spaces]
+
+    return Base
+
+
+
+class ArgDialect(object):
+    """Base class for argument string dialect objects."""
+    pass
+
+parse_args = ArgParser(dialect=creepy10_base(),key_func=string.lower,
+                       illegal_keys=keyword.kwlist + ['macro_name',
+                         'arg_string', 'body', 'isblock', 'environ', 'macro'])
+"""Function for parsing macro arg_strings using a relaxed xml style"""
+
 
 
 
 def create_dialect(dialect_base, **kw_args):
     """Factory function for dialect objects (for parameter defaults,
-    see :func:`~creoleparser.dialects.creole10_base`)
+    see :func:`~creoleparser.dialects.creole10_base` and/or
+    :func:`~creoleparser.dialects.creole11_base`)
 
     :parameters:
+      argument_parser
+        Parser used for automatic parsing of macro arg strings. Must take a
+        single string argument and return a two-tuple with the first element
+        a list (for positional arguments) and the second a dictionary (for
+        keyword arguments). A default is supplied.
       blog_style_endings
         If `True`, each newline character in a paragraph will be converted to
         a <br />. Note that the escaping mechanism (tilde) does not work
         for newlines.
+      bodied_macros
+        Dictionary of macros (functions). If a bodied macro is found that is not
+        in this dictionary, macro_func (below) will be called instead. Each
+        function must accept the following positional arguments:
+
+        1. macro object. This object has attributes ``macro_name``, ``body``,
+           ``isblock``, and ``arg_string``. See macro_func (below) for more
+           information. Attributes can also be access like dictionary values.
+        2. an `environ` object (see :meth:`creoleparser.core.Parser.generate`)
+
+        Each function must also use Python's syntax for accepting other
+        arbitrary arguments (e.g.,def mymacro(macro, env, *pos, **kw):) as the
+        arg_string will be parsed automatically and contribute additional
+        arguments.
+
+        For information on return values, see macro_func (below).
+      non_bodied_macros
+        Same as bodied_macros but used for non-bodied macros.        
       custom_markup
         List of tuples that can each define arbitrary custom wiki markup such
         as WikiWords and emoticons. Each tuple must have two elements,
@@ -66,7 +227,8 @@ def create_dialect(dialect_base, **kw_args):
         that occur in interwiki_links. If no key is present for an interwiki
         name, the wiki_links_space_char will be used.
       macro_func
-        If supplied, this fuction will be called when macro markup is found. The
+        If supplied, this fuction will be called when macro markup is found,
+        unless the macro is in one of macro dictionaries above. The
         function must accept the following postional arguments:
         
         1. macro name (string)
@@ -131,7 +293,7 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
                  blog_style_endings=False,
                  disable_external_content=False,
                  custom_markup=[],
-                 simple_markup=[('**','strong'),('//','em')], 
+                 simple_markup=[('**','strong'),('//','em')],
                  ):
     """Returns a base class for extending
     (for parameter descriptions, see :func:`~creoleparser.dialects.create_dialect`)
@@ -239,7 +401,9 @@ def creole11_base(macro_func=None,
                   indent_style='margin-left:2em',
                   simple_markup=[('**','strong'),('//','em'),(',,','sub'),
                                  ('^^','sup'),('__','u'),('##','code')],
-                  bodied_macros={}, #not ready for public consumption
+                  non_bodied_macros={},
+                  bodied_macros={}, 
+                  argument_parser=parse_args, 
                   **kwargs):
     """Returns a base class for extending (for parameter descriptions, see :func:`~creoleparser.dialects.create_dialect`)
 
@@ -297,9 +461,12 @@ def creole11_base(macro_func=None,
         dt = DefinitionTerm('dt',';',stop_token=':')
         dl = List('dl',';',stop_tokens='*#')
 
-        macro = Macro('',('<<','>>'),func=macro_func)
-        bodiedmacro = BodiedMacro('',('<<','>>'),func=macro_func, macros=bodied_macros)
-        bodied_block_macro = BodiedBlockMacro('',('<<','>>'),func=macro_func, macros=bodied_macros)    
+        macro = Macro('',('<<','>>'),func=macro_func, macros=non_bodied_macros,
+                      arg_parser= argument_parser)
+        bodiedmacro = BodiedMacro('',('<<','>>'),func=macro_func,
+                                  macros=bodied_macros, arg_parser= argument_parser)
+        bodied_block_macro = BodiedBlockMacro('',('<<','>>'),func=macro_func,
+                                              macros=bodied_macros,arg_parser= argument_parser)    
 
         def __init__(self):
             super(Base,self).__init__()
@@ -328,136 +495,6 @@ def creole11_base(macro_func=None,
 
 class Dialect(object):
     """Base class for dialect objects."""
-    pass
-
-
-
-def creepy10_base():
-    """Returns a dialect object (a class) to be used by :class:`~creoleparser.core.ArgParser`
-
-
-    **How it Works**
-
-    The "Creepy" dialect uses a syntax that can look much like that of
-    attribute definition in xml. The most important differences are that
-    positional arguments are allowed and quoting is optional.
-
-    A Creepy dialect object is normally passed to
-    :class:`~creoleparser.core.ArgParser` to create a new parser object.
-    When called with a single argument, this outputs a two-tuple
-    (a list of positional arguments and a dictionary of keyword arguments):
-
-    >>> from core import ArgParser
-    >>> my_parser = ArgParser(dialect=creepy10_base(), convert_implicit_lists=False)
-    >>> my_parser(" foo='one' ")
-    ([], {'foo': 'one'})
-    >>> my_parser("  'one' ")
-    (['one'], {})
-    >>> my_parser("  'one' foo='two' ")
-    (['one'], {'foo': 'two'})
-
-    Positional arguments must come before keyword arguments. If they occur
-    after a keyword argument, they will be combined with that value as a list:
-    
-    >>> my_parser("  foo='one' 'two' ")
-    ([], {'foo': ['one', 'two']})
-
-    Similarly, if two or more keywords are the same, the values will be combined
-    into a list:
-
-    >>> my_parser("  foo='one' foo='two' ")
-    ([], {'foo': ['one', 'two']})
-
-    The lists above are known as "Implicit" lists. They can automatically be
-    converted to strings by setting ``convert_implicit_lists=True`` in the
-    parser.
-
-    Quotes can be single or double:
-    
-    >>> my_parser(''' foo="it's okay" ''')
-    ([], {'foo': "it's okay"})
-
-    Tildes can be used for escaping:
-
-    >>> my_parser(''' foo='it~'s okay' ''')
-    ([], {'foo': "it's okay"})
-    
-    Quotes are optional if an argument value doesn't contain spaces or
-    unescaped special characters:
-    
-    >>> my_parser("  one foo = two ")
-    (['one'], {'foo': 'two'})
-
-    Keyword arguments lacking a value will be interpreted as an empty string:
-
-    >>> my_parser(" '' foo=  boo= '' ")
-    ([''], {'foo': '', 'boo': ''})
-
-    """
-    
-    class Base(ArgDialect):
-
-       kw_arg = KeywordArg(token='=')
-       quoted_arg = QuotedArg(token='\'"')
-       spaces = WhiteSpace()
-
-       def __init__(self):
-          self.kw_arg.child_elements = [self.spaces]
-          self.quoted_arg.child_elements = []
-          self.spaces.child_elements = []
-
-       @property
-       def top_elements(self):
-          return [self.quoted_arg, self.kw_arg, self.spaces]
-
-    return Base
-
-
-def creepy20_base():
-    """Extends creepy10_base to support an explicit list argument syntax.
-
-    >>> from core import ArgParser
-    >>> my_parser = ArgParser(dialect=creepy20_base(),convert_implicit_lists=False)
-    >>> my_parser(" one [two three] foo=['four' 'five'] ")
-    (['one', ['two', 'three']], {'foo': ['four', 'five']})
-
-    You can test if a list is explicit by testing its class:
-
-    >>> from core import ImplicitList
-    >>> pos, kw = my_parser("  foo=['one' 'two'] boo = 'three' 'four'")
-    >>> print kw
-    {'foo': ['one', 'two'], 'boo': ['three', 'four']}
-    >>> isinstance(kw['foo'], ImplicitList)
-    False
-    >>> isinstance(kw['boo'], ImplicitList)
-    True
-    
-    Lists of length zero or one are **never** of type ImplicitList.
-
-    """
-
-    Creepy10Base = creepy10_base()
-    class Base(Creepy10Base):
-
-       list_arg = ListArg(token=['[',']'])
-       explicit_list_arg = ExplicitListArg(token=['[',']'])
-
-       def __init__(self):
-          super(Base,self).__init__()
-          self.kw_arg.child_elements = [self.explicit_list_arg,self.spaces]
-          self.list_arg.child_elements = [self.spaces]
-          self.explicit_list_arg.child_elements = [self.spaces]
-
-       @property
-       def top_elements(self):
-          return [self.quoted_arg, self.kw_arg, self.list_arg,self.spaces]
-
-    return Base
-
-
-
-class ArgDialect(object):
-    """Base class for argument string dialect objects."""
     pass
 
 

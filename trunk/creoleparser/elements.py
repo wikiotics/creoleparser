@@ -496,9 +496,11 @@ Use of elements.Link is depreciated.
 class Macro(WikiElement):
     r"""Finds and processes inline macro elements."""
 
-    def __init__(self, tag, token, func):
+    def __init__(self, tag, token, func, macros, arg_parser):
         super(Macro,self).__init__(tag,token , [])
         self.func = func
+        self.macros = macros
+        self.arg_parser = arg_parser
         self.regexp = re.compile(self.re_string())
 
 
@@ -532,7 +534,16 @@ class Macro(WikiElement):
     trailing_slash = re.compile(r'(?<=[ "\'\]])/$')
     def _build(self,mo,element_store, environ):
         arg_string = re.sub(self.trailing_slash,'',mo.group(4))
-        if self.func:
+
+        if mo.group('name') in self.macros:
+            macro = AttrDict(name=mo.group('name'),arg_string=mo.group('arg_string'),
+                             body=None, isblock=False)
+            if self.arg_parser:
+                pos, kw = self.arg_parser(macro.arg_string)
+            else:
+                pos, kw = [], {}
+            value = self.macros[mo.group('name')](macro,environ,*pos,**kw)    
+        elif self.func:
             value = self.func(mo.group('name'),arg_string,None,False,environ)
         else:
             value = None
@@ -553,10 +564,8 @@ class BodiedMacro(Macro):
     Does not span across top level block markup
     (see BodiedBlockMacro's for that)."""
 
-    def __init__(self, tag, token, func, macros):
-        super(BodiedMacro,self).__init__(tag,token , func)
-        self.func = func
-        self.macros = macros
+    def __init__(self, tag, token, func, macros, arg_parser):
+        super(BodiedMacro,self).__init__(tag,token , func, macros, arg_parser)
         self.regexp = re.compile(self.re_string(),re.DOTALL)
 
     def re_string(self):
@@ -590,8 +599,11 @@ class BodiedMacro(Macro):
         if mo.group('name') in self.macros:
             macro = AttrDict(name=mo.group('name'),arg_string=mo.group('arg_string'),
                              body=body, isblock=False)
-            # arg_string parsing to be added here
-            value = self.macros[mo.group('name')](macro,environ)    
+            if self.arg_parser:
+                pos, kw = self.arg_parser(macro.arg_string)
+            else:
+                pos, kw = [], {}
+            value = self.macros[mo.group('name')](macro,environ,*pos,**kw)    
         elif self.func:
             value = self.func(mo.group('name'),mo.group('arg_string'),body,False,environ)
         else:
@@ -624,10 +636,11 @@ class BodiedBlockMacro(WikiElement):
     including pre blocks and other BodiedBlockMacro's."""
 
 
-    def __init__(self, tag, token, func, macros):
+    def __init__(self, tag, token, func, macros, arg_parser):
         super(BodiedBlockMacro,self).__init__(tag,token)
         self.func = func
         self.macros = macros
+        self.arg_parser=arg_parser
         self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
 
     def re_string(self):
@@ -701,8 +714,11 @@ class BodiedBlockMacro(WikiElement):
         if mo.group('name') in self.macros:
             macro = AttrDict(name=mo.group('name'),arg_string=mo.group('arg_string'),
                              body=body, isblock=True)
-            # arg_string parsing to be added here
-            value = self.macros[mo.group('name')](macro,environ)    
+            if self.arg_parser:
+                pos, kw = self.arg_parser(macro.arg_string)
+            else:
+                pos, kw = [], {}
+            value = self.macros[mo.group('name')](macro,environ,*pos,**kw)    
         elif self.func:
             value = self.func(mo.group('name'),mo.group('arg_string'),body,True,environ)
         else:
