@@ -11,7 +11,7 @@ import keyword
 
 from core import Parser, ArgParser
 from dialects import (creole11_base, creole10_base, creepy10_base,
-                    create_dialect)
+                    create_dialect, parse_args)
 
 __docformat__ = 'restructuredtext en'
 
@@ -23,10 +23,10 @@ creole2html = Parser(dialect=create_dialect(creole10_base), method='html')
 text2html = Parser(dialect=create_dialect(creole11_base), method='html')
 """This is a Creole 1.0 parser (+ additions) created for convenience"""
 
-parse_args = ArgParser(dialect=creepy10_base(),key_func=string.lower,
-                       illegal_keys=keyword.kwlist + ['macro_name',
-                         'arg_string', 'body', 'isblock', 'environ', 'macro'])
-"""Function for parsing macro arg_strings using a relaxed xml style"""
+#parse_args = ArgParser(dialect=creepy10_base(),key_func=string.lower,
+#                       illegal_keys=keyword.kwlist + ['macro_name',
+#                         'arg_string', 'body', 'isblock', 'environ', 'macro'])
+#"""Function for parsing macro arg_strings using a relaxed xml style"""
 
 def _test():
     import doctest

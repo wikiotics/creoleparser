@@ -643,7 +643,7 @@ class MacroTest(unittest.TestCase, BaseTest):
             interwiki_links_base_urls={'Ohana': inter_wiki_url},
             no_wiki_monospace=False,
             macro_func=self.macroFactory,
- #           bodied_macros=dict(span=self.span)
+            bodied_macros=dict(span=self.span)
                                  )
         self.parse = Parser(dialect)
 
@@ -660,16 +660,16 @@ class MacroTest(unittest.TestCase, BaseTest):
         fragment = builder.tag(wrapped)
         return fragment.generate()
 
-#    def span(self, macro_name, arg_string, body, context,wiki):
-#        return builder.tag.span(self.parse.generate(body,context='inline'),id_=arg_string.strip())    
+    def span(self, macro, e, id_=None, *pos, **kw):
+        return builder.tag.span(self.parse.generate(macro.body,context='inline'),id_=id_)    
 
     def macroFactory(self, macro_name, arg_string, body, context,wiki):
         if macro_name == 'html':
             return self.getFragment(body)
         elif macro_name == 'title':
             return wiki.page_title
-        elif macro_name == 'span':
-            return builder.tag.span(self.parse.generate(body,context='inline'),id_=arg_string.strip())
+#        elif macro_name == 'span':
+#            return builder.tag.span(self.parse.generate(body,context='inline'),id_=arg_string.strip())
         elif macro_name == 'div':
             return builder.tag.div(self.parse.generate(body),id_=arg_string.strip())
         elif macro_name == 'html2':
@@ -836,10 +836,10 @@ one
             wrap_result('<span id="one">part 1</span><span id="two">part 2</span>'))
         self.assertEquals(
             self.parse('<<span>>part 1a<<span two>>part 2<</span>>part 1b<</span>>'),
-            wrap_result('<span id="">part 1a<span id="two">part 2</span>part 1b</span>'))
+            wrap_result('<span>part 1a<span id="two">part 2</span>part 1b</span>'))
         self.assertEquals(
             self.parse('<<span>>part 1a<<span>>part 2<</span>>part 1b<</span>>'),
-            wrap_result('<span id="">part 1a<span id="">part 2</span>part 1b</span>'))
+            wrap_result('<span>part 1a<span>part 2</span>part 1b</span>'))
         self.assertEquals(
             self.parse('<<span one>>part 1a<<span two>>part 2<</span>>part 1b<</span>>'),
             wrap_result('<span id="one">part 1a<span id="two">part 2</span>part 1b</span>'))

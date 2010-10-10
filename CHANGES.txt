@@ -1,10 +1,12 @@
 Version 0.7.3 (??? 2010)
 ---------------------------
 
+* external links can have an optional class attribute
+  (``external_links_class``)
 * ``macro_func`` can now return a dictionary, providing better support
   for typical bodied macro use (i.e., styling and formatting)
-* added ``custom_markup``, ``disable_external_content``, and ``simple_markup``,
-  parameters to ``create_dialect`` function
+* added ``custom_markup``, ``disable_external_content``, ``simple_markup``,
+  and ``external_links_class`` parameters to ``create_dialect`` function
 * added support for custom base urls and functions for images
 
 
