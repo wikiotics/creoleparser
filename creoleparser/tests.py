@@ -662,7 +662,9 @@ class MacroTest(unittest.TestCase, BaseTest):
         return fragment.generate()
 
     def span(self, macro, e, id_=None):
-        return builder.tag.span(self.parse.generate(macro.body,context='inline'),id_=id_)
+        return builder.tag.span(macro.body,id_=id_)
+    span.parse_body = True
+    
 
     def luca(self, macro, e, *pos, **kw):
         return builder.tag.strong(macro.arg_string)
