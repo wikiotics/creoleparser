@@ -12,6 +12,7 @@ import urlparse
 import urllib
 import keyword
 import warnings
+import traceback
 
 import genshi.builder as bldr
 from genshi.core import Stream, Markup
@@ -531,18 +532,40 @@ class Macro(WikiElement):
         return esc_neg_look + re.escape(self.token[0]) + r'(' + MACRO_NAME + \
                content + ')' + esc_neg_look + re.escape(self.token[1])
 
+    def _macro_func(self,macro_name,arg_string,body,isblock,environ):
+
+        macro = AttrDict(name=macro_name,arg_string=arg_string,
+                         body=body, isblock=isblock)
+        if self.arg_parser:
+            pos, kw = self.arg_parser(macro.arg_string)
+        else:
+            pos, kw = [], {}
+        try:
+            value = self.macros[macro_name](macro,environ,*pos,**kw)
+        except TypeError as detail:
+            tag = isblock and 'pre' or 'code'
+            e = str(detail)
+            if e.count('most'):
+                msg = 'got too many arguments'
+            elif e.count('least'):
+                msg = 'got too few arguments'
+            else:
+                msg = re.sub(r"^\w*\(\) ", '', e)
+            value = bldr.tag.__getattr__(tag)("Macro error: '%s' %s"% (macro_name, msg),class_='macro_error')
+        except:
+            value = bldr.tag.pre('Unexpected error during macro execution!\n'
+                                 + traceback.format_exc(20) ,
+                                 class_='macro_error')
+
+        return value    
+
+
     trailing_slash = re.compile(r'(?<=[ "\'\]])/$')
     def _build(self,mo,element_store, environ):
         arg_string = re.sub(self.trailing_slash,'',mo.group(4))
 
         if mo.group('name') in self.macros:
-            macro = AttrDict(name=mo.group('name'),arg_string=mo.group('arg_string'),
-                             body=None, isblock=False)
-            if self.arg_parser:
-                pos, kw = self.arg_parser(macro.arg_string)
-            else:
-                pos, kw = [], {}
-            value = self.macros[mo.group('name')](macro,environ,*pos,**kw)    
+            value = self._macro_func(mo.group('name'),arg_string,None,False,environ)    
         elif self.func:
             value = self.func(mo.group('name'),arg_string,None,False,environ)
         else:
@@ -597,13 +620,7 @@ class BodiedMacro(Macro):
             tail = ''
                 
         if mo.group('name') in self.macros:
-            macro = AttrDict(name=mo.group('name'),arg_string=mo.group('arg_string'),
-                             body=body, isblock=False)
-            if self.arg_parser:
-                pos, kw = self.arg_parser(macro.arg_string)
-            else:
-                pos, kw = [], {}
-            value = self.macros[mo.group('name')](macro,environ,*pos,**kw)    
+            value = self._macro_func(mo.group('name'),mo.group('arg_string'),body,False,environ)    
         elif self.func:
             value = self.func(mo.group('name'),mo.group('arg_string'),body,False,environ)
         else:
@@ -628,19 +645,14 @@ class BodiedMacro(Macro):
 
        
 
-class BodiedBlockMacro(WikiElement):
+class BodiedBlockMacro(Macro):
     """Finds and processes block macros with bodies.
 
     The opening and closing tokens must be are each on a line alone without
     leading spaces. These macros can enclose other block level markup
     including pre blocks and other BodiedBlockMacro's."""
-
-
     def __init__(self, tag, token, func, macros, arg_parser):
-        super(BodiedBlockMacro,self).__init__(tag,token)
-        self.func = func
-        self.macros = macros
-        self.arg_parser=arg_parser
+        super(BodiedBlockMacro,self).__init__(tag,token , func, macros, arg_parser)
         self.regexp = re.compile(self.re_string(),re.DOTALL+re.MULTILINE)
 
     def re_string(self):
@@ -712,13 +724,7 @@ class BodiedBlockMacro(WikiElement):
 
 
         if mo.group('name') in self.macros:
-            macro = AttrDict(name=mo.group('name'),arg_string=mo.group('arg_string'),
-                             body=body, isblock=True)
-            if self.arg_parser:
-                pos, kw = self.arg_parser(macro.arg_string)
-            else:
-                pos, kw = [], {}
-            value = self.macros[mo.group('name')](macro,environ,*pos,**kw)    
+            value = self._macro_func(mo.group('name'),mo.group('arg_string'),body,True,environ)    
         elif self.func:
             value = self.func(mo.group('name'),mo.group('arg_string'),body,True,environ)
         else:

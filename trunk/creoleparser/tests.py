@@ -643,7 +643,8 @@ class MacroTest(unittest.TestCase, BaseTest):
             interwiki_links_base_urls={'Ohana': inter_wiki_url},
             no_wiki_monospace=False,
             macro_func=self.macroFactory,
-            bodied_macros=dict(span=self.span)
+            bodied_macros=dict(span=self.span),
+            non_bodied_macros=dict(luca=self.luca),                                 
                                  )
         self.parse = Parser(dialect)
 
@@ -660,8 +661,11 @@ class MacroTest(unittest.TestCase, BaseTest):
         fragment = builder.tag(wrapped)
         return fragment.generate()
 
-    def span(self, macro, e, id_=None, *pos, **kw):
-        return builder.tag.span(self.parse.generate(macro.body,context='inline'),id_=id_)    
+    def span(self, macro, e, id_=None):
+        return builder.tag.span(self.parse.generate(macro.body,context='inline'),id_=id_)
+
+    def luca(self, macro, e, *pos, **kw):
+        return builder.tag.strong(macro.arg_string)
 
     def macroFactory(self, macro_name, arg_string, body, context,wiki):
         if macro_name == 'html':
@@ -680,8 +684,8 @@ class MacroTest(unittest.TestCase, BaseTest):
             return builder.tag.pre('**' + body + '**')
         elif macro_name == 'steve':
             return '**' + arg_string + '**'
-        elif macro_name == 'luca':
-            return builder.tag.strong(arg_string)
+#        elif macro_name == 'luca':
+#            return builder.tag.strong(arg_string)
         elif macro_name == 'mateo':
             return builder.tag.em(body)
         elif macro_name == 'ReverseFrag':
@@ -874,6 +878,14 @@ part 2
             self.parse("[[This Page Here|<<steve the steve macro!>>]]"),
             wrap_result("""<a href="This_Page_Here"><strong> the steve macro!</strong></a>"""))
 
+
+    def test_argument_error(self):
+        self.assertEquals(
+            self.parse("<<span error here>>This is bad<</span>>"),
+                       wrap_result("""<code class="macro_error">Macro error: 'span' got too many arguments</code>"""))
+        self.assertEquals(
+            self.parse("<<span a=1>>This is bad<</span>>"),
+                       wrap_result("""<code class="macro_error">Macro error: 'span' got an unexpected keyword argument 'a'</code>"""))
 
 class InterWikiLinksTest(unittest.TestCase,BaseTest):
 
