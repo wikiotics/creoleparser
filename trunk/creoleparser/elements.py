@@ -534,14 +534,19 @@ class Macro(WikiElement):
 
     def _macro_func(self,macro_name,arg_string,body,isblock,environ):
 
-        macro = AttrDict(name=macro_name,arg_string=arg_string,
-                         body=body, isblock=isblock)
         if self.arg_parser:
-            pos, kw = self.arg_parser(macro.arg_string)
+            pos, kw = self.arg_parser(arg_string)
         else:
             pos, kw = [], {}
+
+        func = self.macros[macro_name]
+        if func.func_dict.get('parse_body') and body is not None:
+           body = bldr.tag(fragmentize(body, self.child_elements, {}, environ))            
+        macro = AttrDict(name=macro_name,arg_string=arg_string,
+                         body=body, isblock=isblock)
+        
         try:
-            value = self.macros[macro_name](macro,environ,*pos,**kw)
+            value = func(macro,environ,*pos,**kw)
         except TypeError as detail:
             tag = isblock and 'pre' or 'code'
             e = str(detail)
