@@ -895,6 +895,9 @@ class InterWikiLinksTest(unittest.TestCase,BaseTest):
         def inter_wiki_link_maker(name):
             return name[::-1]
 
+        def simple_class_maker(name):
+            return name.lower()
+
         functions = {
             'moo':inter_wiki_link_maker,
             'goo':inter_wiki_link_maker,
@@ -909,8 +912,14 @@ class InterWikiLinksTest(unittest.TestCase,BaseTest):
             'poo': '+',
             }
 
+        class_functions = {
+            'moo':simple_class_maker,
+            'goo':simple_class_maker,
+            }
+
         dialect = create_dialect(creole10_base,
-            interwiki_links_funcs=functions,
+            interwiki_links_path_funcs=functions,
+            interwiki_links_class_funcs=class_functions,
             interwiki_links_base_urls=base_urls,
             interwiki_links_space_chars=space_characters
             )
@@ -921,10 +930,10 @@ class InterWikiLinksTest(unittest.TestCase,BaseTest):
         super(InterWikiLinksTest,self).test_interwiki_links()
         self.assertEquals(
             str(self.parse("[[moo:foo bar|Foo]]")),
-            wrap_result("""<a href="rab_oof">Foo</a>"""))
+            wrap_result("""<a class="foo_bar" href="rab_oof">Foo</a>"""))
         self.assertEquals(
             str(self.parse("[[goo:foo|Foo]]")),
-            wrap_result("""<a href="http://example.org/oof">Foo</a>"""))
+            wrap_result("""<a class="foo" href="http://example.org/oof">Foo</a>"""))
         self.assertEquals(
             str(self.parse("[[poo:foo|Foo]]")),
             wrap_result("""<a href="http://example.org/foo">Foo</a>"""))
@@ -933,7 +942,7 @@ class InterWikiLinksTest(unittest.TestCase,BaseTest):
             wrap_result("""<a href="http://example.org/foo%2Bbar">Foo</a>"""))
         self.assertEquals(
             str(self.parse("[[goo:foo bar|Foo]]")),
-            wrap_result("""<a href="http://example.org/rab+oof">Foo</a>"""))
+            wrap_result("""<a class="foo+bar" href="http://example.org/rab+oof">Foo</a>"""))
         self.assertEquals(
             str(self.parse("[[roo:foo bar|Foo]]")),
             wrap_result("""<a href="roo%3Afoo_bar">Foo</a>"""))
