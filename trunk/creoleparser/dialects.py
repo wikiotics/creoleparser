@@ -219,9 +219,13 @@ def create_dialect(dialect_base, **kw_args):
         Style attribute to add to indented regions.
       interwiki_links_base_urls
         Dictionary of urls for interwiki links.
-      interwiki_links_funcs
+      interwiki_links_class_funcs
         Dictionary of functions that will be called for interwiki link
-        names. Works like wiki_links_path_func
+        names and return class attributes. Works like
+        wiki_links_class_func.
+      interwiki_links_path_funcs
+        Dictionary of functions that will be called for interwiki link
+        names and return url paths. Works like wiki_links_path_func.
       interwiki_links_space_chars
         Dictionary of characters that that will be used to replace spaces
         that occur in interwiki_links. If no key is present for an interwiki
@@ -280,6 +284,12 @@ def create_dialect(dialect_base, **kw_args):
  
     """
 
+    if 'interwiki_links_funcs' in kw_args:
+        warnings.warn("""
+The "interwiki_links_funcs" parameter has been renamed
+to "interwiki_links_path_funcs"
+""")
+        kw_args.setdefault('interwiki_links_path_funcs',kw_args.pop('interwiki_links_funcs'))
     return dialect_base(**kw_args)
 
 
@@ -288,8 +298,8 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
                  interwiki_links_base_urls={},
                  no_wiki_monospace=True,
                  wiki_links_class_func=None, external_links_class=None,
-                 wiki_links_path_func=None, interwiki_links_funcs={},
-                 interwiki_links_space_chars={},
+                 wiki_links_path_func=None, interwiki_links_path_funcs={},
+                 interwiki_links_class_funcs={},interwiki_links_space_chars={},
                  blog_style_endings=False,
                  disable_external_content=False,
                  custom_markup=[],
@@ -330,7 +340,8 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
         raw_link = RawLink('a')
         link = AnchorElement('a',('[[',']]'),delimiter = '|',interwiki_delimiter=':',
                                             base_urls=interwiki_links_base_urls,
-                                            links_funcs=interwiki_links_funcs,
+                                            links_funcs=interwiki_links_path_funcs,
+                                            interwiki_class_funcs=interwiki_links_class_funcs, 
                                             default_space_char=wiki_links_space_char,
                                             space_chars=interwiki_links_space_chars,
                                        base_url=wiki_links_base_url,
@@ -339,7 +350,8 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
 
         img = ImageElement('img',('{{','}}'),delimiter = '|',interwiki_delimiter=':',
                                             base_urls=interwiki_links_base_urls,
-                                            links_funcs=interwiki_links_funcs,
+                                            links_funcs=interwiki_links_path_funcs,
+                                            interwiki_class_funcs=interwiki_links_class_funcs, 
                                             default_space_char=embed_space_char,
                                             space_chars=interwiki_links_space_chars,
                                        base_url=embed_base_url,

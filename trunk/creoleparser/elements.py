@@ -279,7 +279,8 @@ class LinkElement(InlineElement):
     """
     
     def __init__(self,tag, token, delimiter,
-                 interwiki_delimiter,base_urls,links_funcs,default_space_char,space_chars,
+                 interwiki_delimiter,base_urls,links_funcs,
+                 interwiki_class_funcs,default_space_char,space_chars,
                  base_url,space_char,class_func,path_func):
         super(LinkElement,self).__init__(tag,token)
         self.regexp = re.compile(self.re_string(),re.DOTALL)
@@ -287,6 +288,7 @@ class LinkElement(InlineElement):
         self.interwiki_delimiter = interwiki_delimiter
         self.base_urls = base_urls
         self.links_funcs = links_funcs
+        self.class_funcs = interwiki_class_funcs
         self.default_space_char = default_space_char
         self.space_chars = space_chars
         self.base_url = base_url
@@ -337,6 +339,7 @@ class LinkElement(InlineElement):
             link_type = 'interwiki'
             base_url = self.base_urls.get(interwikilink_mo.group('wiki_id'))
             link_func = self.links_funcs.get(interwikilink_mo.group('wiki_id'))
+            class_func = self.class_funcs.get(interwikilink_mo.group('wiki_id'))
             page_name = self.page_name(interwikilink_mo)
             if link_func:
                 url = link_func(page_name)
@@ -344,6 +347,8 @@ class LinkElement(InlineElement):
                 url = urllib.quote(page_name.encode('utf-8'))
             if base_url:
                 url = urlparse.urljoin(base_url, url)
+            if class_func:
+                the_class = class_func(page_name)
         elif self.urllink_regexp.match(body):
             urllink_mo = self.urllink_regexp.match(body)
             link_type = 'external'
@@ -387,7 +392,7 @@ class AnchorElement(LinkElement):
     ... interwiki_delimiter=':', 
     ... base_urls=dict(somewiki='http://somewiki.org/',
     ...                bigwiki='http://bigwiki.net/'),
-    ... links_funcs={},default_space_char='-',
+    ... links_funcs={},interwiki_class_funcs={},default_space_char='-',
     ... space_chars={'bigwiki':' '},base_url='http://somewiki.org/',
     ... space_char='_',class_func=None,path_func=None,external_links_class=None)
     
@@ -413,6 +418,7 @@ class AnchorElement(LinkElement):
         super(AnchorElement,self).__init__(tag, token, *args, **kw_args)
         self.external_links_class = external_links_class
 
+
     def emit(self,element_store, environ,link_type,body,url,the_class, alias=None):
         if alias:
             alias = fragmentize(alias,self.child_elements,element_store, environ)
@@ -433,7 +439,7 @@ class ImageElement(LinkElement):
     ... interwiki_delimiter=':', 
     ... base_urls=dict(somewiki='http://somewiki.org/',
     ...                bigwiki='http://bigwiki.net/'),
-    ... links_funcs={},default_space_char='-',
+    ... links_funcs={},interwiki_class_funcs={},default_space_char='-',
     ... space_chars={'bigwiki':' '},base_url='/images/',
     ... space_char='_',class_func=None,path_func=None,disable_external=False)
 
