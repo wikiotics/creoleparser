@@ -553,14 +553,14 @@ class Macro(WikiElement):
         
         try:
             value = func(macro,environ,*pos,**kw)
-        except TypeError as detail:
+        except TypeError , detail:
             tag = isblock and 'pre' or 'code'
             e = str(detail)
             msg = re.sub(r"^\w*\(\) ", '', e)
             if re.search(r'given\)$',msg):
                 mo = re.match(r'(.+)(\d+)(.+)(\d+)(.+)$',msg)
-                msg = mo.group(1) + str(int(mo.group(2))-3) \
-                      + ' argument(s) (' + str(int(mo.group(4))-3) \
+                msg = mo.group(1) + str(int(mo.group(2))-2) \
+                      + ' argument(s) (' + str(int(mo.group(4))-2) \
                       + mo.group(5)
             value = bldr.tag.__getattr__(tag)("Macro error: '%s' %s"% (macro_name, msg),class_='macro_error')
         except:

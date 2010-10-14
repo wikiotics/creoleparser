@@ -889,7 +889,7 @@ part 2
     def test_argument_error(self):
         self.assertEquals(
             self.parse("<<span error here>>This is bad<</span>>"),
-                       wrap_result("""<code class="macro_error">Macro error: 'span' takes at most 1 argument(s) (2 given)</code>"""))
+                       wrap_result("""<code class="macro_error">Macro error: 'span' takes at most 2 argument(s) (3 given)</code>"""))
         self.assertEquals(
             self.parse("<<span a=1>>This is bad<</span>>"),
                        wrap_result("""<code class="macro_error">Macro error: 'span' got an unexpected keyword argument 'a'</code>"""))

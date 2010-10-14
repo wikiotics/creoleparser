@@ -173,14 +173,14 @@ def create_dialect(dialect_base, **kw_args):
 
         1. macro object. This object has attributes ``macro_name``, ``body``,
            ``isblock``, and ``arg_string``. See macro_func (below) for more
-           information. Attributes can also be access like dictionary values.
+           information. Attributes can also be accessed like dictionary values.
         2. an `environ` object (see :meth:`creoleparser.core.Parser.generate`)
 
         If the found macro includes arguments, they will be included in
         the function call. Creoleparser will handle exceptions by returning an
         error message in place of the macro (possibly including a traceback).
         Python's syntax for accepting arbitrary arguments is often used for
-        macros (e.g.,def mymacro(macro, env, *pos, **kw).   
+        macros (e.g.,def mymacro(macro, env, \\*pos, \\**kw).   
 
         For information on return values, see macro_func (below).
       non_bodied_macros
