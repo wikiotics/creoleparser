@@ -176,10 +176,11 @@ def create_dialect(dialect_base, **kw_args):
            information. Attributes can also be access like dictionary values.
         2. an `environ` object (see :meth:`creoleparser.core.Parser.generate`)
 
-        Each function must also use Python's syntax for accepting other
-        arbitrary arguments (e.g.,def mymacro(macro, env, *pos, **kw):) as the
-        arg_string will be parsed automatically and contribute additional
-        arguments.
+        If the found macro includes arguments, they will be included in
+        the function call. Creoleparser will handle exceptions by returning an
+        error message in place of the macro (possibly including a traceback).
+        Python's syntax for accepting arbitrary arguments is often used for
+        macros (e.g.,def mymacro(macro, env, *pos, **kw).   
 
         For information on return values, see macro_func (below).
       non_bodied_macros
@@ -245,12 +246,6 @@ def create_dialect(dialect_base, **kw_args):
         processing), a Genshi object (Stream, Markup, builder.Fragment, or
         builder.Element), or a dictionary (bodied macros only). If None is
         returned, the markup will be rendered unchanged.
-
-        When a dictionary is returned, its key-value pairs will appear
-        as attribute values in the HTML output. If a 'tag' key is present, the
-        value will be use as the HTML tag, otherwise, `span` or `div` will be
-        used automatically, depending on the context. The body of the macro
-        will be processed independently and added to the HTML textnode.
       no_wiki_monospace
         If `False`, inline no_wiki will be rendered as <span> not <code>
       simple_markup

@@ -554,9 +554,14 @@ class DialectOptionsTest(unittest.TestCase):
 
     def test_bodied_macros_option(self):
         def red(macro,e,*args,**kw):
-            return {'style':'color:red'}
+            return builder.tag.__getattr__(macro.isblock and 'div' or 'span')(
+                macro.body,style='color:red')
+        red.parse_body = True
+            #return {'style':'color:red'}
         def blockquote(macro,e,*args,**kw):
-            return {'tag':'blockquote'}
+            return builder.tag.blockquote(macro.body)
+        blockquote.parse_body = True
+            #return {'tag':'blockquote'}
         MyDialect = create_dialect(creole11_base, bodied_macros=dict(red=red, blockquote=blockquote))
         parse = Parser(MyDialect)
         self.assertEquals(
@@ -884,7 +889,7 @@ part 2
     def test_argument_error(self):
         self.assertEquals(
             self.parse("<<span error here>>This is bad<</span>>"),
-                       wrap_result("""<code class="macro_error">Macro error: 'span' got too many arguments</code>"""))
+                       wrap_result("""<code class="macro_error">Macro error: 'span' takes at most 1 argument(s) (2 given)</code>"""))
         self.assertEquals(
             self.parse("<<span a=1>>This is bad<</span>>"),
                        wrap_result("""<code class="macro_error">Macro error: 'span' got an unexpected keyword argument 'a'</code>"""))
