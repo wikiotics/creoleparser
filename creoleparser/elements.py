@@ -556,12 +556,12 @@ class Macro(WikiElement):
         except TypeError as detail:
             tag = isblock and 'pre' or 'code'
             e = str(detail)
-            if e.count('most'):
-                msg = 'got too many arguments'
-            elif e.count('least'):
-                msg = 'got too few arguments'
-            else:
-                msg = re.sub(r"^\w*\(\) ", '', e)
+            msg = re.sub(r"^\w*\(\) ", '', e)
+            if re.search(r'given\)$',msg):
+                mo = re.match(r'(.+)(\d+)(.+)(\d+)(.+)$',msg)
+                msg = mo.group(1) + str(int(mo.group(2))-3) \
+                      + ' argument(s) (' + str(int(mo.group(4))-3) \
+                      + mo.group(5)
             value = bldr.tag.__getattr__(tag)("Macro error: '%s' %s"% (macro_name, msg),class_='macro_error')
         except:
             value = bldr.tag.pre('Unexpected error during macro execution!\n'
@@ -582,7 +582,7 @@ class Macro(WikiElement):
         else:
             value = None
 
-        if value is None or isinstance(value,dict):
+        if value is None:
             return bldr.tag.code(self.token[0],bldr.tag.span(mo.group('name'),class_="macro_name"),
                            bldr.tag.span(arg_string,class_="macro_arg_string"),
                            self.token[1],class_="unknown_macro")
@@ -637,11 +637,7 @@ class BodiedMacro(Macro):
         else:
             value = None
 
-        if isinstance(value,dict):
-           tag = value.pop('tag','span')
-           output = bldr.tag.__getattr__(tag)(
-               fragmentize(body, self.child_elements, element_store, environ),**value)
-        elif value is None:
+        if value is None:
             content_out = [self.token[0],bldr.tag.span(mo.group('name'),class_="macro_name"),
                            bldr.tag.span(mo.group('arg_string'),class_="macro_arg_string"),
                            self.token[1],bldr.tag.span(mo.group('body'),class_="macro_body"),
@@ -691,7 +687,6 @@ class BodiedBlockMacro(Macro):
         else:
             tail = ''
         if isinstance(processed, basestring) and not isinstance(processed,Markup):
-            #print '_process', repr(processed)
             text = ''.join([text[:mo.start()],processed,tail,
                         text[mo.end():]])
             frags = fragmentize(text,wiki_elements,element_store, environ)
@@ -741,13 +736,7 @@ class BodiedBlockMacro(Macro):
         else:
             value = None
 
-        if isinstance(value,dict):
-           tag = value.pop('tag','div')
-           output = bldr.tag.__getattr__(tag)(
-               fragmentize(body, self.child_elements, element_store, environ),**value)
-           if tag not in BLOCK_TAGS:
-               output = bldr.tag.p(output)
-        elif value is None:
+        if value is None:
             output = bldr.tag.pre(self.token[0],bldr.tag.span(mo.group('name'),class_="macro_name"),
                            bldr.tag.span(mo.group('arg_string'),class_="macro_arg_string"),
                            self.token[1],'\n',bldr.tag.span(mo.group('body'),class_="macro_body"),
