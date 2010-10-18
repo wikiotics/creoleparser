@@ -127,9 +127,7 @@ class Parser(object):
     def preprocess(self,text):
         """This should generally be called before fragmentize().
 
-        :parameters:
-          text
-            text to be processsed.
+        :parameter text: text to be processsed.
 
         """
         text = text.replace("\r\n", "\n")

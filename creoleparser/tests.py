@@ -555,11 +555,11 @@ class DialectOptionsTest(unittest.TestCase):
     def test_bodied_macros_option(self):
         def red(macro,e,*args,**kw):
             return builder.tag.__getattr__(macro.isblock and 'div' or 'span')(
-                macro.body,style='color:red')
+                macro.parsed_body(),style='color:red')
         red.parse_body = True
             #return {'style':'color:red'}
         def blockquote(macro,e,*args,**kw):
-            return builder.tag.blockquote(macro.body)
+            return builder.tag.blockquote(macro.parsed_body())
         blockquote.parse_body = True
             #return {'tag':'blockquote'}
         MyDialect = create_dialect(creole11_base, bodied_macros=dict(red=red, blockquote=blockquote))
@@ -604,6 +604,19 @@ class ExtendingTest(unittest.TestCase):
         self.assertEquals(
             parse("This block of #text *should* be monospace# now"),
             wrap_result("This block of <code>text <strong>should</strong> be monospace</code> now"))
+
+    def test_disable_images(self):
+        Base = creole10_base()
+        class MyDialect(Base):
+            @property
+            def inline_elements(self):
+                l = super(MyDialect,self).inline_elements
+                l.remove(self.img)
+                return l
+        parse = Parser(MyDialect)
+        self.assertEquals(
+            parse("{{somefile.jpg}}"),
+            wrap_result("{{somefile.jpg}}"))
 
        
 class NoSpaceDialectTest(unittest.TestCase, BaseTest):
@@ -667,7 +680,7 @@ class MacroTest(unittest.TestCase, BaseTest):
         return fragment.generate()
 
     def span(self, macro, e, id_=None):
-        return builder.tag.span(macro.body,id_=id_)
+        return builder.tag.span(macro.parsed_body(),id_=id_)
     span.parse_body = True
     
 

@@ -546,10 +546,24 @@ class Macro(WikiElement):
             pos, kw = [], {}
 
         func = self.macros[macro_name]
-        if func.func_dict.get('parse_body') and body is not None:
-           body = bldr.tag(fragmentize(body, self.child_elements, {}, environ))            
+
+        def parsed_body(context='auto'):
+            if context == 'auto':
+                if isblock:
+                    child_elements = self.dialect.block_elements
+                else:
+                    child_elements = self.dialect.inline_elements
+            elif context == 'inline':
+                child_elements = self.dialect.inline_elements
+            elif context == 'block':
+                child_elements = self.dialect.block_elements
+            else:
+                child_elements = context
+            return bldr.tag(fragmentize(body, child_elements, {}, environ))
+
+                    
         macro = AttrDict(name=macro_name,arg_string=arg_string,
-                         body=body, isblock=isblock)
+                         body=body, isblock=isblock, parsed_body=parsed_body)
         
         try:
             value = func(macro,environ,*pos,**kw)
