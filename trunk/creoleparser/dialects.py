@@ -482,8 +482,8 @@ def creole11_base(macro_func=None,
             self.dt.child_elements = self.custom_elements + [self.br, self.raw_link, self.simple_element]
             self.dl.child_elements = [(self.no_wiki,self.bodiedmacro,self.macro),self.img,self.link,self.dt,self.dd]
             self.indented.child_elements = self.block_elements
-            self.bodiedmacro.child_elements = self.inline_elements
-            self.bodied_block_macro.child_elements = self.block_elements
+            self.bodiedmacro.dialect = self
+            self.bodied_block_macro.dialect = self
             
         @property 
         def inline_elements(self):
