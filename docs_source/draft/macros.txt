@@ -67,7 +67,7 @@ The following are valid ways to call these macros inside a wiki::
 
     <<spreadsheet 0Aj40hrYQDRwzdDNJVi1xcnlJenNpSHpPLXJuVzBFdHc>>
 
-    <<quote http://en.wikipedia.org/wiki/To_be,_or_not_to_be>>
+    <<quote>>
     To be, or not to be, that is the question.
     <</quote>>
 
@@ -75,7 +75,7 @@ While the following would produce user friendly error messages::
 
     <<spreadsheet width=800 height=500>>
 
-    <<quote http://en.wikipedia.org/wiki/To_be,_or_not_to_be width=200>>
+    <<quote width=200>>
     To be, or not to be, that is the question.
     <</quote>>    
 

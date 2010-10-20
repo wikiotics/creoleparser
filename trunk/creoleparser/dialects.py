@@ -161,30 +161,37 @@ def create_dialect(dialect_base, **kw_args):
         Parser used for automatic parsing of macro arg strings. Must take a
         single string argument and return a two-tuple with the first element
         a list (for positional arguments) and the second a dictionary (for
-        keyword arguments). A default is supplied.
+        keyword arguments). A default is supplied. Individual macros may
+        override this parser by providing their own as a function attribute
+        named `arg_parser`.
       blog_style_endings
         If `True`, each newline character in a paragraph will be converted to
         a <br />. Note that the escaping mechanism (tilde) does not work
         for newlines.
       bodied_macros
         Dictionary of macros (functions). If a bodied macro is found that is not
-        in this dictionary, macro_func (below) will be called instead. Each
+        in this dictionary, ``macro_func`` (below) will be called instead. Each
         function must accept the following positional arguments:
 
         1. macro object. This object has attributes ``macro_name``, ``body``,
-           ``isblock``, and ``arg_string``. See macro_func (below) for more
-           information. Attributes can also be accessed like dictionary values.
-        2. an `environ` object (see :meth:`creoleparser.core.Parser.generate`)
+           ``isblock``, and ``arg_string`` (see ``macro_func`` (below) for more
+           information). Additionally, the macro object has a ``parsed_body()``
+           method, that will return the parsed ``macro.body`` as a
+           genshi.Fragment. ``parsed_body`` takes an optional ``context``
+           argument, that defaults to `auto`, see :meth:`creoleparser.core.Parser.parse`
+           for other possible values. Attributes can also be accessed like
+           dictionary values.
+        2. the `environ` object (see :meth:`creoleparser.core.Parser.parse`)
 
         If the found macro includes arguments, they will be included in
         the function call. Creoleparser will handle exceptions by returning an
         error message in place of the macro (possibly including a traceback).
         Python's syntax for accepting arbitrary arguments is often used for
-        macros (e.g.,def mymacro(macro, env, \\*pos, \\**kw).   
+        macros (e.g.,def mymacro(macro, env, \\*pos, \\**kw)).   
 
         For information on return values, see macro_func (below).
       non_bodied_macros
-        Same as bodied_macros but used for non-bodied macros.        
+        Same as ``bodied_macros`` but used for non-bodied macros.        
       custom_markup
         List of tuples that can each define arbitrary custom wiki markup such
         as WikiWords and emoticons. Each tuple must have two elements,
@@ -194,7 +201,7 @@ def create_dialect(dialect_base, **kw_args):
         2. Function that takes two postional arguments, as follows:
 
            1. the match object
-           2. an `environ` object (see :meth:`creoleparser.core.Parser.generate`)
+           2. the `environ` object (see :meth:`creoleparser.core.Parser.parse`)
 
            The function must return a Genshi object (Stream, Markup,
            builder.Fragment, or builder.Element). Returning a string will
@@ -240,7 +247,7 @@ def create_dialect(dialect_base, **kw_args):
         2. the argument, including any delimter (string)
         3. the macro body (string or None for a macro without a body)
         4. macro type (boolean, True for block macros, False for normal macros)
-        5. an `environ` object (see :meth:`creoleparser.core.Parser.generate`)
+        5. the `environ` object (see :meth:`creoleparser.core.Parser.generate`)
         
         The function may return a string (which will be subject to further wiki
         processing), a Genshi object (Stream, Markup, builder.Fragment, or
@@ -426,21 +433,22 @@ def creole11_base(macro_func=None,
 
    **A Basic Extending Example**
 
-   Here we create a dialect that alters the basic Creole inline syntax by
-   removing underline and adding strike-though::
+   Extending Creoleparser through subclassing is usually only needed when
+   custom WikiElement objects are incorporated. However, it is also
+   needed for other special jobs, like entirely disabling certain markup.
+   Here we create a dialect that removes image support::
 
        >>> Base = creole11_base()
        >>> class MyDialect(Base):
-       ...       simple_element = SimpleElement(token_dict={'**':'strong',
-       ...                                                  '//':'em',
-       ...                                                  ',,':'sub',
-       ...                                                  '^^':'sup',
-       ...                                                  '--':'del',
-       ...                                                  '##':'code'})
+       ...     @property
+       ...     def inline_elements(self):
+       ...         l = super(MyDialect,self).inline_elements
+       ...         l.remove(self.img)
+       ...         return l
        >>> from core import Parser
-       >>> parser = Parser(MyDialect) # for verion 6.0, use Parser(MyDialect())
-       >>> print parser.render("delete --this-- but don't underline __this__"),
-       <p>delete <del>this</del> but don't underline __this__</p>
+       >>> parser = Parser(MyDialect) 
+       >>> print parser.render("{{this}} is not an image!"),
+       <p>{{this}} is not an image!</p>
            
    For a more complex example, see the `source code
    <http://code.google.com/p/creoleparser/source/browse/trunk/creoleparser/dialects.py>`_
@@ -448,7 +456,7 @@ def creole11_base(macro_func=None,
 
    .. note::
 
-       It is generally safest to create only one dialect instance per base
+       It is generally safest to create only one dialect class per base
        class. This is because WikiElement objects are bound as class
        attributes and would therefor be shared between multiple instances,
        which could lead to unexpected behaviour.

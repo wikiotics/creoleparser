@@ -6,15 +6,19 @@ Creoleparser is a Python implementation of a parser for the `Creole <http://wiki
 Features
 ========
 
-* Creoleparser is a complete and robust Creole 1.0 implementation, plus optional additions (see :ref:`syntax`). 
+* Creoleparser is a complete and robust Creole 1.0 implementation, plus optional additions (see :ref:`syntax`)
 * Uses `Genshi <http://genshi.edgewall.org/>`_ - *the Python toolkit for generation of output for the web*
 
   * guarantees well formed xml output by default 
-  * can instantly switch between HTML 4.01 and XHTML 1.0 (or other formats) (see :class:`~creoleparser.core.Parser`)
+  * can instantly switch between HTML and XHTML (or other formats) (see :class:`~creoleparser.core.Parser`)
   * `many other useful features <http://genshi.edgewall.org/>`_
 
-* Inline markup is easily customized (see :func:`~creoleparser.dialects.creole11_base`).
-* Advanced macro support. 
+* Inline markup is easily customized (see the ``simple_markup`` and ``custom_markup`` options of :func:`~creoleparser.dialects.create_dialect`)
+
+  * add markup for additonal HTMLs tags
+  * add support for custom markup like emoticons and WikiWords
+
+* Advanced macro support
 * Runs on Google App Engine!
 
 .. include:: ../../trunk/INSTALL.txt

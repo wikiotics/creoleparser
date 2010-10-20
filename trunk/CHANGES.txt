@@ -1,17 +1,29 @@
 Version 0.7.3 (??? 2010)
----------------------------
+------------------------
 
-* external links can have an optional class attribute
-  (``external_links_class``)
-* ``macro_func`` can now return a dictionary, providing better support
-  for typical bodied macro use (i.e., styling and formatting)
-* added ``custom_markup``, ``disable_external_content``, ``simple_markup``,
-  and ``external_links_class`` parameters to ``create_dialect`` function
+* added higher level support for macros for those that don't need a
+  specialized ``macro_func`` (see the ``bodied_macros`` and
+  ``non_bodied_macros`` parameters of the ``create_dialect`` function)
+* renamed ``interwiki_links_funcs`` to ``interwiki_links_path_funcs``, added
+  depreciation warning
+* added a bunch of other new parameters to ``create_dialect``:
+
+  * ``disable_external_content``
+  * ``external_links_class``
+  * ``interwiki_links_class_funcs``
+  * ``simple_markup``, markup for inline HTML tags like `strong` and `em`
+    now lives here
+  * ``custom_markup``, provides easy support for markup like emoticons
+    and WikiWords
+  * ``argument_parser``, the default parser for macro argument strings
+    
+* depreciated unused classes  
 * added support for custom base urls and functions for images
+* fix bug with ``blog_style_endings`` option
 
 
 Version 0.7.2 (May 8 2010)
------------------------------
+--------------------------
 
 * fixed bad import in setup.py 
 * images now support wiki links and interwiki links
