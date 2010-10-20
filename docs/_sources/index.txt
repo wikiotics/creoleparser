@@ -15,7 +15,7 @@ Features
 
 * Inline markup is easily customized (see the ``simple_markup`` and ``custom_markup`` options of :func:`~creoleparser.dialects.create_dialect`)
 
-  * add markup for additonal HTMLs tags
+  * add markup for additonal HTML tags
   * add support for custom markup like emoticons and WikiWords
 
 * Advanced macro support
