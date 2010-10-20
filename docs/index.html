@@ -4,13 +4,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Creoleparser: for parsing Creole wiki markup &amp;mdash; creoleparser v0.7.x documentation</title>
+    <title>Creoleparser: for parsing Creole wiki markup &amp;mdash; creoleparser v0.7.3 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
           URL_ROOT:    '#',
-          VERSION:     '0.7.x',
+          VERSION:     '0.7.3',
           COLLAPSE_MODINDEX: false,
           FILE_SUFFIX: '.html'
       };
@@ -20,7 +20,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="creoleparser v0.7.x documentation" href="#" />
+    <link rel="top" title="creoleparser v0.7.3 documentation" href="#" />
     <link rel="next" title="Syntax" href="syntax.html" />
     <link rel="prev" title="Creoleparser documentation contents" href="contents.html" /> 
   </head>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="contents.html" title="Creoleparser documentation contents"
              accesskey="P">previous</a> |</li>
-        <li><a href="contents.html">creoleparser v0.7.x documentation</a> &raquo;</li> 
+        <li><a href="contents.html">creoleparser v0.7.3 documentation</a> &raquo;</li> 
       </ul>
     </div>  
     <div class="document">
@@ -54,15 +54,19 @@
 <div class="section" id="features">
 <h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Creoleparser is a complete and robust Creole 1.0 implementation, plus optional additions (see <a class="reference internal" href="syntax.html#syntax"><em>Syntax</em></a>).</li>
+<li>Creoleparser is a complete and robust Creole 1.0 implementation, plus optional additions (see <a class="reference internal" href="syntax.html#syntax"><em>Syntax</em></a>)</li>
 <li>Uses <a class="reference external" href="http://genshi.edgewall.org/">Genshi</a> - <em>the Python toolkit for generation of output for the web</em><ul>
 <li>guarantees well formed xml output by default</li>
-<li>can instantly switch between HTML 4.01 and XHTML 1.0 (or other formats) (see <a class="reference internal" href="modules/core.html#creoleparser.core.Parser" title="creoleparser.core.Parser"><tt class="xref py py-class docutils literal"><span class="pre">Parser</span></tt></a>)</li>
+<li>can instantly switch between HTML and XHTML (or other formats) (see <a class="reference internal" href="modules/core.html#creoleparser.core.Parser" title="creoleparser.core.Parser"><tt class="xref py py-class docutils literal"><span class="pre">Parser</span></tt></a>)</li>
 <li><a class="reference external" href="http://genshi.edgewall.org/">many other useful features</a></li>
 </ul>
 </li>
-<li>Inline markup is easily customized (see <a class="reference internal" href="modules/dialects.html#creoleparser.dialects.creole11_base" title="creoleparser.dialects.creole11_base"><tt class="xref py py-func docutils literal"><span class="pre">creole11_base()</span></tt></a>).</li>
-<li>Advanced macro support.</li>
+<li>Inline markup is easily customized (see the <tt class="docutils literal"><span class="pre">simple_markup</span></tt> and <tt class="docutils literal"><span class="pre">custom_markup</span></tt> options of <a class="reference internal" href="modules/dialects.html#creoleparser.dialects.create_dialect" title="creoleparser.dialects.create_dialect"><tt class="xref py py-func docutils literal"><span class="pre">create_dialect()</span></tt></a>)<ul>
+<li>add markup for additonal HTMLs tags</li>
+<li>add support for custom markup like emoticons and WikiWords</li>
+</ul>
+</li>
+<li>Advanced macro support</li>
 <li>Runs on Google App Engine!</li>
 </ul>
 </div>
@@ -166,7 +170,7 @@
         <li class="right" >
           <a href="contents.html" title="Creoleparser documentation contents"
              accesskey="P">previous</a> |</li>
-        <li><a href="contents.html">creoleparser v0.7.x documentation</a> &raquo;</li> 
+        <li><a href="contents.html">creoleparser v0.7.3 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

@@ -4,13 +4,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Changelog &amp;mdash; creoleparser v0.7.x documentation</title>
+    <title>Changelog &amp;mdash; creoleparser v0.7.3 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
           URL_ROOT:    '#',
-          VERSION:     '0.7.x',
+          VERSION:     '0.7.3',
           COLLAPSE_MODINDEX: false,
           FILE_SUFFIX: '.html'
       };
@@ -20,7 +20,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="creoleparser v0.7.x documentation" href="index.html" />
+    <link rel="top" title="creoleparser v0.7.3 documentation" href="index.html" />
     <link rel="next" title="Generated API documentation" href="modules.html" />
     <link rel="prev" title="Implementing Macros" href="macros.html" /> 
   </head>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="macros.html" title="Implementing Macros"
              accesskey="P">previous</a> |</li>
-        <li><a href="contents.html">creoleparser v0.7.x documentation</a> &raquo;</li> 
+        <li><a href="contents.html">creoleparser v0.7.3 documentation</a> &raquo;</li> 
       </ul>
     </div>  
     <div class="document">
@@ -50,12 +50,28 @@
             
   <div class="section" id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="version-0-7-3-2010">
-<h2>Version 0.7.3 (??? 2010)<a class="headerlink" href="#version-0-7-3-2010" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="version-0-7-3-oct-19-2010">
+<h2>Version 0.7.3 (Oct 19 2010)<a class="headerlink" href="#version-0-7-3-oct-19-2010" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>added <tt class="docutils literal"><span class="pre">disable_external_content</span></tt> parameter to
-<tt class="docutils literal"><span class="pre">create_dialect</span></tt> function</li>
+<li>added higher level support for macros for those that don&#8217;t need a
+specialized <tt class="docutils literal"><span class="pre">macro_func</span></tt> (see the <tt class="docutils literal"><span class="pre">bodied_macros</span></tt> and
+<tt class="docutils literal"><span class="pre">non_bodied_macros</span></tt> parameters of the <tt class="docutils literal"><span class="pre">create_dialect</span></tt> function)</li>
+<li>renamed <tt class="docutils literal"><span class="pre">interwiki_links_funcs</span></tt> to <tt class="docutils literal"><span class="pre">interwiki_links_path_funcs</span></tt>, added
+depreciation warning</li>
+<li>added a bunch of other new parameters to <tt class="docutils literal"><span class="pre">create_dialect</span></tt>:<ul>
+<li><tt class="docutils literal"><span class="pre">disable_external_content</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">external_links_class</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">interwiki_links_class_funcs</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">simple_markup</span></tt>, markup for inline HTML tags like <cite>strong</cite> and <cite>em</cite>
+now lives here</li>
+<li><tt class="docutils literal"><span class="pre">custom_markup</span></tt>, provides easy support for markup like emoticons
+and WikiWords</li>
+<li><tt class="docutils literal"><span class="pre">argument_parser</span></tt>, the default parser for macro argument strings</li>
+</ul>
+</li>
+<li>depreciated unused classes</li>
 <li>added support for custom base urls and functions for images</li>
+<li>fix bug with <tt class="docutils literal"><span class="pre">blog_style_endings</span></tt> option</li>
 </ul>
 </div>
 <div class="section" id="version-0-7-2-may-8-2010">
@@ -233,7 +249,7 @@ wiki links (e.g., if the page doesn&#8217;t exist).</li>
             <h3><a href="contents.html">Table Of Contents</a></h3>
             <ul>
 <li><a class="reference internal" href="#">Changelog</a><ul>
-<li><a class="reference internal" href="#version-0-7-3-2010">Version 0.7.3 (??? 2010)</a></li>
+<li><a class="reference internal" href="#version-0-7-3-oct-19-2010">Version 0.7.3 (Oct 19 2010)</a></li>
 <li><a class="reference internal" href="#version-0-7-2-may-8-2010">Version 0.7.2 (May 8 2010)</a></li>
 <li><a class="reference internal" href="#version-0-7-1-march-29-2010">Version 0.7.1 (March 29 2010)</a></li>
 <li><a class="reference internal" href="#version-0-7-0-march-20-2010">Version 0.7.0 (March 20 2010)</a></li>
@@ -291,7 +307,7 @@ wiki links (e.g., if the page doesn&#8217;t exist).</li>
         <li class="right" >
           <a href="macros.html" title="Implementing Macros"
              accesskey="P">previous</a> |</li>
-        <li><a href="contents.html">creoleparser v0.7.x documentation</a> &raquo;</li> 
+        <li><a href="contents.html">creoleparser v0.7.3 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

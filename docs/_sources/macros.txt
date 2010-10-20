@@ -3,16 +3,97 @@
 Implementing Macros
 *******************
 
-This page describes how to implement macros (i.e, extensions) in a wiki engine.
+This page describes how to implement macros (i.e., extensions) in a wiki engine.
 For end user usage, please see :ref:`syntax`.
+
+The macro dictionaries: ``bodied_macros`` and ``non_bodied_macros``
+===================================================================
+
+Marcos are normal python functions that reside in the above dictionaries.
+These dictionaries are supplied to the
+:func:`~creoleparser.dialects.create_dialect` function during dialect creation.
+
+Macros take two mandatory positional arguments, ``macro`` and ``environ``, followed
+by macro-specific arguments. More information about macros can be found in
+:func:`~creoleparser.dialects.create_dialect` under the macro dictionary
+descriptions.
+
+**Two example macros**
+
+..  testcode::
+
+    import urllib
+    import genshi
+    import creoleparser
+    
+    def spreadsheet(macro,environ,key,height=300,width=500):
+        """Embeds a published Google spreadsheet.
+
+        :param key:    the google spreadsheet key, found in its url
+        :param height: height of the enclosing iframe
+        :param width:  width of the enclosing iframe
+        
+        """
+
+        query = urllib.urlencode([('key',key),('hl','en'),('single','true'),
+                                  ('gid','0'),('output','html'),
+                                  ('widget','true')])
+        src='https://spreadsheets.google.com/pub?'+query
+        return genshi.builder.tag.iframe(width=width,height=height,frameborder='0',src=src)
+
+
+    def quote(macro,environ,cite=None):
+        """Applies a 'blockquote' or 'q' tag, depending on the context."""
+        
+        if macro.isblock:
+            tag = 'blockquote'
+        else:
+            tag = 'q'
+        return bldr.tag.__getattr__(tag)(macro.parsed_body(), cite=cite)
+
+Now, create a custom parser using these functions: 
+
+..  testcode::
+
+    dialect = creoleparser.create_dialect(
+                  creoleparser.creole11_base,
+                  non_bodied_macros={'spreadsheet':spreadsheet},
+                  bodied_macros={'quote':quote})
+    text2html = creoleparser.Parser(dialect)
+
+The following are valid ways to call these macros inside a wiki::
+
+    <<spreadsheet key=0Aj40hrYQDRwzdDNJVi1xcnlJenNpSHpPLXJuVzBFdHc height=500>>
+
+    <<spreadsheet 0Aj40hrYQDRwzdDNJVi1xcnlJenNpSHpPLXJuVzBFdHc>>
+
+    <<quote>>
+    To be, or not to be, that is the question.
+    <</quote>>
+
+While the following would produce user friendly error messages::
+
+    <<spreadsheet width=800 height=500>>
+
+    <<quote width=200>>
+    To be, or not to be, that is the question.
+    <</quote>>    
+
+`See these examples <http://creoleparserwiki.appspot.com/pages/Macro_Examples>`_,
+live, in the sandbox wiki.
+
+    
 
 The ``macro_func``
 ==================
 
-``macro_func`` is an optional argument used during instantiation of a dialect object.
-Most often, this function will act as a dispatcher and call other functions based
-on ``macro_name``'s that are encountered while a Parser is working. Using this method,
-the ``macro_func`` can be very simple, particularly if the actual macros have 
+If creoleparser finds a macro that is not present in one of the above
+dictionaries, it will attempt to call the ``macro_func``. This function
+provides lower level control of macro processing than does using the
+macro dictionaries. Most often, it will act as a
+dispatcher and call other functions based on ``macro_name``'s that are
+encountered while a Parser is working. Using this method, the ``macro_func``
+can be very simple, particularly if the actual macros have 
 compatible signatures.
 
 **A simple macro_func:**
@@ -31,22 +112,36 @@ compatible signatures.
           pos, kw = parse_args(arg_string)
           return environ['macros'][macro_name](macro, environ, *pos, **kw)
 
-In the code above, ``eniviron['macros']`` is a dictionary of functions. Note that if ``macro_name`` is
-not in the dictionary, or if a macro returns `None`, creoleparser will treat the macro as
-unknown and render the raw wikitext unaltered.
+In the code above, ``eniviron['macros']`` is a dictionary of functions. Note
+that if ``macro_name`` is not in the dictionary, or if a macro returns `None`,
+creoleparser will treat the macro as unknown and render the raw wikitext
+unaltered.
 
-Additional information about ``macro_func`` is documented with the :func:`~creoleparser.dialects.create_dialect` factory function.
+Additional information about
+``macro_func`` is documented with the :func:`~creoleparser.dialects.create_dialect`
+factory function.
 
 
 Macros Returning HTML
 =====================
-In order for a macro to return raw HTML, the HTML must be wrapped in a genshi.Markup object. See
-an example `here <http://creoleparserwiki.appspot.com/pages/HTMLMacroExample>`_
+In order for a macro to return raw HTML, the HTML must be wrapped in a
+genshi.Markup object, as follows::
+
+    return genshi.Markup("<ol class="mytable"><li>...</li><ol>")
+
+However, there are several advantages to using Genshi's builder module for
+generating HTML, one of which is that creoleparser will be aware of what is
+contained, and therefore more likely to produce valid output (according to
+xhtml1 strict). At a minimum, it is recommended to wrap a Markup object in
+an Element, as follows::
+
+    return genshi.builder.tag.ol(genshi.Markup("<li>...</li>"),class_="mytable")
+                            
 
 Macros Returning Creole
 =======================
-Don't forget that macros can return simple strings (preferably as unicode objects) rather than
-genshi objects. These will be processed as Creole markup (potentially including other macros!)
+Don't forget that macros can return simple strings (preferably as Unicode objects) rather than
+Genshi objects. These will be processed as Creole markup (potentially including other macros!)
 in their new context.
 
 How can I stop a macro from being placed in a paragraph? (or visa versa)
@@ -88,8 +183,9 @@ Other Macro Implementation Examples
 
 * `test_cheat_sheet_plus.py <http://code.google.com/p/creoleparser/source/browse/trunk/creoleparser/test_cheat_sheet_plus.py>`_
   which is used to generate the `creoleparser cheatsheet <http://purl.oclc.org/creoleparser/cheatsheet>`_ and
-  help validate any changes made to the library code.
+  help validate any changes made to the library code. This utilizes the ``macro_func``.
 
-* `the code used in the sandbox wiki <http://code.google.com/p/urlminer/source/browse/examples/wiki/macros.py>`_.         
+* `The code used in the sandbox wiki <http://code.google.com/p/urlminer/source/browse/examples/wiki/macros.py>`_
+  shows how to use the macro dictionaries (``bodied_macros`` and ``non_bodied_macros``).
 
 

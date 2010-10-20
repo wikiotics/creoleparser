@@ -4,13 +4,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Implementing Macros &amp;mdash; creoleparser v0.7.x documentation</title>
+    <title>Implementing Macros &amp;mdash; creoleparser v0.7.3 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
           URL_ROOT:    '#',
-          VERSION:     '0.7.x',
+          VERSION:     '0.7.3',
           COLLAPSE_MODINDEX: false,
           FILE_SUFFIX: '.html'
       };
@@ -20,7 +20,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="creoleparser v0.7.x documentation" href="index.html" />
+    <link rel="top" title="creoleparser v0.7.3 documentation" href="index.html" />
     <link rel="next" title="Changelog" href="changelog.html" />
     <link rel="prev" title="Basic Usage" href="usage.html" /> 
   </head>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="usage.html" title="Basic Usage"
              accesskey="P">previous</a> |</li>
-        <li><a href="contents.html">creoleparser v0.7.x documentation</a> &raquo;</li> 
+        <li><a href="contents.html">creoleparser v0.7.3 documentation</a> &raquo;</li> 
       </ul>
     </div>  
     <div class="document">
@@ -50,14 +50,84 @@
             
   <div class="section" id="implementing-macros">
 <span id="macros"></span><h1>Implementing Macros<a class="headerlink" href="#implementing-macros" title="Permalink to this headline">¶</a></h1>
-<p>This page describes how to implement macros (i.e, extensions) in a wiki engine.
+<p>This page describes how to implement macros (i.e., extensions) in a wiki engine.
 For end user usage, please see <a class="reference internal" href="syntax.html#syntax"><em>Syntax</em></a>.</p>
+<div class="section" id="the-macro-dictionaries-bodied-macros-and-non-bodied-macros">
+<h2>The macro dictionaries: <tt class="docutils literal"><span class="pre">bodied_macros</span></tt> and <tt class="docutils literal"><span class="pre">non_bodied_macros</span></tt><a class="headerlink" href="#the-macro-dictionaries-bodied-macros-and-non-bodied-macros" title="Permalink to this headline">¶</a></h2>
+<p>Marcos are normal python functions that reside in the above dictionaries.
+These dictionaries are supplied to the
+<a class="reference internal" href="modules/dialects.html#creoleparser.dialects.create_dialect" title="creoleparser.dialects.create_dialect"><tt class="xref py py-func docutils literal"><span class="pre">create_dialect()</span></tt></a> function during dialect creation.</p>
+<p>Macros take two mandatory positional arguments, <tt class="docutils literal"><span class="pre">macro</span></tt> and <tt class="docutils literal"><span class="pre">environ</span></tt>, followed
+by macro-specific arguments. More information about macros can be found in
+<a class="reference internal" href="modules/dialects.html#creoleparser.dialects.create_dialect" title="creoleparser.dialects.create_dialect"><tt class="xref py py-func docutils literal"><span class="pre">create_dialect()</span></tt></a> under the macro dictionary
+descriptions.</p>
+<p><strong>Two example macros</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">urllib</span>
+<span class="kn">import</span> <span class="nn">genshi</span>
+<span class="kn">import</span> <span class="nn">creoleparser</span>
+
+<span class="k">def</span> <span class="nf">spreadsheet</span><span class="p">(</span><span class="n">macro</span><span class="p">,</span><span class="n">environ</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">height</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span><span class="n">width</span><span class="o">=</span><span class="mi">500</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Embeds a published Google spreadsheet.</span>
+
+<span class="sd">    :param key:    the google spreadsheet key, found in its url</span>
+<span class="sd">    :param height: height of the enclosing iframe</span>
+<span class="sd">    :param width:  width of the enclosing iframe</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">query</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">urlencode</span><span class="p">([(</span><span class="s">&#39;key&#39;</span><span class="p">,</span><span class="n">key</span><span class="p">),(</span><span class="s">&#39;hl&#39;</span><span class="p">,</span><span class="s">&#39;en&#39;</span><span class="p">),(</span><span class="s">&#39;single&#39;</span><span class="p">,</span><span class="s">&#39;true&#39;</span><span class="p">),</span>
+                              <span class="p">(</span><span class="s">&#39;gid&#39;</span><span class="p">,</span><span class="s">&#39;0&#39;</span><span class="p">),(</span><span class="s">&#39;output&#39;</span><span class="p">,</span><span class="s">&#39;html&#39;</span><span class="p">),</span>
+                              <span class="p">(</span><span class="s">&#39;widget&#39;</span><span class="p">,</span><span class="s">&#39;true&#39;</span><span class="p">)])</span>
+    <span class="n">src</span><span class="o">=</span><span class="s">&#39;https://spreadsheets.google.com/pub?&#39;</span><span class="o">+</span><span class="n">query</span>
+    <span class="k">return</span> <span class="n">genshi</span><span class="o">.</span><span class="n">builder</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">iframe</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span><span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span><span class="n">frameborder</span><span class="o">=</span><span class="s">&#39;0&#39;</span><span class="p">,</span><span class="n">src</span><span class="o">=</span><span class="n">src</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">quote</span><span class="p">(</span><span class="n">macro</span><span class="p">,</span><span class="n">environ</span><span class="p">,</span><span class="n">cite</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Applies a &#39;blockquote&#39; or &#39;q&#39; tag, depending on the context.&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">macro</span><span class="o">.</span><span class="n">isblock</span><span class="p">:</span>
+        <span class="n">tag</span> <span class="o">=</span> <span class="s">&#39;blockquote&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">tag</span> <span class="o">=</span> <span class="s">&#39;q&#39;</span>
+    <span class="k">return</span> <span class="n">bldr</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">__getattr__</span><span class="p">(</span><span class="n">tag</span><span class="p">)(</span><span class="n">macro</span><span class="o">.</span><span class="n">parsed_body</span><span class="p">(),</span> <span class="n">cite</span><span class="o">=</span><span class="n">cite</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now, create a custom parser using these functions:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">dialect</span> <span class="o">=</span> <span class="n">creoleparser</span><span class="o">.</span><span class="n">create_dialect</span><span class="p">(</span>
+              <span class="n">creoleparser</span><span class="o">.</span><span class="n">creole11_base</span><span class="p">,</span>
+              <span class="n">non_bodied_macros</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;spreadsheet&#39;</span><span class="p">:</span><span class="n">spreadsheet</span><span class="p">},</span>
+              <span class="n">bodied_macros</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;quote&#39;</span><span class="p">:</span><span class="n">quote</span><span class="p">})</span>
+<span class="n">text2html</span> <span class="o">=</span> <span class="n">creoleparser</span><span class="o">.</span><span class="n">Parser</span><span class="p">(</span><span class="n">dialect</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The following are valid ways to call these macros inside a wiki:</p>
+<div class="highlight-python"><pre>&lt;&lt;spreadsheet key=0Aj40hrYQDRwzdDNJVi1xcnlJenNpSHpPLXJuVzBFdHc height=500&gt;&gt;
+
+&lt;&lt;spreadsheet 0Aj40hrYQDRwzdDNJVi1xcnlJenNpSHpPLXJuVzBFdHc&gt;&gt;
+
+&lt;&lt;quote&gt;&gt;
+To be, or not to be, that is the question.
+&lt;&lt;/quote&gt;&gt;</pre>
+</div>
+<p>While the following would produce user friendly error messages:</p>
+<div class="highlight-python"><pre>&lt;&lt;spreadsheet width=800 height=500&gt;&gt;
+
+&lt;&lt;quote width=200&gt;&gt;
+To be, or not to be, that is the question.
+&lt;&lt;/quote&gt;&gt;</pre>
+</div>
+<p><a class="reference external" href="http://creoleparserwiki.appspot.com/pages/Macro_Examples">See these examples</a>,
+live, in the sandbox wiki.</p>
+</div>
 <div class="section" id="the-macro-func">
 <h2>The <tt class="docutils literal"><span class="pre">macro_func</span></tt><a class="headerlink" href="#the-macro-func" title="Permalink to this headline">¶</a></h2>
-<p><tt class="docutils literal"><span class="pre">macro_func</span></tt> is an optional argument used during instantiation of a dialect object.
-Most often, this function will act as a dispatcher and call other functions based
-on <tt class="docutils literal"><span class="pre">macro_name</span></tt>&#8216;s that are encountered while a Parser is working. Using this method,
-the <tt class="docutils literal"><span class="pre">macro_func</span></tt> can be very simple, particularly if the actual macros have
+<p>If creoleparser finds a macro that is not present in one of the above
+dictionaries, it will attempt to call the <tt class="docutils literal"><span class="pre">macro_func</span></tt>. This function
+provides lower level control of macro processing than does using the
+macro dictionaries. Most often, it will act as a
+dispatcher and call other functions based on <tt class="docutils literal"><span class="pre">macro_name</span></tt>&#8216;s that are
+encountered while a Parser is working. Using this method, the <tt class="docutils literal"><span class="pre">macro_func</span></tt>
+can be very simple, particularly if the actual macros have
 compatible signatures.</p>
 <p><strong>A simple macro_func:</strong></p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">creoleparser</span> <span class="kn">import</span> <span class="n">parse_args</span>
@@ -73,20 +143,33 @@ compatible signatures.</p>
        <span class="k">return</span> <span class="n">environ</span><span class="p">[</span><span class="s">&#39;macros&#39;</span><span class="p">][</span><span class="n">macro_name</span><span class="p">](</span><span class="n">macro</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="o">*</span><span class="n">pos</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>In the code above, <tt class="docutils literal"><span class="pre">eniviron['macros']</span></tt> is a dictionary of functions. Note that if <tt class="docutils literal"><span class="pre">macro_name</span></tt> is
-not in the dictionary, or if a macro returns <cite>None</cite>, creoleparser will treat the macro as
-unknown and render the raw wikitext unaltered.</p>
-<p>Additional information about <tt class="docutils literal"><span class="pre">macro_func</span></tt> is documented with the <a class="reference internal" href="modules/dialects.html#creoleparser.dialects.create_dialect" title="creoleparser.dialects.create_dialect"><tt class="xref py py-func docutils literal"><span class="pre">create_dialect()</span></tt></a> factory function.</p>
+<p>In the code above, <tt class="docutils literal"><span class="pre">eniviron['macros']</span></tt> is a dictionary of functions. Note
+that if <tt class="docutils literal"><span class="pre">macro_name</span></tt> is not in the dictionary, or if a macro returns <cite>None</cite>,
+creoleparser will treat the macro as unknown and render the raw wikitext
+unaltered.</p>
+<p>Additional information about
+<tt class="docutils literal"><span class="pre">macro_func</span></tt> is documented with the <a class="reference internal" href="modules/dialects.html#creoleparser.dialects.create_dialect" title="creoleparser.dialects.create_dialect"><tt class="xref py py-func docutils literal"><span class="pre">create_dialect()</span></tt></a>
+factory function.</p>
 </div>
 <div class="section" id="macros-returning-html">
 <h2>Macros Returning HTML<a class="headerlink" href="#macros-returning-html" title="Permalink to this headline">¶</a></h2>
-<p>In order for a macro to return raw HTML, the HTML must be wrapped in a genshi.Markup object. See
-an example <a class="reference external" href="http://creoleparserwiki.appspot.com/pages/HTMLMacroExample">here</a></p>
+<p>In order for a macro to return raw HTML, the HTML must be wrapped in a
+genshi.Markup object, as follows:</p>
+<div class="highlight-python"><pre>return genshi.Markup("&lt;ol class="mytable"&gt;&lt;li&gt;...&lt;/li&gt;&lt;ol&gt;")</pre>
+</div>
+<p>However, there are several advantages to using Genshi&#8217;s builder module for
+generating HTML, one of which is that creoleparser will be aware of what is
+contained, and therefore more likely to produce valid output (according to
+xhtml1 strict). At a minimum, it is recommended to wrap a Markup object in
+an Element, as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">return</span> <span class="n">genshi</span><span class="o">.</span><span class="n">builder</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">ol</span><span class="p">(</span><span class="n">genshi</span><span class="o">.</span><span class="n">Markup</span><span class="p">(</span><span class="s">&quot;&lt;li&gt;...&lt;/li&gt;&quot;</span><span class="p">),</span><span class="n">class_</span><span class="o">=</span><span class="s">&quot;mytable&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="macros-returning-creole">
 <h2>Macros Returning Creole<a class="headerlink" href="#macros-returning-creole" title="Permalink to this headline">¶</a></h2>
-<p>Don&#8217;t forget that macros can return simple strings (preferably as unicode objects) rather than
-genshi objects. These will be processed as Creole markup (potentially including other macros!)
+<p>Don&#8217;t forget that macros can return simple strings (preferably as Unicode objects) rather than
+Genshi objects. These will be processed as Creole markup (potentially including other macros!)
 in their new context.</p>
 </div>
 <div class="section" id="how-can-i-stop-a-macro-from-being-placed-in-a-paragraph-or-visa-versa">
@@ -127,8 +210,9 @@ When returning other objects, you should follow the rules above.</p>
 <ul class="simple">
 <li><a class="reference external" href="http://code.google.com/p/creoleparser/source/browse/trunk/creoleparser/test_cheat_sheet_plus.py">test_cheat_sheet_plus.py</a>
 which is used to generate the <a class="reference external" href="http://purl.oclc.org/creoleparser/cheatsheet">creoleparser cheatsheet</a> and
-help validate any changes made to the library code.</li>
-<li><a class="reference external" href="http://code.google.com/p/urlminer/source/browse/examples/wiki/macros.py">the code used in the sandbox wiki</a>.</li>
+help validate any changes made to the library code. This utilizes the <tt class="docutils literal"><span class="pre">macro_func</span></tt>.</li>
+<li><a class="reference external" href="http://code.google.com/p/urlminer/source/browse/examples/wiki/macros.py">The code used in the sandbox wiki</a>
+shows how to use the macro dictionaries (<tt class="docutils literal"><span class="pre">bodied_macros</span></tt> and <tt class="docutils literal"><span class="pre">non_bodied_macros</span></tt>).</li>
 </ul>
 </div>
 </div>
@@ -142,6 +226,7 @@ help validate any changes made to the library code.</li>
             <h3><a href="contents.html">Table Of Contents</a></h3>
             <ul>
 <li><a class="reference internal" href="#">Implementing Macros</a><ul>
+<li><a class="reference internal" href="#the-macro-dictionaries-bodied-macros-and-non-bodied-macros">The macro dictionaries: <tt class="docutils literal"><span class="pre">bodied_macros</span></tt> and <tt class="docutils literal"><span class="pre">non_bodied_macros</span></tt></a></li>
 <li><a class="reference internal" href="#the-macro-func">The <tt class="docutils literal"><span class="pre">macro_func</span></tt></a></li>
 <li><a class="reference internal" href="#macros-returning-html">Macros Returning HTML</a></li>
 <li><a class="reference internal" href="#macros-returning-creole">Macros Returning Creole</a></li>
@@ -192,7 +277,7 @@ help validate any changes made to the library code.</li>
         <li class="right" >
           <a href="usage.html" title="Basic Usage"
              accesskey="P">previous</a> |</li>
-        <li><a href="contents.html">creoleparser v0.7.x documentation</a> &raquo;</li> 
+        <li><a href="contents.html">creoleparser v0.7.3 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
