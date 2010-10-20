@@ -1,5 +1,5 @@
-Version 0.7.3 (??? 2010)
-------------------------
+Version 0.7.3 (Oct 19 2010)
+---------------------------
 
 * added higher level support for macros for those that don't need a
   specialized ``macro_func`` (see the ``bodied_macros`` and
