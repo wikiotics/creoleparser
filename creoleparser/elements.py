@@ -540,12 +540,12 @@ class Macro(WikiElement):
 
     def _macro_func(self,macro_name,arg_string,body,isblock,environ):
 
-        if self.arg_parser:
-            pos, kw = self.arg_parser(arg_string)
+        func = self.macros[macro_name]
+        arg_parser = func.func_dict.get('arg_parser') or self.arg_parser
+        if arg_parser:
+            pos, kw = arg_parser(arg_string)
         else:
             pos, kw = [], {}
-
-        func = self.macros[macro_name]
 
         def parsed_body(context='auto'):
             if context == 'auto':
@@ -571,11 +571,12 @@ class Macro(WikiElement):
             tag = isblock and 'pre' or 'code'
             e = str(detail)
             msg = re.sub(r"^\w*\(\) ", '', e)
-            if re.search(r'given\)$',msg):
-                mo = re.match(r'(.+)(\d+)(.+)(\d+)(.+)$',msg)
+            mo = re.match(r'(.+)(\d+)(.+)(\d+) given\)$',msg)
+            if mo: #re.search(r'given\)$',msg):
+                #mo = re.match(r'(.+)(\d+)(.+)(\d+)(.+)$',msg)
                 msg = mo.group(1) + str(int(mo.group(2))-2) \
-                      + ' argument(s) (' + str(int(mo.group(4))-2) \
-                      + mo.group(5)
+                      + re.sub('arguments?','argument(s)',mo.group(3)) \
+                      + str(int(mo.group(4))-2) + ' given)'
             value = bldr.tag.__getattr__(tag)("Macro error: '%s' %s"% (macro_name, msg),class_='macro_error')
         except:
             value = bldr.tag.pre('Unexpected error during macro execution!\n'
