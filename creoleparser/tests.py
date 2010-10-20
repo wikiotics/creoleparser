@@ -661,7 +661,7 @@ class MacroTest(unittest.TestCase, BaseTest):
             interwiki_links_base_urls={'Ohana': inter_wiki_url},
             no_wiki_monospace=False,
             macro_func=self.macroFactory,
-            bodied_macros=dict(span=self.span),
+            bodied_macros=dict(span=self.span, div=self.div),
             non_bodied_macros=dict(luca=self.luca),                                 
                                  )
         self.parse = Parser(dialect)
@@ -681,7 +681,9 @@ class MacroTest(unittest.TestCase, BaseTest):
 
     def span(self, macro, e, id_=None):
         return builder.tag.span(macro.parsed_body(),id_=id_)
-    span.parse_body = True
+
+    def div(self, macro, e, id_=None):
+        return builder.tag.div(macro.parsed_body('block'),id_=id_)
     
 
     def luca(self, macro, e, *pos, **kw):
@@ -694,8 +696,8 @@ class MacroTest(unittest.TestCase, BaseTest):
             return wiki.page_title
 #        elif macro_name == 'span':
 #            return builder.tag.span(self.parse.generate(body,context='inline'),id_=arg_string.strip())
-        elif macro_name == 'div':
-            return builder.tag.div(self.parse.generate(body),id_=arg_string.strip())
+#        elif macro_name == 'div':
+#            return builder.tag.div(self.parse.generate(body),id_=arg_string.strip())
         elif macro_name == 'html2':
             return Markup(body)
         elif macro_name == 'htmlblock':
