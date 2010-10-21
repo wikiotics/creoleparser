@@ -173,14 +173,14 @@ def create_dialect(dialect_base, **kw_args):
         in this dictionary, ``macro_func`` (below) will be called instead. Each
         function must accept the following positional arguments:
 
-        1. macro object. This object has attributes ``macro_name``, ``body``,
+        1. macro object. This dictionary-like object has attributes
+           ``macro_name``, ``body``,
            ``isblock``, and ``arg_string`` (see ``macro_func`` (below) for more
            information). Additionally, the macro object has a ``parsed_body()``
            method, that will return the parsed ``macro.body`` as a
-           genshi.Fragment. ``parsed_body`` takes an optional ``context``
+           genshi.Fragment. ``parsed_body()`` takes an optional ``context``
            argument, that defaults to `auto`, see :meth:`creoleparser.core.Parser.parse`
-           for other possible values. Attributes can also be accessed like
-           dictionary values.
+           for other possible values.
         2. the `environ` object (see :meth:`creoleparser.core.Parser.parse`)
 
         If the found macro includes arguments, they will be included in
@@ -197,7 +197,7 @@ def create_dialect(dialect_base, **kw_args):
         as WikiWords and emoticons. Each tuple must have two elements,
         as follows:
 
-        1. String to match, or compiled regular expresion.
+        1. Compiled regular expression or string (*not* an re pattern) to match.
         2. Function that takes two postional arguments, as follows:
 
            1. the match object
@@ -207,8 +207,8 @@ def create_dialect(dialect_base, **kw_args):
            builder.Fragment, or builder.Element). Returning a string will
            raise an error.
 
-        As a shortcut for simple cases, the second tuple element may
-        alternatively be a string. The string will be wrapped in a Markup
+        As a shortcut for simple cases, the second tuple element may be
+        a string rather than a function. The string will be wrapped in a Markup
         object (to allow pass-through of HTML) and a Fragment object (to prevent
         Creoleparser from creating a new paragraph). 
       dialect_base
@@ -220,7 +220,7 @@ def create_dialect(dialect_base, **kw_args):
         hosted image is found.
       external_links_class
         Class attribute to add to external links (i.e., not wiki or interwiki
-        link).
+        links).
       indent_class
         Class attribute to add to indented regions.
       indent_style
@@ -247,11 +247,11 @@ def create_dialect(dialect_base, **kw_args):
         2. the argument, including any delimter (string)
         3. the macro body (string or None for a macro without a body)
         4. macro type (boolean, True for block macros, False for normal macros)
-        5. the `environ` object (see :meth:`creoleparser.core.Parser.generate`)
+        5. the `environ` object (see :meth:`creoleparser.core.Parser.parse`)
         
         The function may return a string (which will be subject to further wiki
-        processing), a Genshi object (Stream, Markup, builder.Fragment, or
-        builder.Element), or a dictionary (bodied macros only). If None is
+        processing) or a Genshi object (Stream, Markup, builder.Fragment, or
+        builder.Element). If None is
         returned, the markup will be rendered unchanged.
       no_wiki_monospace
         If `False`, inline no_wiki will be rendered as <span> not <code>

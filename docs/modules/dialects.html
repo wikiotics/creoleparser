@@ -81,14 +81,14 @@ for newlines.</p>
 in this dictionary, <tt class="docutils literal"><span class="pre">macro_func</span></tt> (below) will be called instead. Each
 function must accept the following positional arguments:</p>
 <ol class="arabic simple">
-<li>macro object. This object has attributes <tt class="docutils literal"><span class="pre">macro_name</span></tt>, <tt class="docutils literal"><span class="pre">body</span></tt>,
+<li>macro object. This dictionary-like object has attributes
+<tt class="docutils literal"><span class="pre">macro_name</span></tt>, <tt class="docutils literal"><span class="pre">body</span></tt>,
 <tt class="docutils literal"><span class="pre">isblock</span></tt>, and <tt class="docutils literal"><span class="pre">arg_string</span></tt> (see <tt class="docutils literal"><span class="pre">macro_func</span></tt> (below) for more
 information). Additionally, the macro object has a <tt class="docutils literal"><span class="pre">parsed_body()</span></tt>
 method, that will return the parsed <tt class="docutils literal"><span class="pre">macro.body</span></tt> as a
-genshi.Fragment. <tt class="docutils literal"><span class="pre">parsed_body</span></tt> takes an optional <tt class="docutils literal"><span class="pre">context</span></tt>
+genshi.Fragment. <tt class="docutils literal"><span class="pre">parsed_body()</span></tt> takes an optional <tt class="docutils literal"><span class="pre">context</span></tt>
 argument, that defaults to <cite>auto</cite>, see <a class="reference internal" href="core.html#creoleparser.core.Parser.parse" title="creoleparser.core.Parser.parse"><tt class="xref py py-meth docutils literal"><span class="pre">creoleparser.core.Parser.parse()</span></tt></a>
-for other possible values. Attributes can also be accessed like
-dictionary values.</li>
+for other possible values.</li>
 <li>the <cite>environ</cite> object (see <a class="reference internal" href="core.html#creoleparser.core.Parser.parse" title="creoleparser.core.Parser.parse"><tt class="xref py py-meth docutils literal"><span class="pre">creoleparser.core.Parser.parse()</span></tt></a>)</li>
 </ol>
 <p>If the found macro includes arguments, they will be included in
@@ -106,7 +106,7 @@ macros (e.g.,def mymacro(macro, env, *pos, **kw)).</p>
 as WikiWords and emoticons. Each tuple must have two elements,
 as follows:</p>
 <ol class="arabic">
-<li><p class="first">String to match, or compiled regular expresion.</p>
+<li><p class="first">Compiled regular expression or string (<em>not</em> an re pattern) to match.</p>
 </li>
 <li><p class="first">Function that takes two postional arguments, as follows:</p>
 <ol class="arabic simple">
@@ -118,8 +118,8 @@ builder.Fragment, or builder.Element). Returning a string will
 raise an error.</p>
 </li>
 </ol>
-<p class="last">As a shortcut for simple cases, the second tuple element may
-alternatively be a string. The string will be wrapped in a Markup
+<p class="last">As a shortcut for simple cases, the second tuple element may be
+a string rather than a function. The string will be wrapped in a Markup
 object (to allow pass-through of HTML) and a Fragment object (to prevent
 Creoleparser from creating a new paragraph).</p>
 </dd>
@@ -134,7 +134,7 @@ hosted image is found.</p>
 </dd>
 <dt>external_links_class</dt>
 <dd><p class="first last">Class attribute to add to external links (i.e., not wiki or interwiki
-link).</p>
+links).</p>
 </dd>
 <dt>indent_class</dt>
 <dd><p class="first last">Class attribute to add to indented regions.</p>
@@ -168,11 +168,11 @@ function must accept the following postional arguments:</p>
 <li>the argument, including any delimter (string)</li>
 <li>the macro body (string or None for a macro without a body)</li>
 <li>macro type (boolean, True for block macros, False for normal macros)</li>
-<li>the <cite>environ</cite> object (see <a class="reference internal" href="core.html#creoleparser.core.Parser.generate" title="creoleparser.core.Parser.generate"><tt class="xref py py-meth docutils literal"><span class="pre">creoleparser.core.Parser.generate()</span></tt></a>)</li>
+<li>the <cite>environ</cite> object (see <a class="reference internal" href="core.html#creoleparser.core.Parser.parse" title="creoleparser.core.Parser.parse"><tt class="xref py py-meth docutils literal"><span class="pre">creoleparser.core.Parser.parse()</span></tt></a>)</li>
 </ol>
 <p class="last">The function may return a string (which will be subject to further wiki
-processing), a Genshi object (Stream, Markup, builder.Fragment, or
-builder.Element), or a dictionary (bodied macros only). If None is
+processing) or a Genshi object (Stream, Markup, builder.Fragment, or
+builder.Element). If None is
 returned, the markup will be rendered unchanged.</p>
 </dd>
 <dt>no_wiki_monospace</dt>
@@ -229,7 +229,7 @@ to Creole 1.0 specification.</p>
 
 <dl class="function">
 <dt id="creoleparser.dialects.creole11_base">
-<tt class="descclassname">creoleparser.dialects.</tt><tt class="descname">creole11_base</tt><big>(</big><em>macro_func=None, indent_class=None, indent_style='margin-left:2em', simple_markup=[('**', 'strong'), ('//', 'em'), (',,', 'sub'), ('^^', 'sup'), ('__', 'u'), ('##', 'code')], non_bodied_macros={}, bodied_macros={}, argument_parser=&lt;creoleparser.core.ArgParser object at 0x02A3C8F0&gt;, **kwargs</em><big>)</big><a class="headerlink" href="#creoleparser.dialects.creole11_base" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">creoleparser.dialects.</tt><tt class="descname">creole11_base</tt><big>(</big><em>macro_func=None, indent_class=None, indent_style='margin-left:2em', simple_markup=[('**', 'strong'), ('//', 'em'), (',,', 'sub'), ('^^', 'sup'), ('__', 'u'), ('##', 'code')], non_bodied_macros={}, bodied_macros={}, argument_parser=&lt;creoleparser.core.ArgParser object at 0x02D18CD0&gt;, **kwargs</em><big>)</big><a class="headerlink" href="#creoleparser.dialects.creole11_base" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a base class for extending (for parameter descriptions, see <a class="reference internal" href="#creoleparser.dialects.create_dialect" title="creoleparser.dialects.create_dialect"><tt class="xref py py-func docutils literal"><span class="pre">create_dialect()</span></tt></a>)</p>
 <blockquote>
 <p>The returned class implements most of the <em>officially</em> proposed additions to
