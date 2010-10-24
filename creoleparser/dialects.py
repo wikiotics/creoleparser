@@ -226,18 +226,20 @@ def create_dialect(dialect_base, **kw_args):
       indent_style
         Style attribute to add to indented regions.
       interwiki_links_base_urls
-        Dictionary of urls for interwiki links.
+        Dictionary of urls for interwiki links. Works like
+        ``wiki_links_base_url``.
       interwiki_links_class_funcs
         Dictionary of functions that will be called for interwiki link
         names and return class attributes. Works like
-        wiki_links_class_func.
+        ``wiki_links_class_func``.
       interwiki_links_path_funcs
         Dictionary of functions that will be called for interwiki link
-        names and return url paths. Works like wiki_links_path_func.
+        names and return url paths. Works like ``wiki_links_path_func``.
       interwiki_links_space_chars
         Dictionary of characters that that will be used to replace spaces
-        that occur in interwiki_links. If no key is present for an interwiki
-        name, the wiki_links_space_char will be used.
+        that occur in interwiki_links. Works like ``wiki_links_space_char``.
+        If no key is present for an interwiki name, the
+        ``wiki_links_space_char`` will be used. 
       macro_func
         If supplied, this fuction will be called when macro markup is found,
         unless the macro is in one of macro dictionaries above. The
@@ -328,7 +330,26 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
     else:
         embed_space_char = wiki_links_space_char
 
-        
+    embed_interwiki_base_urls = {}
+    for k,v in interwiki_links_base_urls.items():
+        if isinstance(v,(list, tuple)):
+            interwiki_links_base_urls[k], embed_interwiki_base_urls[k] = v
+        else:
+            embed_interwiki_base_urls[k] = v
+    embed_interwiki_path_funcs = {}
+    for k,v in interwiki_links_path_funcs.items():
+        if isinstance(v,(list, tuple)):
+            interwiki_links_path_funcs[k], embed_interwiki_path_funcs[k] = v
+        else:
+            embed_interwiki_path_funcs[k] = v
+    embed_interwiki_space_chars = {}
+    for k,v in interwiki_links_space_chars.items():
+        if isinstance(v,(list, tuple)):
+            interwiki_links_space_chars[k], embed_interwiki_space_chars[k] = v
+        else:
+            embed_interwiki_space_chars[k] = v
+
+      
     class Base(Dialect):
 
         br = LineBreak('br', r'\\',blog_style=blog_style_endings)
@@ -351,11 +372,11 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
                               path_func=wiki_links_path_func, external_links_class=external_links_class)
 
         img = ImageElement('img',('{{','}}'),delimiter = '|',interwiki_delimiter=':',
-                                            base_urls=interwiki_links_base_urls,
-                                            links_funcs=interwiki_links_path_funcs,
+                                            base_urls=embed_interwiki_base_urls,
+                                            links_funcs=embed_interwiki_path_funcs,
                                             interwiki_class_funcs=interwiki_links_class_funcs, 
                                             default_space_char=embed_space_char,
-                                            space_chars=interwiki_links_space_chars,
+                                            space_chars=embed_interwiki_space_chars,
                                        base_url=embed_base_url,
                               space_char=embed_space_char,class_func=wiki_links_class_func,
                               path_func=embed_path_func,disable_external=disable_external_content)        

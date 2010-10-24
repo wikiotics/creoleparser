@@ -517,6 +517,20 @@ class DialectOptionsTest(unittest.TestCase):
             parse("{{foo bar}}"),
             wrap_result("""<img src="/files/Foo bar" alt="foo bar" title="foo bar" />"""))
 
+    def test_interwiki_image_link_options(self):
+        dialect = create_dialect(creole10_base,
+                                 interwiki_links_base_urls={'a': ['/pages/','/files/']},
+                                 interwiki_links_space_chars={'a': ['_',' ']},
+                                 interwiki_links_path_funcs={'a': [lambda s:s.upper(),
+                                                                    lambda s:s.capitalize()]})
+        parse = Parser(dialect)
+        self.assertEquals(
+            parse("[[a:foo bar|Foo]]"),
+            wrap_result("""<a href="/pages/FOO_BAR">Foo</a>"""))
+        self.assertEquals(
+            parse("{{a:foo bar|Foo}}"),
+            wrap_result("""<img src="/files/Foo bar" alt="Foo" title="Foo" />"""))
+
     def test_disable_external_content(self):
         dialect = create_dialect(creole10_base, disable_external_content=True)
         parse = Parser(dialect)
