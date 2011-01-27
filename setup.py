@@ -47,6 +47,8 @@ Creoleparser is a Python library for converting Creole wiki markup
 for output on the web. It is a full implementation of the Creole 1.0
 specification and aims to follow the spec exactly.
 
+Find out more about Creoleparser at <http://code.google.com/p/creoleparser/>
+
 What is Creole?
 ---------------
 
