@@ -76,6 +76,8 @@ class Parser(object):
         
         if element_store is None:
             element_store = {}
+        if environ is None:
+            environ = {}
         if not isinstance(context,list):
             if context == 'block':
                 top_level_elements = self.dialect.block_elements
