@@ -606,7 +606,7 @@ class DialectOptionsTest(unittest.TestCase):
 
 
     def test_add_heading_ids(self):
-        dialect = create_dialect(creole10_base, id_prefix='!')
+        dialect = create_dialect(creole10_base, add_heading_ids=True)
         parse = Parser(dialect)
         self.assertEquals(
             parse("== Level 2"),
@@ -623,11 +623,24 @@ class DialectOptionsTest(unittest.TestCase):
         self.assertEquals(
             parse("== ~http://www.google.com\n"),
             '<h2 id="!http-www-google-com">http://www.google.com</h2>\n')
-        dialect = create_dialect(creole10_base, id_prefix='')
+        self.assertEquals(
+            parse("[[foo bar#!a-heading_1]]"),
+            wrap_result("""<a href="foo_bar#!a-heading_1">foo bar#!a-heading_1</a>"""))
+        self.assertEquals(
+            parse("[[#!a-heading]]"),
+            wrap_result("""<a href="#!a-heading">#!a-heading</a>"""))
+        self.assertEquals(
+            parse("[[foo bar#1]]"),
+            wrap_result("""<a href="foo_bar%231">foo bar#1</a>"""))
+        self.assertEquals(
+            parse("[[#1]]"),
+            wrap_result("""<a href="%231">#1</a>"""))
+        dialect = create_dialect(creole10_base, add_heading_ids='')
         parse = Parser(dialect)
         self.assertEquals(
             parse("== Level 2"),
-            '<h2 id="level-2">Level 2</h2>\n')        
+            '<h2 id="level-2">Level 2</h2>\n')
+        
 
 
        

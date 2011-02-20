@@ -157,6 +157,11 @@ def create_dialect(dialect_base, **kw_args):
     :func:`~creoleparser.dialects.creole11_base`)
 
     :parameters:
+      add_heading_ids
+        If `True`, user friendly, lowercase, unique, id attributes will be
+        automatically added to headings. To prevent clashes with other page
+        ids, all will be prefixed with a "!". This prefix may be changed by
+        passing a string rather than a boolean.
       argument_parser
         Parser used for automatic parsing of macro arg strings. Must take a
         single string argument and return a two-tuple with the first element
@@ -308,7 +313,7 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
                  disable_external_content=False,
                  custom_markup=[],
                  simple_markup=[('**','strong'),('//','em')],
-                 id_prefix=False 
+                 add_heading_ids=False 
                  ):
     """Returns a base class for extending
     (for parameter descriptions, see :func:`~creoleparser.dialects.create_dialect`)
@@ -349,12 +354,17 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
             interwiki_links_space_chars[k], embed_interwiki_space_chars[k] = v
         else:
             embed_interwiki_space_chars[k] = v
-
+            
+    id_prefix=add_heading_ids is True and '!' or add_heading_ids
+    if id_prefix is False:
+        fragment_pattern = None
+    else:
+        fragment_pattern = '#' + re.escape(id_prefix) + r'[a-z0-9-_]+'
       
     class Base(Dialect):
 
         br = LineBreak('br', r'\\',blog_style=blog_style_endings)
-        headings = Heading(['h1','h2','h3','h4','h5','h6'],'=',id_prefix=id_prefix)
+        headings = Heading(['h1','h2','h3','h4','h5','h6'],'=', id_prefix=id_prefix)
         no_wiki = NoWikiElement(no_wiki_monospace and 'code' or 'span',['{{{','}}}'])
         simple_element = SimpleElement(token_dict=dict(simple_markup))
         hr = LoneElement('hr','----')
@@ -370,7 +380,8 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
                                             space_chars=interwiki_links_space_chars,
                                        base_url=wiki_links_base_url,
                               space_char=wiki_links_space_char,class_func=wiki_links_class_func,
-                              path_func=wiki_links_path_func, external_links_class=external_links_class)
+                              path_func=wiki_links_path_func,fragment_pattern=fragment_pattern,
+                             external_links_class=external_links_class)
                              
 
         img = ImageElement('img',('{{','}}'),delimiter = '|',interwiki_delimiter=':',
@@ -381,7 +392,8 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
                                             space_chars=embed_interwiki_space_chars,
                                        base_url=embed_base_url,
                               space_char=embed_space_char,class_func=wiki_links_class_func,
-                              path_func=embed_path_func,disable_external=disable_external_content)        
+                              path_func=embed_path_func,fragment_pattern=fragment_pattern,
+                              disable_external=disable_external_content)        
 
 
         td = TableCell('td','|')
@@ -491,8 +503,6 @@ def creole11_base(macro_func=None,
     
     class Base(Creole10Base):
         
-        #simple_element = SimpleElement(token_dict={'**':'strong','//':'em',',,':'sub',
-        #                                          '^^':'sup','__':'u','##':'code'})
         indented = IndentedBlock('div','>', class_=indent_class, style=indent_style)
         
         dd = DefinitionDef('dd',':')

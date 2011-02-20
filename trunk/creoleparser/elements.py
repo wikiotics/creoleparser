@@ -282,7 +282,7 @@ class LinkElement(InlineElement):
     def __init__(self,tag, token, delimiter,
                  interwiki_delimiter,base_urls,links_funcs,
                  interwiki_class_funcs,default_space_char,space_chars,
-                 base_url,space_char,class_func,path_func):
+                 base_url,space_char,class_func,path_func,fragment_pattern):
         super(LinkElement,self).__init__(tag,token)
         self.regexp = re.compile(self.re_string(),re.DOTALL)
         self.delimiter = delimiter
@@ -296,6 +296,7 @@ class LinkElement(InlineElement):
         self.space_char = space_char
         self.class_func = class_func
         self.path_func = path_func
+        self.fragment_pattern = fragment_pattern
         self.content_regexp = re.compile(self.content_re_string(),re.DOTALL)
         self.interwikilink_regexp = re.compile(self.interwikilink_re_string())
         self.urllink_regexp = re.compile(self.urllink_re_string(), re.DOTALL)
@@ -320,7 +321,11 @@ class LinkElement(InlineElement):
 
     def wikilink_re_string(self):
         optional_spaces = ' *'
-        page_name = r'(?P<page_name>\S+?( \S+?)*?)' #allows any number of single spaces
+        if self.fragment_pattern:
+            page_name = r'(?P<page_name>\S*?( \S+?)*?)(?P<fragment>' + \
+                        self.fragment_pattern + ')?'
+        else:
+            page_name = r'(?P<page_name>\S+?( \S+?)*?)' #allows any number of single spaces
         return '^' + optional_spaces + page_name + optional_spaces + '$'
 
     def page_name(self,mo):
@@ -361,10 +366,12 @@ class LinkElement(InlineElement):
             wikilink_mo = self.wikilink_regexp.match(body)
             link_type = 'wiki'
             page_name = self.page_name(wikilink_mo)
-            if self.path_func:
+            if self.path_func and page_name:
                 the_path = self.path_func(page_name)
             else:
                 the_path = urllib.quote(page_name.encode('utf-8'))
+            if wikilink_mo.groupdict().get('fragment'):
+                the_path = ''.join([the_path,wikilink_mo.group('fragment')])
             if self.class_func:
                 the_class = self.class_func(page_name)
             url = urlparse.urljoin(self.base_url, the_path)
@@ -395,7 +402,8 @@ class AnchorElement(LinkElement):
     ...                bigwiki='http://bigwiki.net/'),
     ... links_funcs={},interwiki_class_funcs={},default_space_char='-',
     ... space_chars={'bigwiki':' '},base_url='http://somewiki.org/',
-    ... space_char='_',class_func=None,path_func=None,external_links_class=None)
+    ... space_char='_',class_func=None,path_func=None,external_links_class=None,
+    ... fragment_pattern=r'#![a-z0-9-_]+')
     
     >>> mo = link.regexp.search("[[http://www.google.com| here]]")
     >>> link._build(mo,{},None).generate().render()
@@ -412,6 +420,14 @@ class AnchorElement(LinkElement):
     >>> mo = link.regexp.search(" [[Home Page |Home]]")
     >>> link._build(mo,{},None).generate().render()
     '<a href="http://somewiki.org/Home_Page">Home</a>'
+
+    >>> mo = link.regexp.search(" [[#!my-header|Subpage]]")
+    >>> link._build(mo,{},None).generate().render()
+    '<a href="http://somewiki.org/#!my-header">Subpage</a>'
+
+    >>> mo = link.regexp.search(" [[Home Page#!a-header |Home]]")
+    >>> link._build(mo,{},None).generate().render()
+    '<a href="http://somewiki.org/Home_Page#!a-header">Home</a>'
     
     """
 
@@ -442,7 +458,8 @@ class ImageElement(LinkElement):
     ...                bigwiki='http://bigwiki.net/'),
     ... links_funcs={},interwiki_class_funcs={},default_space_char='-',
     ... space_chars={'bigwiki':' '},base_url='/images/',
-    ... space_char='_',class_func=None,path_func=None,disable_external=False)
+    ... space_char='_',class_func=None,path_func=None,disable_external=False,
+    ... fragment_pattern=False)
 
     >>> mo = img.regexp.search('{{ picture.jpg | An image of a house }}')
     >>> img._build(mo,{},None).generate().render()
@@ -1235,17 +1252,17 @@ class Heading(BlockElement):
         heading_body = fragmentize(mo.group(2),
                                    self.child_elements,
                                    element_store, environ)
-        if self.id_prefix is not False:
+        if self.id_prefix is False:
+            id_=None
+        else:
             heading_text = bldr.tag(heading_body).generate().render(method='text',encoding=None)
             used_ids = environ.setdefault('ids', [])
-            _id = self.make_id(self.id_prefix,heading_text,used_ids)
-            used_ids.append(_id)
+            id_ = self.make_id(self.id_prefix,heading_text,used_ids)
+            used_ids.append(id_)
             toc = environ.setdefault('toc', [])
-            toc.append((heading_tag, bldr.tag(heading_body), _id))            
-        else:
-            _id = None
+            toc.append((heading_tag, bldr.tag(heading_body), id_))            
         return bldr.tag.__getattr__(heading_tag)(heading_body,
-                                                 id=_id)
+                                                 id_=id_)
 
 
 
