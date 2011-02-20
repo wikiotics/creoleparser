@@ -308,6 +308,7 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
                  disable_external_content=False,
                  custom_markup=[],
                  simple_markup=[('**','strong'),('//','em')],
+                 id_prefix=False 
                  ):
     """Returns a base class for extending
     (for parameter descriptions, see :func:`~creoleparser.dialects.create_dialect`)
@@ -353,7 +354,7 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
     class Base(Dialect):
 
         br = LineBreak('br', r'\\',blog_style=blog_style_endings)
-        headings = Heading(['h1','h2','h3','h4','h5','h6'],'=')
+        headings = Heading(['h1','h2','h3','h4','h5','h6'],'=',id_prefix=id_prefix)
         no_wiki = NoWikiElement(no_wiki_monospace and 'code' or 'span',['{{{','}}}'])
         simple_element = SimpleElement(token_dict=dict(simple_markup))
         hr = LoneElement('hr','----')
@@ -370,6 +371,7 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
                                        base_url=wiki_links_base_url,
                               space_char=wiki_links_space_char,class_func=wiki_links_class_func,
                               path_func=wiki_links_path_func, external_links_class=external_links_class)
+                             
 
         img = ImageElement('img',('{{','}}'),delimiter = '|',interwiki_delimiter=':',
                                             base_urls=embed_interwiki_base_urls,

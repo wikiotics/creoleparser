@@ -13,6 +13,7 @@ import urllib
 import keyword
 import warnings
 import traceback
+import unicodedata
 
 import genshi.builder as bldr
 from genshi.core import Stream, Markup
@@ -1171,22 +1172,56 @@ class Paragraph(BlockElement):
 
 class Heading(BlockElement):
 
-    r"""Finds heading wiki elements.
+    r"""Finds heading wiki elements. Optionally adds id attributes.
 
-    >>> h1 = Heading(['h1','h2'],'=')
+    To avoid invalid HTML, ids are made unique by appending an incrementing
+    number. The clear_seen method allows reseting the dictionary holding counts
+    per id.
+
+    >>> h1 = Heading(['h1','h2'],'=',id_prefix=False)
     >>> mo = h1.regexp.search('before\n = An important thing = \n after')
     >>> mo.group(2)
     'An important thing'
     >>> mo.group(0)
     ' = An important thing = \n'
 
+    >>> h1 = Heading(['h1','h2'],'=',id_prefix='!')
+    >>> mo = h1.regexp.search(u'before\n = An important thing = \n after')
+    >>> mo.group(2)
+    u'An important thing'
+    >>> h1.make_id('!',mo.group(2),[])
+    '!an-important-thing'
+    >>> h1.make_id('!',mo.group(2),['!an-important-thing'])
+    '!an-important-thing_1'
+    >>> h1.make_id('!',mo.group(2),{})
+    '!an-important-thing'
+    >>> h1.make_id('!',mo.group(2) + '!@#$%&*()_[]+=/?|-- TO    SAY',{})
+    '!an-important-thing-to-say'
+
     """
-  
-    def __init__(self, tag, token):
+
+    def __init__(self, tag, token, id_prefix):
         super(Heading,self).__init__('',token)
+        self.id_prefix = id_prefix
         self.tags = tag
         self.regexp = re.compile(self.re_string(),re.MULTILINE)
 
+
+    def make_id(self, prefix, heading_text,used_ids):
+        slug = unicodedata.normalize('NFKD', heading_text).encode('ascii', 'ignore').lower()
+        slug = re.sub('-+', '-', re.sub('[^a-z0-9-]+', '-', slug)).strip('-')
+        slug = ''.join([prefix,slug]) or '!'
+        i = 1
+        original_slug = slug 
+        while True:
+            if slug not in used_ids:
+                break
+            slug = '%s_%d' % (original_slug, i)
+            i += 1
+        
+        return slug
+
+  
     def re_string(self):
         whitespace = r'[ \t]*'
         tokens = '(' + re.escape(self.token) + '{1,' + str(len(self.tags)) +'})'
@@ -1197,9 +1232,22 @@ class Heading(BlockElement):
 
     def _build(self,mo,element_store, environ):
         heading_tag = self.tags[len(mo.group(1))-1]
-        return bldr.tag.__getattr__(heading_tag)(fragmentize(mo.group(2),
-                                                          self.child_elements,
-                                                          element_store, environ))
+        heading_body = fragmentize(mo.group(2),
+                                   self.child_elements,
+                                   element_store, environ)
+        if self.id_prefix is not False:
+            heading_text = bldr.tag(heading_body).generate().render(method='text',encoding=None)
+            used_ids = environ.setdefault('ids', [])
+            _id = self.make_id(self.id_prefix,heading_text,used_ids)
+            used_ids.append(_id)
+            toc = environ.setdefault('toc', [])
+            toc.append((heading_tag, bldr.tag(heading_body), _id))            
+        else:
+            _id = None
+        return bldr.tag.__getattr__(heading_tag)(heading_body,
+                                                 id=_id)
+
+
 
 
 class Table(BlockElement):

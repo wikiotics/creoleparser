@@ -168,7 +168,7 @@ class Creole2HTMLTest(unittest.TestCase, BaseTest):
                 wiki_links_base_url=base_url,
                 interwiki_links_base_urls={'Ohana': inter_wiki_url},
                 #use_additions=False,
-                no_wiki_monospace=True
+                no_wiki_monospace=True,
                 )
             )
         self.parse = creole2html
@@ -604,6 +604,30 @@ class DialectOptionsTest(unittest.TestCase):
             parse("[[http://www.somesite.com/campfire.jpg]]"),
             wrap_result("""<a class="external" href="http://www.somesite.com/campfire.jpg">http://www.somesite.com/campfire.jpg</a>"""))
 
+
+    def test_add_heading_ids(self):
+        dialect = create_dialect(creole10_base, id_prefix='!')
+        parse = Parser(dialect)
+        self.assertEquals(
+            parse("== Level 2"),
+            '<h2 id="!level-2">Level 2</h2>\n')
+        self.assertEquals(
+            parse("= Level 1\n= Level 1"),
+            '<h1 id="!level-1">Level 1</h1>\n<h1 id="!level-1_1">Level 1</h1>\n')
+        self.assertEquals(
+            parse("= [[http://www.google.com|Google]]\n"),
+            """<h1 id="!google"><a href="http://www.google.com">Google</a></h1>\n""")
+        self.assertEquals(
+            parse("== http://www.google.com\n"),
+            """<h2 id="!http-www-google-com"><a href="http://www.google.com">http://www.google.com</a></h2>\n""")
+        self.assertEquals(
+            parse("== ~http://www.google.com\n"),
+            '<h2 id="!http-www-google-com">http://www.google.com</h2>\n')
+        dialect = create_dialect(creole10_base, id_prefix='')
+        parse = Parser(dialect)
+        self.assertEquals(
+            parse("== Level 2"),
+            '<h2 id="level-2">Level 2</h2>\n')        
 
 
        
