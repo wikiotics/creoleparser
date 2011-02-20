@@ -161,7 +161,10 @@ def create_dialect(dialect_base, **kw_args):
         If `True`, user friendly, lowercase, unique, id attributes will be
         automatically added to headings. To prevent clashes with other page
         ids, all will be prefixed with a "!". This prefix may be changed by
-        passing a string rather than a boolean.
+        passing a string rather than a boolean. *``environ`` needs to be a
+        dicionary-like object for this to function (see
+        :meth:`creoleparser.core.Parser.parse`) and a key named `ids` will
+        be added.*
       argument_parser
         Parser used for automatic parsing of macro arg strings. Must take a
         single string argument and return a two-tuple with the first element

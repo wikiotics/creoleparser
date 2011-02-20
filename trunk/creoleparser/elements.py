@@ -1259,8 +1259,8 @@ class Heading(BlockElement):
             used_ids = environ.setdefault('ids', [])
             id_ = self.make_id(self.id_prefix,heading_text,used_ids)
             used_ids.append(id_)
-            toc = environ.setdefault('toc', [])
-            toc.append((heading_tag, bldr.tag(heading_body), id_))            
+            #toc = environ.setdefault('toc', [])
+            #toc.append((heading_tag, bldr.tag(heading_body), id_))            
         return bldr.tag.__getattr__(heading_tag)(heading_body,
                                                  id_=id_)
 
