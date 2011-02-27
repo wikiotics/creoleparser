@@ -327,6 +327,14 @@ class AttrDict(dict):
     def __getattr__(self, attr):
         return self[attr] 
 
+        
+class MacroError(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
+
+
 def _test():
     import doctest
     doctest.testmod()

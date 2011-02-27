@@ -19,7 +19,7 @@ import genshi.builder as bldr
 from genshi.core import Stream, Markup
 
 from core import (escape_char, esc_neg_look, fragmentize,
-                  ImplicitList, AttrDict) 
+                  ImplicitList, AttrDict, MacroError) 
 
 BLOCK_ONLY_TAGS = ['h1','h2','h3','h4','h5','h6',
               'ul','ol','dl',
@@ -596,6 +596,9 @@ class Macro(WikiElement):
                       + re.sub('arguments?','argument(s)',mo.group(3)) \
                       + str(int(mo.group(4))-2) + ' given)'
             value = bldr.tag.__getattr__(tag)("Macro error: '%s' %s"% (macro_name, msg),class_='macro_error')
+        except MacroError, detail:
+            tag = isblock and 'pre' or 'code'
+            value = bldr.tag.__getattr__(tag)("Error in macro '%s': %s"% (macro_name,str(detail.value)),class_='macro_error')
         except:
             value = bldr.tag.pre('Unexpected error during macro execution!\n'
                                  + traceback.format_exc(20) ,
@@ -1189,11 +1192,7 @@ class Paragraph(BlockElement):
 
 class Heading(BlockElement):
 
-    r"""Finds heading wiki elements. Optionally adds id attributes.
-
-    To avoid invalid HTML, ids are made unique by appending an incrementing
-    number. The clear_seen method allows reseting the dictionary holding counts
-    per id.
+    r"""Processes heading wiki elements. Optionally adds id attributes.
 
     >>> h1 = Heading(['h1','h2'],'=',id_prefix=False)
     >>> mo = h1.regexp.search('before\n = An important thing = \n after')
@@ -1228,6 +1227,12 @@ class Heading(BlockElement):
         slug = unicodedata.normalize('NFKD', heading_text).encode('ascii', 'ignore').lower()
         slug = re.sub('-+', '-', re.sub('[^a-z0-9-]+', '-', slug)).strip('-')
         slug = ''.join([prefix,slug]) or '!'
+        # Restrict length without breaking words.
+        while len(slug) > 40:
+            if slug.find('-') == -1:
+                slug = slug[:40]
+            else:
+                slug = slug.rsplit('-', 1)[0]
         i = 1
         original_slug = slug 
         while True:
