@@ -963,7 +963,9 @@ part 2
 
     def test_slow_reg_exp(self):
         t = timeit.Timer('text2html("<<aaaaaaaaaaaaaaaaa>>")','from __main__ import text2html')
-        self.assertTrue(t.timeit(number=10) < 0.05)
+        t2 = timeit.Timer('a = "a" * 100')
+        rel_time = t.timeit(number=10)/t2.timeit(100000)
+        self.assertTrue(rel_time < 10)
 
 class InterWikiLinksTest(unittest.TestCase,BaseTest):
 
