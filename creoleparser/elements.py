@@ -29,8 +29,7 @@ BLOCK_ONLY_TAGS = ['h1','h2','h3','h4','h5','h6',
 
 BLOCK_TAGS = BLOCK_ONLY_TAGS + ['ins','del','script']
 
-
-MACRO_NAME = r'(?P<name>[a-zA-Z]+([-.]?[a-zA-Z0-9]+)*)'
+MACRO_NAME = r'(?P<name>[a-zA-Z][a-zA-Z0-9]*([-.][a-zA-Z0-9]+)*)'
 """allows any number of non-repeating hyphens or periods.
 Underscore is not included because hyphen is"""
 

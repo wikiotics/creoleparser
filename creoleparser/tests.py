@@ -9,6 +9,7 @@
 import urllib
 import unittest
 import re
+import timeit
 
 from genshi import builder
 from genshi.core import Markup
@@ -959,6 +960,10 @@ part 2
         self.assertEquals(
             self.parse("<<span a=1>>This is bad<</span>>"),
                        wrap_result("""<code class="macro_error">Macro error: 'span' got an unexpected keyword argument 'a'</code>"""))
+
+    def test_slow_reg_exp(self):
+        t = timeit.Timer('text2html("<<aaaaaaaaaaaaaaaaa>>")','from __main__ import text2html')
+        self.assertTrue(t.timeit(number=10) < 0.05)
 
 class InterWikiLinksTest(unittest.TestCase,BaseTest):
 
