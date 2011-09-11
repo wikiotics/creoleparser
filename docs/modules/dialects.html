@@ -63,6 +63,15 @@ see <a class="reference internal" href="#creoleparser.dialects.creole10_base" ti
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters :</th><td class="field-body"><dl class="first last docutils">
+<dt>add_heading_ids</dt>
+<dd><p class="first last">If <cite>True</cite>, user friendly, lowercase, unique, id attributes will be
+automatically added to headings. To prevent clashes with other page
+ids, all will be prefixed with a &#8221;!&#8221;. This prefix may be changed by
+passing a string rather than a boolean. <em>``environ`` needs to be a
+dicionary-like object for this to function</em>
+(see <a class="reference internal" href="core.html#creoleparser.core.Parser.parse" title="creoleparser.core.Parser.parse"><tt class="xref py py-meth docutils literal"><span class="pre">creoleparser.core.Parser.parse()</span></tt></a>) and a key named <cite>ids</cite>
+will be added.</p>
+</dd>
 <dt>argument_parser</dt>
 <dd><p class="first last">Parser used for automatic parsing of macro arg strings. Must take a
 single string argument and return a two-tuple with the first element
@@ -143,21 +152,23 @@ links).</p>
 <dd><p class="first last">Style attribute to add to indented regions.</p>
 </dd>
 <dt>interwiki_links_base_urls</dt>
-<dd><p class="first last">Dictionary of urls for interwiki links.</p>
+<dd><p class="first last">Dictionary of urls for interwiki links. Works like
+<tt class="docutils literal"><span class="pre">wiki_links_base_url</span></tt>.</p>
 </dd>
 <dt>interwiki_links_class_funcs</dt>
 <dd><p class="first last">Dictionary of functions that will be called for interwiki link
 names and return class attributes. Works like
-wiki_links_class_func.</p>
+<tt class="docutils literal"><span class="pre">wiki_links_class_func</span></tt>.</p>
 </dd>
 <dt>interwiki_links_path_funcs</dt>
 <dd><p class="first last">Dictionary of functions that will be called for interwiki link
-names and return url paths. Works like wiki_links_path_func.</p>
+names and return url paths. Works like <tt class="docutils literal"><span class="pre">wiki_links_path_func</span></tt>.</p>
 </dd>
 <dt>interwiki_links_space_chars</dt>
 <dd><p class="first last">Dictionary of characters that that will be used to replace spaces
-that occur in interwiki_links. If no key is present for an interwiki
-name, the wiki_links_space_char will be used.</p>
+that occur in interwiki_links. Works like <tt class="docutils literal"><span class="pre">wiki_links_space_char</span></tt>.
+If no key is present for an interwiki name, the
+<tt class="docutils literal"><span class="pre">wiki_links_space_char</span></tt> will be used.</p>
 </dd>
 <dt>macro_func</dt>
 <dd><p class="first">If supplied, this fuction will be called when macro markup is found,
@@ -220,7 +231,7 @@ list; the second element will be used.</p>
 
 <dl class="function">
 <dt id="creoleparser.dialects.creole10_base">
-<tt class="descclassname">creoleparser.dialects.</tt><tt class="descname">creole10_base</tt><big>(</big><em>wiki_links_base_url='', wiki_links_space_char='_', interwiki_links_base_urls={}, no_wiki_monospace=True, wiki_links_class_func=None, external_links_class=None, wiki_links_path_func=None, interwiki_links_path_funcs={}, interwiki_links_class_funcs={}, interwiki_links_space_chars={}, blog_style_endings=False, disable_external_content=False, custom_markup=[], simple_markup=[('**', 'strong'), ('//', 'em')]</em><big>)</big><a class="headerlink" href="#creoleparser.dialects.creole10_base" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">creoleparser.dialects.</tt><tt class="descname">creole10_base</tt><big>(</big><em>wiki_links_base_url='', wiki_links_space_char='_', interwiki_links_base_urls={}, no_wiki_monospace=True, wiki_links_class_func=None, external_links_class=None, wiki_links_path_func=None, interwiki_links_path_funcs={}, interwiki_links_class_funcs={}, interwiki_links_space_chars={}, blog_style_endings=False, disable_external_content=False, custom_markup=[], simple_markup=[('**', 'strong'), ('//', 'em')], add_heading_ids=False</em><big>)</big><a class="headerlink" href="#creoleparser.dialects.creole10_base" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a base class for extending
 (for parameter descriptions, see <a class="reference internal" href="#creoleparser.dialects.create_dialect" title="creoleparser.dialects.create_dialect"><tt class="xref py py-func docutils literal"><span class="pre">create_dialect()</span></tt></a>)</p>
 <p>The returned class does not implement any of the proposed additions to
@@ -229,7 +240,7 @@ to Creole 1.0 specification.</p>
 
 <dl class="function">
 <dt id="creoleparser.dialects.creole11_base">
-<tt class="descclassname">creoleparser.dialects.</tt><tt class="descname">creole11_base</tt><big>(</big><em>macro_func=None, indent_class=None, indent_style='margin-left:2em', simple_markup=[('**', 'strong'), ('//', 'em'), (',,', 'sub'), ('^^', 'sup'), ('__', 'u'), ('##', 'code')], non_bodied_macros={}, bodied_macros={}, argument_parser=&lt;creoleparser.core.ArgParser object at 0x02D18CD0&gt;, **kwargs</em><big>)</big><a class="headerlink" href="#creoleparser.dialects.creole11_base" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">creoleparser.dialects.</tt><tt class="descname">creole11_base</tt><big>(</big><em>macro_func=None, indent_class=None, indent_style='margin-left:2em', simple_markup=[('**', 'strong'), ('//', 'em'), (',,', 'sub'), ('^^', 'sup'), ('__', 'u'), ('##', 'code')], non_bodied_macros={}, bodied_macros={}, argument_parser=&lt;creoleparser.core.ArgParser object at 0x030E6D10&gt;, **kwargs</em><big>)</big><a class="headerlink" href="#creoleparser.dialects.creole11_base" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a base class for extending (for parameter descriptions, see <a class="reference internal" href="#creoleparser.dialects.create_dialect" title="creoleparser.dialects.create_dialect"><tt class="xref py py-func docutils literal"><span class="pre">create_dialect()</span></tt></a>)</p>
 <blockquote>
 <p>The returned class implements most of the <em>officially</em> proposed additions to
