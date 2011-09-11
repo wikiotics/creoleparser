@@ -1,5 +1,5 @@
-Version 0.7.4 (August 2011)
---------------------------
+Version 0.7.4 (Sept 11 2011)
+----------------------------
 
 * optimized macro regular expression (thanks to Jim Garrison)
 * added MacroError class
