@@ -5,7 +5,7 @@ Version 0.7.4 (Sept 11 2011)
 * added MacroError class
 * added support for fragment identifiers in wiki links
 * added option for automatic creation of id attributes in headings
-  (see ``add_heading_ids`` parameters of the ``create_dialect`` function)
+  (see ``add_heading_ids`` parameter of the ``create_dialect`` function)
 
 
 Version 0.7.3 (Oct 19 2010)
