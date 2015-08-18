@@ -1,0 +1,1 @@
+**This page is no longer active. Please use [the discussion group](http://groups.google.com/group/creoleparser) or [file an issue](http://code.google.com/p/creoleparser/issues/entry) instead.**
