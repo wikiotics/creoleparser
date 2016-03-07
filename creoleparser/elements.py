@@ -1261,7 +1261,10 @@ class Heading(BlockElement):
         else:
             heading_text = bldr.tag(heading_body).generate().render(method='text',encoding=None)
             used_ids = environ.setdefault('ids', [])
-            id_ = self.make_id(self.id_prefix,heading_text,used_ids)
+            if heading_text:
+                id_ = self.make_id(self.id_prefix,heading_text,used_ids)
+            else:
+                id_ = None
             used_ids.append(id_)
             #toc = environ.setdefault('toc', [])
             #toc.append((heading_tag, bldr.tag(heading_body), id_))            
