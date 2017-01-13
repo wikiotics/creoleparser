@@ -8,7 +8,7 @@
 #
 
 import re
-from six.moves.urllib.parse import urljoin, urlsplit
+from six.moves.urllib.parse import urljoin, urlsplit, quote
 from six import string_types
 import urllib
 import keyword
@@ -351,7 +351,7 @@ class LinkElement(InlineElement):
             if link_func:
                 url = link_func(page_name)
             else:
-                url = urllib.quote(page_name.encode('utf-8'))
+                url = quote(page_name.encode('utf-8'))
             if base_url:
                 url = urljoin(base_url, url)
             if class_func:
@@ -370,7 +370,7 @@ class LinkElement(InlineElement):
             if self.path_func and page_name:
                 the_path = self.path_func(page_name)
             else:
-                the_path = urllib.quote(page_name.encode('utf-8'))
+                the_path = quote(page_name.encode('utf-8'))
             if wikilink_mo.groupdict().get('fragment'):
                 the_path = ''.join([the_path,wikilink_mo.group('fragment')])
             if self.class_func:
