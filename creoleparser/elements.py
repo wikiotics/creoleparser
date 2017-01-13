@@ -8,7 +8,8 @@
 #
 
 import re
-import urlparse
+from six.moves.urllib.parse import urljoin, urlsplit
+from six import string_types
 import urllib
 import keyword
 import warnings
@@ -236,7 +237,7 @@ class SimpleElement(InlineElement):
         self.regexp = re.compile(self.re_string(),re.DOTALL)
 
     def re_string(self):
-        if isinstance(self.token,basestring):
+        if isinstance(self.token,string_types):
             tokens = '(' + '|'.join([re.escape(token) for token in self.tokens]) + ')'
             content = '(.+?)'
             end = '(' + esc_neg_look + r'\1|$)'
@@ -253,7 +254,7 @@ class CustomElement(InlineElement):
 
     def __init__(self, reg_exp, func):
         super(CustomElement,self).__init__('','')
-        if isinstance(reg_exp, basestring):
+        if isinstance(reg_exp, string_types):
             self.regexp = re.compile(esc_neg_look + re.escape(reg_exp), re.DOTALL)
         else:
             self.regexp = reg_exp
@@ -261,11 +262,11 @@ class CustomElement(InlineElement):
 
 
     def _build(self,mo,element_store, environ):
-        if isinstance(self.func, basestring) and not isinstance(self.func, bldr.Markup):
+        if isinstance(self.func, string_types) and not isinstance(self.func, bldr.Markup):
             value = bldr.tag(bldr.Markup(self.func))
         else:
             value = self.func(mo, environ)
-            if isinstance(value, basestring) and not isinstance(value, bldr.Markup):
+            if isinstance(value, string_types) and not isinstance(value, bldr.Markup):
                 raise Exception("Custom markup functions can only return Genshi objects.")
 
         return value
@@ -305,7 +306,8 @@ class LinkElement(InlineElement):
         return r'(?P<body>.*?)(' + re.escape(self.delimiter) + '(?P<arg_string>.*?))?$'
 
     def interwikilink_re_string(self):
-        all_wikis = set(self.links_funcs.keys() + self.base_urls.keys())
+        all_wikis = set(self.links_funcs.keys())
+        all_wikis.update(self.base_urls.keys())
         wiki_id = '(?P<wiki_id>' + '|'.join(all_wikis) + ')'
         optional_spaces = ' *'
         page_name = r'(?P<page_name>\S+?( \S+?)*)' #allows any number of single spaces
@@ -351,7 +353,7 @@ class LinkElement(InlineElement):
             else:
                 url = urllib.quote(page_name.encode('utf-8'))
             if base_url:
-                url = urlparse.urljoin(base_url, url)
+                url = urljoin(base_url, url)
             if class_func:
                 the_class = class_func(page_name)
         elif self.urllink_regexp.match(body):
@@ -373,7 +375,7 @@ class LinkElement(InlineElement):
                 the_path = ''.join([the_path,wikilink_mo.group('fragment')])
             if self.class_func:
                 the_class = self.class_func(page_name)
-            url = urlparse.urljoin(self.base_url, the_path)
+            url = urljoin(self.base_url, the_path)
         else:
             url = None
 
@@ -478,7 +480,7 @@ class ImageElement(LinkElement):
 
         if alt is None:
             if link_type == 'external':
-                alt = urlparse.urlsplit(url).path.split('/')[-1]
+                alt = urlsplit(url).path.split('/')[-1]
             else:
                 alt = body.strip()
 
@@ -538,7 +540,7 @@ class Macro(WikiElement):
             processed = processed[0]
         else:
             tail = ''
-        if isinstance(processed, basestring) and not isinstance(processed,Markup):
+        if isinstance(processed, string_types) and not isinstance(processed,Markup):
             text = ''.join([text[:mo.start()],processed,tail,
                         text[mo.end():]])
         else:
@@ -584,7 +586,7 @@ class Macro(WikiElement):
         
         try:
             value = func(macro,environ,*pos,**kw)
-        except TypeError , detail:
+        except TypeError as detail:
             tag = isblock and 'pre' or 'code'
             e = str(detail)
             msg = re.sub(r"^\w*\(\) ", '', e)
@@ -595,7 +597,7 @@ class Macro(WikiElement):
                       + re.sub('arguments?','argument(s)',mo.group(3)) \
                       + str(int(mo.group(4))-2) + ' given)'
             value = bldr.tag.__getattr__(tag)("Macro error: '%s' %s"% (macro_name, msg),class_='macro_error')
-        except MacroError, detail:
+        except MacroError as  detail:
             tag = isblock and 'pre' or 'code'
             value = bldr.tag.__getattr__(tag)("Error in macro '%s': %s"% (macro_name,str(detail.value)),class_='macro_error')
         except:
@@ -621,7 +623,7 @@ class Macro(WikiElement):
             return bldr.tag.code(self.token[0],bldr.tag.span(mo.group('name'),class_="macro_name"),
                            bldr.tag.span(arg_string,class_="macro_arg_string"),
                            self.token[1],class_="unknown_macro")
-        elif isinstance(value, (basestring,bldr.Fragment,bldr.Element, Stream)):
+        elif isinstance(value, (string_types,bldr.Fragment,bldr.Element, Stream)):
             return value
         else:
             raise Exception("macros can only return strings and genshi objects") 
@@ -678,7 +680,7 @@ class BodiedMacro(Macro):
                            self.token[1],bldr.tag.span(mo.group('body'),class_="macro_body"),
                            self.token[0] + '/' + mo.group('name') + self.token[1]]
             output = bldr.tag.code(content_out,class_="unknown_macro", style="white-space:pre-wrap")
-        elif isinstance(value, (basestring,bldr.Fragment, Stream)):
+        elif isinstance(value, (string_types,bldr.Fragment, Stream)):
             output = value
         else:
             raise Exception("macros can only return strings and genshi objects")
@@ -721,7 +723,7 @@ class BodiedBlockMacro(Macro):
             processed = processed[0]
         else:
             tail = ''
-        if isinstance(processed, basestring) and not isinstance(processed,Markup):
+        if isinstance(processed, string_types) and not isinstance(processed,Markup):
             text = ''.join([text[:mo.start()],processed,tail,
                         text[mo.end():]])
             frags = fragmentize(text,wiki_elements,element_store, environ)
@@ -777,7 +779,7 @@ class BodiedBlockMacro(Macro):
                            self.token[1],'\n',bldr.tag.span(mo.group('body'),class_="macro_body"),
                            self.token[0] + '/' + mo.group('name') + self.token[1],
                            class_="unknown_macro")
-        elif (isinstance(value, (Stream, basestring)) or
+        elif (isinstance(value, (Stream, string_types)) or
              (isinstance(value,bldr.Element) and value.tag in BLOCK_TAGS)):
             output = value
         # Add a p tag if the value is a Fragment or Element that needs one
@@ -925,7 +927,7 @@ Use of elements.InterWikiLink is depreciated.
             else:
                 href = urllib.quote(href.encode('utf-8'))
             if base_url:
-                href = urlparse.urljoin(base_url, href)
+                href = urljoin(base_url, href)
             return href
 
     def _build(self,mo,element_store, environ):
@@ -976,7 +978,7 @@ Use of elements.WikiLink is depreciated.
             the_path = self.path_func(self.page_name(mo))
         else:
             the_path = urllib.quote(self.page_name(mo).encode('utf-8'))
-        return urlparse.urljoin(self.base_url, the_path)
+        return urljoin(self.base_url, the_path)
 
     def _build(self,mo,element_store, environ):
         if self.class_func:
