@@ -49,10 +49,10 @@ text2html = Parser(
 
 
 def wrap_result(expected):
-    if not isinstance(expected, six.binary_type):
+    if isinstance(expected, six.text_type):
         return force_b("<p>%s</p>\n" % expected)
     else:
-        return six.b("<p>%s</p>\n") % expected
+        raise TypeError
 
 
 def force_b(s):
@@ -845,10 +845,10 @@ class MacroTest(SloppyBytesTestCase, BaseTest):
             '<pre>**one&lt;&lt;pre&gt;&gt;\n&lt;&lt;/pre&gt;&gt;two**</pre>\n')
         self.assertEquals(
             self.parse(u'<<mateo>>fooα<</mateo>>'),
-            wrap_result(force_b('<em>fooα</em>')))
+            wrap_result(u'<em>fooα</em>'))
         self.assertEquals(
             self.parse(u'<<steve fooα>>'),
-            wrap_result(force_b('<strong> fooα</strong>')))
+            wrap_result(u'<strong> fooα</strong>'))
         self.assertEquals(
             self.parse('<<ReverseFrag>>**foo**<</ReverseFrag>>'),
             wrap_result('**oof**'))
