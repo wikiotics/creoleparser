@@ -8,7 +8,7 @@
 #
 from __future__ import unicode_literals
 
-import urllib
+from six.moves.urllib.parse import quote
 import unittest
 import re
 import timeit
@@ -34,7 +34,7 @@ def path_name_function(page_name):
     if page_name == 'ThisPageHere':
         path = 'Special/ThisPageHere'
     else:
-        path = urllib.quote(page_name.encode('utf-8'))
+        path = quote(page_name.encode('utf-8'))
     return path
 
 
@@ -61,21 +61,22 @@ def force_b(s):
     else:
         return s
 
+
 class SloppyBytesTestCase(unittest.TestCase):
             
-    def assertEqual(self, x, y):
-        return self.assertEquals(x, y)
+    def assertEqual(self, x, y, msg=None):
+        return self.assertEquals(x, y, msg=msg)
 
-    def assertEquals(self, x, y):
+    def assertEquals(self, x, y, msg=None):
         # Hack around the Python 2 vs 3 unicode vs bytes expectations in the test cases.
         x = force_b(x)
         y = force_b(y)
-        return super(SloppyBytesTestCase, self).assertEquals(x, y)
+        return super(SloppyBytesTestCase, self).assertEquals(x, y, msg=msg)
 
     def assertEqualTag(self, x, y):
         # test cases assume unimportant things about attribute order: ignore that.
-        x_words = set(force_b(x).split(six.b(' ')))
-        y_words = set(force_b(y).split(six.b(' ')))
+        x_words = set(force_b(x).replace(six.b('>'), six.b(' >')).split(six.b(' ')))
+        y_words = set(force_b(y).replace(six.b('>'), six.b(' >')).split(six.b(' ')))
         return self.assertEquals(x_words, y_words)
         
 
@@ -157,10 +158,10 @@ class BaseTest(object):
         self.assertEqualTag(
             self.parse("{{http://www.google.com/pic.png|google}}"),
             wrap_result("""<img src="http://www.google.com/pic.png" alt="google" title="google" />"""))
-        self.assertEquals(
+        self.assertEqualTag(
             self.parse("{{http://www.google.com/pic.png/}}"),
             wrap_result("""<img src="http://www.google.com/pic.png/" alt="" title="" />"""))
-        self.assertEquals(
+        self.assertEqualTag(
             self.parse("{{http://www.google.com/pic.png|}}"),
             wrap_result("""<img src="http://www.google.com/pic.png" alt="" title="" />"""))
         #self.assertEquals(
@@ -271,16 +272,16 @@ class Text2HTMLTest(SloppyBytesTestCase, BaseTest):
         self.assertEqualTag(
             self.parse('<<bad name>>foo<</bad>>'),
             wrap_result('<code class="unknown_macro" style="white-space:pre-wrap">&lt;&lt;<span class="macro_name">bad</span><span class="macro_arg_string"> name</span>&gt;&gt;<span class="macro_body">foo</span>&lt;&lt;/bad&gt;&gt;</code>'))
-        self.assertEquals(
+        self.assertEqualTag(
             self.parse('<<unknown>>foo<</unknown>>'),
             wrap_result('<code class="unknown_macro" style="white-space:pre-wrap">&lt;&lt;<span class="macro_name">unknown</span><span class="macro_arg_string"></span>&gt;&gt;<span class="macro_body">foo</span>&lt;&lt;/unknown&gt;&gt;</code>'))
-        self.assertEquals(
+        self.assertEqualTag(
             self.parse('<<unknown>>foo with\na line break<</unknown>>'),
             wrap_result('<code class="unknown_macro" style="white-space:pre-wrap">&lt;&lt;<span class="macro_name">unknown</span><span class="macro_arg_string"></span>&gt;&gt;<span class="macro_body">foo with\na line break</span>&lt;&lt;/unknown&gt;&gt;</code>'))
-        self.assertEquals(
+        self.assertEqualTag(
             self.parse('<<unknown>>\nfoo\n<</unknown>>'),
             '<pre class="unknown_macro">&lt;&lt;<span class="macro_name">unknown</span><span class="macro_arg_string"></span>&gt;&gt;\n<span class="macro_body">foo\n</span>&lt;&lt;/unknown&gt;&gt;</pre>')
-        self.assertEquals(
+        self.assertEqualTag(
             self.parse('start\n\n<<unknown>>\n\nend'),
             wrap_result('start</p>\n<p><code class="unknown_macro">&lt;&lt;<span class="macro_name">unknown</span><span class="macro_arg_string"></span>&gt;&gt;</code></p>\n<p>end'))
 
@@ -727,7 +728,7 @@ class NoSpaceDialectTest(SloppyBytesTestCase, BaseTest):
             wrap_result("""<a href="Special/ThisPageHere">This Page Here</a>"""))
 
     def test_new_page(self):
-        self.assertEquals(
+        self.assertEqualTag(
             self.parse("[[New Page|this]]"),
             wrap_result("""<a class="nonexistent" href="NewPage">this</a>"""))
 
@@ -984,12 +985,8 @@ part 2
 
 
     def test_argument_error(self):
-        self.assertEquals(
-            self.parse("<<span error here>>This is bad<</span>>"),
-                       wrap_result("""<code class="macro_error">Macro error: 'span' takes at most 2 argument(s) (3 given)</code>"""))
-        self.assertEquals(
-            self.parse("<<span a=1>>This is bad<</span>>"),
-                       wrap_result("""<code class="macro_error">Macro error: 'span' got an unexpected keyword argument 'a'</code>"""))
+        self.assertTrue(self.parse("<<span error here>>This is bad<</span>>").startswith(six.b('''<p><code class="macro_error">Macro error: 'span' ''')))
+        self.assertTrue(self.parse("<<span a=1>>This is bad<</span>>").startswith(six.b('''<p><code class="macro_error">Macro error: 'span' ''')))
 
     def test_slow_reg_exp(self):
         t = timeit.Timer('text2html("<<aaaaaaaaaaaaaaaaa>>")','from __main__ import text2html')
@@ -1040,19 +1037,19 @@ class InterWikiLinksTest(SloppyBytesTestCase,BaseTest):
             self.parse("[[moo:foo bar|Foo]]"),
             wrap_result("""<a class="foo_bar" href="rab_oof">Foo</a>"""))
         self.assertEqualTag(
-            six.b(self.parse("[[goo:foo|Foo]]")),
+            self.parse("[[goo:foo|Foo]]"),
             wrap_result("""<a class="foo" href="http://example.org/oof">Foo</a>"""))
-        self.assertEquals(
-            six.b(self.parse("[[poo:foo|Foo]]")),
+        self.assertEqualTag(
+            self.parse("[[poo:foo|Foo]]"),
             wrap_result("""<a href="http://example.org/foo">Foo</a>"""))
-        self.assertEquals(
-            six.b(self.parse("[[poo:foo bar|Foo]]")),
+        self.assertEqualTag(
+            self.parse("[[poo:foo bar|Foo]]"),
             wrap_result("""<a href="http://example.org/foo%2Bbar">Foo</a>"""))
         self.assertEqualTag(
-            six.b(self.parse("[[goo:foo bar|Foo]]")),
+            self.parse("[[goo:foo bar|Foo]]"),
             wrap_result("""<a class="foo+bar" href="http://example.org/rab+oof">Foo</a>"""))
         self.assertEquals(
-            six.b(self.parse("[[roo:foo bar|Foo]]")),
+            self.parse("[[roo:foo bar|Foo]]"),
             wrap_result("""<a href="roo%3Afoo_bar">Foo</a>"""))
             #wrap_result("""[[roo:foo bar|Foo]]"""))
 

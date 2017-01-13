@@ -560,7 +560,7 @@ class Macro(WikiElement):
     def _macro_func(self,macro_name,arg_string,body,isblock,environ):
 
         func = self.macros[macro_name]
-        arg_parser = func.func_dict.get('arg_parser') or self.arg_parser
+        arg_parser = func.__dict__.get('arg_parser') or self.arg_parser
         if arg_parser:
             pos, kw = arg_parser(arg_string)
         else:
@@ -1225,7 +1225,7 @@ class Heading(BlockElement):
 
 
     def make_id(self, prefix, heading_text,used_ids):
-        slug = unicodedata.normalize('NFKD', heading_text).encode('ascii', 'ignore').lower()
+        slug = unicodedata.normalize('NFKD', heading_text).encode('ascii', 'ignore').decode('ascii').lower()
         slug = re.sub('-+', '-', re.sub('[^a-z0-9-]+', '-', slug)).strip('-')
         slug = ''.join([prefix,slug]) or '!'
         # Restrict length without breaking words.
