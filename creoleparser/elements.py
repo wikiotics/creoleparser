@@ -19,7 +19,7 @@ import unicodedata
 import genshi.builder as bldr
 from genshi.core import Stream, Markup
 
-from core import (escape_char, esc_neg_look, fragmentize,
+from .core import (escape_char, esc_neg_look, fragmentize,
                   ImplicitList, AttrDict, MacroError) 
 
 BLOCK_ONLY_TAGS = ['h1','h2','h3','h4','h5','h6',

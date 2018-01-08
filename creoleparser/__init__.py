@@ -9,8 +9,8 @@
 import string
 import keyword
 
-from core import Parser, ArgParser
-from dialects import (creole11_base, creole10_base, creepy10_base,
+from .core import Parser, ArgParser
+from .dialects import (creole11_base, creole10_base, creepy10_base,
                     create_dialect, parse_args)
 
 __docformat__ = 'restructuredtext en'

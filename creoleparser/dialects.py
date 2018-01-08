@@ -10,8 +10,8 @@
 import warnings
 import string, keyword
 
-from elements import *
-from core import ArgParser
+from .elements import *
+from .core import ArgParser
 
 
 def creepy10_base():

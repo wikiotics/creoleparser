@@ -17,9 +17,9 @@ import six
 from genshi import builder
 from genshi.core import Markup
 
-from core import Parser, esc_neg_look
-from dialects import creole10_base, creole11_base, create_dialect#, Creole10
-from elements import SimpleElement, IndentedBlock#, NestedIndentedBlock
+from .core import Parser, esc_neg_look
+from .dialects import creole10_base, creole11_base, create_dialect#, Creole10
+from .elements import SimpleElement, IndentedBlock#, NestedIndentedBlock
 
 base_url = ''
 inter_wiki_url = 'http://wikiohana.net/cgi-bin/wiki.pl/'
@@ -989,7 +989,7 @@ part 2
         self.assertTrue(self.parse("<<span a=1>>This is bad<</span>>").startswith(six.b('''<p><code class="macro_error">Macro error: 'span' ''')))
 
     def test_slow_reg_exp(self):
-        t = timeit.Timer('text2html("<<aaaaaaaaaaaaaaaaa>>")','from __main__ import text2html')
+        t = timeit.Timer('text2html("<<aaaaaaaaaaaaaaaaa>>")','from creoleparser.tests import text2html')
         t2 = timeit.Timer('a = "a" * 100')
         rel_time = t.timeit(number=10)/t2.timeit(100000)
         self.assertTrue(rel_time < 10)
