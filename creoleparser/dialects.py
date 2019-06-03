@@ -10,8 +10,8 @@
 import warnings
 import string, keyword
 
-from elements import *
-from core import ArgParser
+from .elements import *
+from .core import ArgParser
 
 
 def creepy10_base():
@@ -143,7 +143,7 @@ class ArgDialect(object):
     """Base class for argument string dialect objects."""
     pass
 
-parse_args = ArgParser(dialect=creepy10_base(),key_func=string.lower,
+parse_args = ArgParser(dialect=creepy10_base(),key_func=lambda s: s.lower,
                        illegal_keys=keyword.kwlist + ['macro_name',
                          'arg_string', 'body', 'isblock', 'environ', 'macro'])
 """Function for parsing macro arg_strings using a relaxed xml style"""

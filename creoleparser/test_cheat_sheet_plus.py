@@ -4,7 +4,7 @@ or safe (``include`` doesn't guard against circular reference). For a more compl
 
 """
 import genshi.builder as bldr
-import dialects, core
+from . import dialects, core
 import os
 
 class Page(object):

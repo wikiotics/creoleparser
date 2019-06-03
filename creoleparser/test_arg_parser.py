@@ -1,10 +1,11 @@
 import unittest
-from string import lower
 
-from __init__ import parse_args
-from core import ArgParser
-from dialects import creepy10_base, creepy20_base
+from .__init__ import parse_args
+from .core import ArgParser
+from .dialects import creepy10_base, creepy20_base
 
+def lower(s):
+    return s.lower()
 
 class BaseTest(object):
     """
@@ -44,7 +45,7 @@ class BaseTest(object):
             (['height = 54in'],{'one': "don't try it"}))
 
     def test_empty_strings(self):
-        self.assertEquals(
+        self.assertEqual(
             self.parse(""" '' '' foo='' boo = """),
             (['', ''], {'foo': '', 'boo': ''}))
   
