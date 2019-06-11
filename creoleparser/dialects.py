@@ -339,18 +339,21 @@ def creole10_base(wiki_links_base_url='',wiki_links_space_char='_',
     else:
         embed_space_char = wiki_links_space_char
 
+    interwiki_links_base_urls = dict(interwiki_links_base_urls)
     embed_interwiki_base_urls = {}
     for k,v in interwiki_links_base_urls.items():
         if isinstance(v,(list, tuple)):
             interwiki_links_base_urls[k], embed_interwiki_base_urls[k] = v
         else:
             embed_interwiki_base_urls[k] = v
+    interwiki_links_path_funcs = dict(interwiki_links_path_funcs)
     embed_interwiki_path_funcs = {}
     for k,v in interwiki_links_path_funcs.items():
         if isinstance(v,(list, tuple)):
             interwiki_links_path_funcs[k], embed_interwiki_path_funcs[k] = v
         else:
             embed_interwiki_path_funcs[k] = v
+    interwiki_links_space_chars = dict(interwiki_links_space_chars)
     embed_interwiki_space_chars = {}
     for k,v in interwiki_links_space_chars.items():
         if isinstance(v,(list, tuple)):
